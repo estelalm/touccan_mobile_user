@@ -119,7 +119,7 @@ fun Login (navController: NavHostController) {
                         onValueChange = {
 
                             emailState.value = it
-
+                            isErrorState.value = false
                         },
                         leadingIcon = {
                             Image(
@@ -148,7 +148,9 @@ fun Login (navController: NavHostController) {
                             .height(60.dp),
                         value = passwordState.value,
                         placeholder = { Text("Senha") },
-                        onValueChange = {passwordState.value = it},
+                        onValueChange = {
+                            passwordState.value = it
+                            isErrorState.value = false},
                         visualTransformation =
                         if (showPasswordState.value) VisualTransformation.None
                         else PasswordVisualTransformation(),
@@ -187,6 +189,10 @@ fun Login (navController: NavHostController) {
 
 
                 }
+                Spacer(modifier = Modifier.height(10.dp))
+                if(isErrorState.value)
+                Text(messageErrorState.value, color = Color.Red)
+
                 Spacer(modifier = Modifier.height(140.dp))
                 Button(
                     onClick = {
@@ -196,15 +202,29 @@ fun Login (navController: NavHostController) {
                             senha = passwordState.value
                         )
 
-                        RetrofitFactory().getUserService().loginUser(login).enqueue(object : Callback<Login>{
-                            override fun onResponse(p0: Call<Login>, res: Response<Login>) {
-                                Log.i("Response:", res.toString())
-                            }
+                        if(login.senha != "" && login.email != ""){
+                            RetrofitFactory().getUserService().loginUser(login).enqueue(object : Callback<Login>{
+                                override fun onResponse(p0: Call<Login>, res: Response<Login>) {
+                                    Log.i("Response:", res.toString())
+                                    if(res.isSuccessful){
 
-                            override fun onFailure(p0: Call<Login>, res: Throwable) {
-                                Log.i("Falhou:", res.toString())
-                            }
-                        })
+                                    }else{
+                                        isErrorState.value = true
+                                        messageErrorState.value = "Email ou senha incorretos"
+                                    }
+                                }
+
+                                override fun onFailure(p0: Call<Login>, res: Throwable) {
+                                    Log.i("Falhou:", res.toString())
+
+                                }
+                            })
+                        }else{
+                            isErrorState.value = true
+                            messageErrorState.value = "Todos os campos devem ser preenchidos"
+                        }
+
+
 
 
                         },
