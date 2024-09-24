@@ -3,6 +3,7 @@ package br.senai.sp.jandira.touccanuser.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,6 +16,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -42,9 +44,9 @@ import br.senai.sp.jandira.touccanuser.ui.theme.Inter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Home(navController: NavHostController) {
-
-
+fun Home() {
+//    navController: NavHostController
+    val laranja = 0xffF07B07
 
     Scaffold (
         containerColor = Color(0xFFEBEBEB),
@@ -98,11 +100,30 @@ fun Home(navController: NavHostController) {
                 Row (
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceAround) {
+
+
+                    IconButton(
+                        onClick = {}
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.home),
+                            contentDescription = "Home: Ícone de casa",
+                        )
+                    }
                     IconButton(
                         onClick = {}
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.historico),
+                            contentDescription = "Home: Ícone de casa",
+                        )
+                    }
+                    IconButton(
+                        onClick = {}
+                    ) {
+                        Icon(
+                            modifier = Modifier.size(35.dp),
+                            painter = painterResource(R.drawable.notificacao),
                             contentDescription = "Home: Ícone de casa",
                         )
                     }
@@ -120,26 +141,7 @@ fun Home(navController: NavHostController) {
                         onClick = {}
                     ) {
                         Icon(
-                            modifier = Modifier.size(35.dp),
-                            painter = painterResource(R.drawable.notificacao),
-                            contentDescription = "Home: Ícone de casa",
-                        )
-                    }
-
-                    IconButton(
-                        onClick = {}
-                    ) {
-                        Icon(
                             painter = painterResource(R.drawable.pesquisa),
-                            contentDescription = "Home: Ícone de casa",
-                        )
-                    }
-
-                    IconButton(
-                        onClick = {}
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.home),
                             contentDescription = "Home: Ícone de casa",
                         )
                     }
@@ -148,20 +150,33 @@ fun Home(navController: NavHostController) {
             }
         }
     ) { innerpadding ->
-        Column {
-            Row (modifier = Modifier.fillMaxWidth()){
-                Button(onClick = {}) {
+        Column (Modifier.padding(vertical = 100.dp)){
+            Row (
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
+                horizontalArrangement = Arrangement.SpaceAround
+
+            ){
+                Button(
+                    onClick = {},
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Transparent
+                    )
+                ) {
                     Text(
                         text = "Perto de você"
                     )
                 }
-                Button(onClick = {}) {
+                Button(onClick = {},
+                    colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Transparent
+                )) {
                     Text(
-                        text = "Urgente"
+                        text = "Urgente",
+
                     )
                 }
             }
-            LazyColumn (contentPadding = innerpadding){
+            LazyColumn (contentPadding = PaddingValues(0.dp)){
                 items(2){
                     AnuncioCard()
                 }
@@ -270,12 +285,12 @@ fun AnuncioCard(modifier: Modifier = Modifier) {
 
 }
 
-//
-//@Preview (showSystemUi = true, showBackground = true)
-//@Composable
-//private fun HomePreview() {
-//    Surface (modifier = Modifier.fillMaxSize(), color = Color(0xFFEBEBEB)) {
-//        Home(navController)
-//    }
-//
-//}
+
+@Preview (showSystemUi = true, showBackground = true)
+@Composable
+private fun HomePreview() {
+    Surface (modifier = Modifier.fillMaxSize(), color = Color(0xFFEBEBEB)) {
+        Home()
+    }
+
+}
