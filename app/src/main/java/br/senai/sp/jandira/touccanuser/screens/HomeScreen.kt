@@ -22,6 +22,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -36,15 +37,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import br.senai.sp.jandira.touccanuser.R
+import br.senai.sp.jandira.touccanuser.ui.theme.Inter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Home() {
+
+
+
     Scaffold (
         containerColor = Color(0xFFEBEBEB),
         topBar = {
@@ -168,6 +175,9 @@ fun Home() {
 @Composable
 fun AnuncioCard(modifier: Modifier = Modifier) {
 
+    val grayColor = 0xff6D6D6D
+    val greenColor = 0xff106B16
+
     Row (modifier = Modifier.padding(16.dp)){
         Card (
             modifier = Modifier.size(35.dp),
@@ -177,20 +187,25 @@ fun AnuncioCard(modifier: Modifier = Modifier) {
             shape = RoundedCornerShape(50.dp)
         ){  }
         Column (
-            modifier = modifier.padding(vertical = 10.dp, horizontal = 6.dp)
+            modifier = modifier.padding(vertical = 8.dp, horizontal = 6.dp)
         ){
 
-            Text(text = "Empresa 1", modifier = Modifier.padding(bottom = 10.dp))
+            Text(
+                text = "Empresa 1",
+                modifier = Modifier.padding(bottom = 10.dp, start = 4.dp),
+                fontFamily = Inter,
+                fontWeight = FontWeight.Normal
+            )
             Card {
-                Row (modifier = Modifier.height(160.dp).fillMaxWidth().background(Color.White)){
-                    Card (
+                Row (modifier = Modifier.height(180.dp).fillMaxWidth().background(Color.White)){
+                    ElevatedCard (
                         modifier = Modifier.fillMaxHeight().width(10.dp),
                         colors = CardDefaults.cardColors(
                             containerColor = Color(0xffF07B07),
                         ),
                         shape = RectangleShape,
                         elevation = CardDefaults.cardElevation(
-                            defaultElevation = 100.dp
+                            defaultElevation = 20.dp
                         )
                     ){}
                     Column (
@@ -198,25 +213,51 @@ fun AnuncioCard(modifier: Modifier = Modifier) {
                         verticalArrangement = Arrangement.SpaceAround
                     ){
                         Text(
-                            text = "Assistente Admnistrativo"
+                            text = "Assistente Admnistrativo",
+                            fontFamily = Inter,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color(grayColor)
                         )
                         Text(
-                            text = "Trabalho focado em organizar e atender clientes com intuito de disponibilidade hoje!"
+                            text = "Trabalho focado em organizar e atender clientes com intuito de disponibilidade hoje!",
+                            fontFamily = Inter,
+                            fontWeight = FontWeight.Light
                         )
                         Text(
-                            text = "Jandira - SP"
+                            text = "Jandira - SP",
+                            fontFamily = Inter,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color(grayColor)
                         )
-                        Text(
-                            text = "Dificuldade: Baixa"
-                        )
+                        Row {
+                            Text(
+                                text = "Dificuldade: ",
+                                fontFamily = Inter,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color(grayColor)
+                            )
+                            Text(
+                                text = "Baixa",
+                                fontFamily = Inter,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color(greenColor)
+                            )
+                        }
+
                         Row (
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.End
                         ){ Button(
+                            modifier = Modifier.height(32.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xffF07B07)),
                             onClick = {}
                         ) {
-                            Text(text ="Candidatar-se")
+                            Text(
+                                text ="Candidatar-se",
+                                fontFamily = Inter,
+                                fontWeight = FontWeight.Normal,
+                                lineHeight = 12.sp
+                            )
                         } }
                     }
                 }
