@@ -1,6 +1,7 @@
 package br.senai.sp.jandira.touccanuser.screens
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -190,13 +191,13 @@ fun Login (navController: NavHostController) {
 
                 }
                 Spacer(modifier = Modifier.height(10.dp))
-                if(isErrorState.value)
-                Text(messageErrorState.value, color = Color.Red)
+                if(isErrorState.value){
+                    Text(messageErrorState.value, color = Color.Red)
+                }
 
                 Spacer(modifier = Modifier.height(140.dp))
                 Button(
                     onClick = {
-
                         val login = Login(
                             email = emailState.value,
                             senha = passwordState.value
@@ -207,13 +208,12 @@ fun Login (navController: NavHostController) {
                                 override fun onResponse(p0: Call<Login>, res: Response<Login>) {
                                     Log.i("Response:", res.toString())
                                     if(res.isSuccessful){
-
+                                        navController.navigate("home")
                                     }else{
                                         isErrorState.value = true
                                         messageErrorState.value = "Email ou senha incorretos"
                                     }
                                 }
-
                                 override fun onFailure(p0: Call<Login>, res: Throwable) {
                                     Log.i("Falhou:", res.toString())
 
@@ -223,9 +223,6 @@ fun Login (navController: NavHostController) {
                             isErrorState.value = true
                             messageErrorState.value = "Todos os campos devem ser preenchidos"
                         }
-
-
-
 
                         },
                     modifier = Modifier

@@ -13,9 +13,10 @@ import br.senai.sp.jandira.touccanuser.R
 // Set of Material typography styles to start with
 
 val Inter = FontFamily(
-    Font(R.font.inter_18pt_medium, FontWeight.Normal, FontStyle.Normal),
+    Font(R.font.inter_18pt_medium, FontWeight.Medium, FontStyle.Normal),
     Font(R.font.inter_18pt_bold, FontWeight.Bold, FontStyle.Normal),
-    Font(R.font.inter_18pt_thin, FontWeight.Thin, FontStyle.Normal)
+    Font(R.font.inter_18pt_thin, FontWeight.Thin, FontStyle.Normal),
+    Font(R.font.inter_18pt_regular, FontWeight.Normal, FontStyle.Normal)
 )
 
 

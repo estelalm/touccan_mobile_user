@@ -30,7 +30,7 @@ class MainActivity : ComponentActivity() {
 
                     NavHost(
                         navController = navController,
-                        startDestination = "home") {
+                        startDestination = "logIn") {
                         composable(route = "signUp"){ SignUpScreen(navController)}
                         composable(route = "setPassword/{dados}",
                             arguments = listOf(navArgument("dados") {

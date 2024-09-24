@@ -6,6 +6,10 @@
         android:font="@font/inter_18pt_medium" />
     <font
         android:fontStyle="normal"
+        android:fontWeight="300"
+        android:font="@font/inter_18pt_regular" />
+    <font
+        android:fontStyle="normal"
         android:fontWeight="200"
         android:font="@font/inter_18pt_thin" />
     <font
