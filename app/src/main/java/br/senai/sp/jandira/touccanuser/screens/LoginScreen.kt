@@ -79,7 +79,7 @@ fun Login (navController: NavHostController) {
         ) {
             Box(modifier = Modifier
                 .fillMaxWidth()
-                .height(320.dp)
+                .height(200.dp)
                 //height com a curva: 320.dp
                 .background(linearOrange)
                 .zIndex(-0.6F)
