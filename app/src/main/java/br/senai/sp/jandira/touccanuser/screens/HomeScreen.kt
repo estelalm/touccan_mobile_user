@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,9 +13,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ArrowBack
-import androidx.compose.material.icons.twotone.Home
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -32,13 +28,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -48,7 +42,7 @@ import br.senai.sp.jandira.touccanuser.ui.theme.Inter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Home() {
+fun Home(navController: NavHostController) {
 
 
 
@@ -157,7 +151,14 @@ fun Home() {
         Column {
             Row (modifier = Modifier.fillMaxWidth()){
                 Button(onClick = {}) {
-
+                    Text(
+                        text = "Perto de você"
+                    )
+                }
+                Button(onClick = {}) {
+                    Text(
+                        text = "Urgente"
+                    )
                 }
             }
             LazyColumn (contentPadding = innerpadding){
@@ -205,7 +206,7 @@ fun AnuncioCard(modifier: Modifier = Modifier) {
                         ),
                         shape = RectangleShape,
                         elevation = CardDefaults.cardElevation(
-                            defaultElevation = 20.dp
+                            defaultElevation = 70.dp
                         )
                     ){}
                     Column (
@@ -221,7 +222,7 @@ fun AnuncioCard(modifier: Modifier = Modifier) {
                         Text(
                             text = "Trabalho focado em organizar e atender clientes com intuito de disponibilidade hoje!",
                             fontFamily = Inter,
-                            fontWeight = FontWeight.Light
+                            fontWeight = FontWeight.Normal
                         )
                         Text(
                             text = "Jandira - SP",
@@ -256,7 +257,8 @@ fun AnuncioCard(modifier: Modifier = Modifier) {
                                 text ="Candidatar-se",
                                 fontFamily = Inter,
                                 fontWeight = FontWeight.Normal,
-                                lineHeight = 12.sp
+                                lineHeight = 12.sp,
+                                color = Color.White
                             )
                         } }
                     }
@@ -268,12 +270,12 @@ fun AnuncioCard(modifier: Modifier = Modifier) {
 
 }
 
-
-@Preview (showSystemUi = true, showBackground = true)
-@Composable
-private fun HomePreview() {
-    Surface (modifier = Modifier.fillMaxSize(), color = Color(0xFFEBEBEB)) {
-        Home()
-    }
-
-}
+//
+//@Preview (showSystemUi = true, showBackground = true)
+//@Composable
+//private fun HomePreview() {
+//    Surface (modifier = Modifier.fillMaxSize(), color = Color(0xFFEBEBEB)) {
+//        Home(navController)
+//    }
+//
+//}

@@ -11,12 +11,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import br.senai.sp.jandira.touccanuser.model.User
+import br.senai.sp.jandira.touccanuser.screens.Home
 import br.senai.sp.jandira.touccanuser.screens.Login
 import br.senai.sp.jandira.touccanuser.screens.SetPassword
 import br.senai.sp.jandira.touccanuser.screens.SignUpScreen
-import br.senai.sp.jandira.touccanuser.screens.SetPassword
-import br.senai.sp.jandira.touccanuser.screens.SignUpScreen
-import br.senai.sp.jandira.touccanuser.screens.Login
 import br.senai.sp.jandira.touccanuser.ui.theme.TouccanUserTheme
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -32,7 +30,7 @@ class MainActivity : ComponentActivity() {
 
                     NavHost(
                         navController = navController,
-                        startDestination = "signUp") {
+                        startDestination = "home") {
                         composable(route = "signUp"){ SignUpScreen(navController)}
                         composable(route = "setPassword/{dados}",
                             arguments = listOf(navArgument("dados") {
@@ -43,6 +41,7 @@ class MainActivity : ComponentActivity() {
                             val user = Json.decodeFromString<User>(dadosJson ?: "")
                             SetPassword(navController, user, this@MainActivity) }
                         composable(route = "logIn"){ Login(navController) }
+                        composable(route = "home"){ Home(navController) }
                     }
                 }
             }
