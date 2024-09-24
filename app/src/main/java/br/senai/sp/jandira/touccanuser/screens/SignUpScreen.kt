@@ -1,5 +1,6 @@
 package br.senai.sp.jandira.touccanuser.screens
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -83,6 +84,7 @@ fun validateEmail(email: String): Boolean {
 //    return age >= 18
 //}
 
+@SuppressLint("SuspiciousIndentation")
 @Composable
 fun SignUpScreen(navController: NavHostController) {
 

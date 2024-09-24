@@ -41,7 +41,7 @@ class MainActivity : ComponentActivity() {
                         ){ backStackEntry ->
                             val dadosJson = backStackEntry.arguments?.getString("dados")
                             val user = Json.decodeFromString<User>(dadosJson ?: "")
-                            SetPassword(navController, user) }
+                            SetPassword(navController, user, this@MainActivity) }
                         composable(route = "logIn"){ Login(navController) }
                     }
                 }

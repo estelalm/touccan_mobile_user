@@ -1,6 +1,9 @@
 package br.senai.sp.jandira.touccanuser.screens
 
+import android.app.PendingIntent.getActivity
+import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -20,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.currentCompositionLocalContext
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -35,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
+import br.senai.sp.jandira.touccanuser.MainActivity
 import br.senai.sp.jandira.touccanuser.R
 import br.senai.sp.jandira.touccanuser.model.User
 import br.senai.sp.jandira.touccanuser.service.RetrofitFactory
@@ -45,7 +50,7 @@ import retrofit2.Response
 
 
 @Composable
-fun SetPassword(navController: NavHostController, user: User) {
+fun SetPassword(navController: NavHostController, user: User, context : Context) {
 
     val linearOrange = Brush.linearGradient(listOf(Color(0xffF07B07), Color(0xffE25401)))
     val mainOrange = 0xffF07B07
@@ -215,7 +220,7 @@ fun SetPassword(navController: NavHostController, user: User) {
                     onClick = {
 
                         if(passwordState.value == ""){
-
+                            Toast.makeText(context, "Todos os valores devem ser preenchidos", Toast.LENGTH_SHORT).show()
                         }else{
                             if(checkPasswordState.value == passwordState.value ){
                                 user.senha = passwordState.value
@@ -224,6 +229,9 @@ fun SetPassword(navController: NavHostController, user: User) {
                                 RetrofitFactory().getUserService().saveUser(user).enqueue(object : Callback<User> {
                                     override fun onResponse(p0: Call<User>, response: Response<User>) {
                                             Log.i("resposta", response.toString())
+                                        if(response.isSuccessful){
+                                            Toast.makeText(context, "Conta criada, redirecionando para a página de login...", Toast.LENGTH_SHORT).show()
+                                        }
                                     }
 
                                     override fun onFailure(p0: Call<User>, t: Throwable) {
