@@ -295,8 +295,8 @@ fun AnuncioCard(modifier: Modifier = Modifier) {
                             containerColor = Color(0xffF07B07),
                         ),
                         shape = RectangleShape,
-                        elevation = CardDefaults.cardElevation(
-                            defaultElevation = 70.dp
+                        elevation = CardDefaults.elevatedCardElevation(
+                            defaultElevation = 10.dp
                         )
                     ){}
                     Column (

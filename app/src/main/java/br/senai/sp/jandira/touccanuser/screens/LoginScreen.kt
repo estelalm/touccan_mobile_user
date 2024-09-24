@@ -2,6 +2,7 @@ package br.senai.sp.jandira.touccanuser.screens
 
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -25,8 +26,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -75,11 +79,12 @@ fun Login (navController: NavHostController) {
         ) {
             Box(modifier = Modifier
                 .fillMaxWidth()
-                .height(210.dp)
+                .height(320.dp)
                 //height com a curva: 320.dp
                 .background(linearOrange)
                 .zIndex(-0.6F)
             ){
+
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -93,8 +98,21 @@ fun Login (navController: NavHostController) {
                     )
                 }
             }
-
-            Spacer(modifier = Modifier.height(140.dp))
+//            Canvas(modifier = Modifier
+//                .fillMaxSize()
+//                .offset(y = 1980.dp, x = 5180.dp)
+//                .zIndex(-0.6F)
+//            ) {
+//                rotate(degrees = 114F) {
+//                    drawRoundRect(
+//                        color = Color(0xffEBEBEB),
+//                        topLeft = Offset(x = size.width / 3F, y = size.height / 3F),
+//                        size = size / 0.1F,
+//                        cornerRadius = CornerRadius(290f)
+//                    )
+//                }
+//            }
+            Spacer(modifier = Modifier.height(100.dp))
             Column (modifier = Modifier
                 .zIndex(10F)
                 .offset(y = 0.dp)
@@ -102,6 +120,8 @@ fun Login (navController: NavHostController) {
                 .fillMaxWidth()
                 .padding(40.dp),
                 horizontalAlignment = Alignment.Start) {
+
+
                 Text(
                     text = "Login",
                     fontFamily = Inter
@@ -246,7 +266,7 @@ fun Login (navController: NavHostController) {
                 Column (modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 12.dp)
-                    .clickable { navController.navigate("logIn") },
+                    .clickable { navController.navigate("signUp") },
                     horizontalAlignment = Alignment.CenterHorizontally){
                     Text(text = "Não possui uma conta?",
                         fontSize = 14.sp,
@@ -267,20 +287,7 @@ fun Login (navController: NavHostController) {
 
             //parte branca curvada no fundo
 
-//            Canvas(modifier = Modifier
-//                .fillMaxSize()
-//                .offset(y = 1000.dp, x = 3000.dp)
-//                .zIndex(-0.6F)
-//            ) {
-//                rotate(degrees = 114F) {
-//                    drawRoundRect(
-//                        color = Color(0xffEBEBEB),
-//                        topLeft = Offset(x = size.width / 3F, y = size.height / 3F),
-//                        size = size / 0.1F,
-//                        cornerRadius = CornerRadius(290f)
-//                    )
-//                }
-//            }
+
 
         }
     }
