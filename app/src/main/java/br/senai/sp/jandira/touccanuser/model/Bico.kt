@@ -11,7 +11,10 @@ data class Bico(
     val horario_limite: String = "",
     val data_limite: String = "",
     val salario: Number = 0,
-    val finalizado: Int = 0
+    val finalizado: Int = 0,
+    val categoria: List<Categoria> = listOf(),
+    val dificuldade: List<Dificuldade> = listOf(),
+    val cliente: List<Cliente> = listOf()
 )
 
 //"id_dificuldade": 1,

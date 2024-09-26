@@ -20,4 +20,8 @@ class RetrofitFactory {
     fun getUserService(): UserService {
         return retrofitFactory.create(UserService::class.java)
     }
+
+    fun getBicoService(): BicoService {
+        return retrofitFactory.create(BicoService::class.java)
+    }
 }

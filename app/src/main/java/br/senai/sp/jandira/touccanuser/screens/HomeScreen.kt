@@ -1,6 +1,6 @@
 package br.senai.sp.jandira.touccanuser.screens
 
-import android.R.color
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
@@ -26,7 +27,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -35,26 +35,53 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import br.senai.sp.jandira.touccanuser.MainActivity
 import br.senai.sp.jandira.touccanuser.R
+import br.senai.sp.jandira.touccanuser.model.Bico
+import br.senai.sp.jandira.touccanuser.model.ResultBico
+import br.senai.sp.jandira.touccanuser.model.UserId
+import br.senai.sp.jandira.touccanuser.service.RetrofitFactory
 import br.senai.sp.jandira.touccanuser.ui.theme.Inter
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Home(navController: NavHostController) {
-//    navController: NavHostController
+fun Home(navController: NavHostController, idUser: UserId, mainActivity: MainActivity) {
+
+    Log.i("User:", idUser.toString())
+
+    var bicosList = remember {
+        mutableStateOf(listOf<Bico>())
+    }
+
+    val callBicoList = RetrofitFactory()
+        .getBicoService()
+        .getAllBicos()
+
+    callBicoList.enqueue(object: Callback<ResultBico>{
+        override fun onResponse(call: Call<ResultBico>, res: Response<ResultBico>) {
+            Log.i("Response: ", res.toString())
+            bicosList.value = res.body()!!.bicos
+        }
+
+        override fun onFailure(call: Call<ResultBico>, t: Throwable) {
+            Log.i("Falhou:", t.toString())
+        }
+    })
+
+
     val laranja = 0xffF07B07
 
     val cinza = 0xffC6C5C5
@@ -245,9 +272,10 @@ fun Home(navController: NavHostController) {
                 }
             }
             LazyColumn (contentPadding = PaddingValues(0.dp)){
-                items(5){
-                    AnuncioCard()
+                items(bicosList.value){bico ->
+                    AnuncioCard(bico)
                 }
+
 
             }
         }
@@ -257,7 +285,7 @@ fun Home(navController: NavHostController) {
 }
 
 @Composable
-fun AnuncioCard(modifier: Modifier = Modifier) {
+fun AnuncioCard(bico: Bico) {
 
     val grayColor = 0xff6D6D6D
     val greenColor = 0xff106B16
@@ -272,7 +300,7 @@ fun AnuncioCard(modifier: Modifier = Modifier) {
             shape = RoundedCornerShape(50.dp)
         ){  }
         Column (
-            modifier = modifier.padding(vertical = 4.dp, horizontal = 6.dp)
+            modifier = Modifier.padding(vertical = 4.dp, horizontal = 6.dp)
         ){
 
             Text(
@@ -306,14 +334,14 @@ fun AnuncioCard(modifier: Modifier = Modifier) {
                         verticalArrangement = Arrangement.SpaceAround
                     ){
                         Text(
-                            text = "Assistente Admnistrativo",
+                            text = bico.titulo,
                             fontFamily = Inter,
                             fontSize = 15.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = Color(grayColor)
                         )
                         Text(
-                            text = "Trabalho focado em organizar e atender clientes com intuito de disponibilidade hoje!",
+                            text = bico.descricao,
                             fontFamily = Inter,
                             fontSize = 15.sp,
                             lineHeight = 15.sp,

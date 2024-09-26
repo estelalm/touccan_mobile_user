@@ -1,7 +1,9 @@
 package br.senai.sp.jandira.touccanuser.service
 
 import br.senai.sp.jandira.touccanuser.model.Login
+import br.senai.sp.jandira.touccanuser.model.LoginResult
 import br.senai.sp.jandira.touccanuser.model.User
+import br.senai.sp.jandira.touccanuser.model.UserId
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -15,10 +17,9 @@ interface UserService {
     @POST("usuario")
     fun saveUser(@Body user: User): Call<User>
 
-
     @Headers("Content-Type: application/json")
     @POST("login/usuario")
-    fun loginUser(@Body user: Login): Call<Login>
+    fun loginUser(@Body user: Login): Call<LoginResult>
 
     @GET("usuario/{id}")
     fun getUserById(@Path("id") id: Int): Call<User>

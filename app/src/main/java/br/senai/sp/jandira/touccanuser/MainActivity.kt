@@ -1,6 +1,7 @@
 package br.senai.sp.jandira.touccanuser
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -11,6 +12,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import br.senai.sp.jandira.touccanuser.model.User
+import br.senai.sp.jandira.touccanuser.model.UserId
 import br.senai.sp.jandira.touccanuser.screens.Home
 import br.senai.sp.jandira.touccanuser.screens.Login
 import br.senai.sp.jandira.touccanuser.screens.SetPassword
@@ -31,18 +33,32 @@ class MainActivity : ComponentActivity() {
                     NavHost(
                         navController = navController,
                         startDestination = "logIn") {
+
                         composable(route = "signUp"){ SignUpScreen(navController)}
+
                         composable(route = "setPassword/{dados}",
                             arguments = listOf(navArgument("dados") {
 //                                type = NavType.StringType
                             })
                         ){ backStackEntry ->
                             val dadosJson = backStackEntry.arguments?.getString("dados")
+                            Log.i("Dados: ", dadosJson.toString())
                             val user = Json.decodeFromString<User>(dadosJson ?: "")
                             SetPassword(navController, user, this@MainActivity) }
+
                         composable(route = "logIn"){ Login(navController) }
-                        composable(route = "home"){ Home(navController) }
+
+                        composable(route = "home/{id}",
+                            arguments = listOf(navArgument("id") {
+//                                type = NavType.StringType
+                            })
+                        ){ backStackEntry ->
+                            val userId = backStackEntry.arguments?.getString("id")
+                            Log.i("User: ", userId.toString())
+                            val idUser = Json.decodeFromString<UserId>(userId ?: "")
+                            Home(navController, idUser, this@MainActivity) }
                     }
+
                 }
             }
         }

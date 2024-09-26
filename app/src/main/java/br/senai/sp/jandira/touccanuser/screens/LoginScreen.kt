@@ -42,15 +42,20 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
 import br.senai.sp.jandira.touccanuser.R
 import br.senai.sp.jandira.touccanuser.model.Login
+import br.senai.sp.jandira.touccanuser.model.LoginResult
 import br.senai.sp.jandira.touccanuser.model.User
+import br.senai.sp.jandira.touccanuser.model.UserId
 import br.senai.sp.jandira.touccanuser.service.RetrofitFactory
 import br.senai.sp.jandira.touccanuser.ui.theme.Inter
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 @Composable
 fun Login (navController: NavHostController) {
+
     val linearOrange = Brush.linearGradient(listOf(Color(0xffF07B07), Color(0xffE25401)))
     val mainOrange = 0xffF07B07
 
@@ -224,19 +229,20 @@ fun Login (navController: NavHostController) {
                         )
 
                         if(login.senha != "" && login.email != ""){
-                            RetrofitFactory().getUserService().loginUser(login).enqueue(object : Callback<Login>{
-                                override fun onResponse(p0: Call<Login>, res: Response<Login>) {
-                                    Log.i("Response:", res.toString())
+                            RetrofitFactory().getUserService().loginUser(login).enqueue(object : Callback<LoginResult>{
+                                override fun onResponse(p0: Call<LoginResult>, res: Response<LoginResult>) {
+                                    Log.i("Response:", res.body().toString())
+                                    val userJson = res.body()
+                                        ?.let { Json.encodeToString(it.usuario) }
                                     if(res.isSuccessful){
-                                        navController.navigate("home")
+                                        navController.navigate("home/${userJson}")
                                     }else{
                                         isErrorState.value = true
                                         messageErrorState.value = "Email ou senha incorretos"
                                     }
                                 }
-                                override fun onFailure(p0: Call<Login>, res: Throwable) {
+                                override fun onFailure(p0: Call<LoginResult>, res: Throwable) {
                                     Log.i("Falhou:", res.toString())
-
                                 }
                             })
                         }else{
