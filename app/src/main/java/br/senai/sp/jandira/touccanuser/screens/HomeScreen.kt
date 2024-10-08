@@ -133,7 +133,9 @@ fun Home(navController: NavHostController, idUser: UserId, mainActivity: MainAct
                                 contentDescription = "Configurações: Ícone de engrenagem",
                             )
                         }
-                        IconButton(onClick = {}) {
+                        IconButton(onClick = {
+                            navController.navigate("perfilCliente")
+                        }) {
                             Icon(
                                 painter = painterResource(R.drawable.person),
                                 contentDescription = "Configurações: Ícone de engrenagem",

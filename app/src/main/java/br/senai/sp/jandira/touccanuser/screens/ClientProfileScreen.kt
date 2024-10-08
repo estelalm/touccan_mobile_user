@@ -2,7 +2,9 @@ package br.senai.sp.jandira.touccanuser.screens
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,29 +19,37 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CardElevation
-import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.ModifierInfo
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import br.senai.sp.jandira.touccanuser.R
+import br.senai.sp.jandira.touccanuser.ui.theme.Inter
+import br.senai.sp.jandira.touccanuser.screens.SobreNos as SobreNos
 
 @Composable
-fun ClientProfile(){
+fun ClientProfile(navController: NavHostController) {
+    var sobreNosState = remember{
+        mutableStateOf(false)
+    }
+
+    var feedbackState = remember{
+        mutableStateOf(true)
+    }
     Surface(modifier = Modifier.fillMaxSize(), color = Color(0xFFEBEBEB)) {
         Column (
             modifier = Modifier.fillMaxWidth()
@@ -66,7 +76,7 @@ fun ClientProfile(){
             Column (
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
-            ){
+            ) {
                 Card(
                     modifier = Modifier.size(170.dp),
                     shape = CircleShape,
@@ -86,31 +96,96 @@ fun ClientProfile(){
                     fontSize = 19.sp,
                     fontWeight = FontWeight.Bold,
                     fontStyle = FontStyle.Italic
-                    )
+                )
                 Spacer(Modifier.height(30.dp))
-                Row (
-                    modifier = Modifier.fillMaxSize(),
-                        //.padding(top = 4.dp, start = 14.dp, end = 14.dp),
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    //.padding(top = 4.dp, start = 14.dp, end = 14.dp),
                     horizontalArrangement = Arrangement.SpaceAround
-                ){
+                ) {
                     Button(
-                        onClick = {},
-                        colors = ButtonDefaults.buttonColors(Color.Transparent)
-                        ) {
-                        Text(
-                            "Sobre nós",
-                            color = Color.Black
+                        onClick = {
+                            feedbackState.value = false
+                            sobreNosState.value = true
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Transparent
                         )
-                    }
-                    Button(
-                        onClick = {},
-                        colors = ButtonDefaults.buttonColors(Color.Transparent)
                     ) {
-                        Text(
-                            "Feedback",
-                            color = Color.Black
-                        )
+
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(
+                                text = "Sobre nós",
+                                textAlign = TextAlign.Center,
+                                fontFamily = Inter,
+                                fontStyle = if (sobreNosState.value) {
+                                    FontStyle.Italic
+                                } else {
+                                    FontStyle.Normal
+                                },
+                                fontWeight = FontWeight.SemiBold,
+                                color = if (sobreNosState.value) {
+                                    Color.Black
+                                } else {
+                                    Color(0xffC6C5C5)
+                                }
+                            )
+                            if (sobreNosState.value) {
+                                Box(
+                                    modifier = Modifier
+                                        .background(Color(0xffF07B07))
+                                        .height(1.dp)
+                                        .width(100.dp)
+
+                                )
+                            }
+                        }
                     }
+                    Button(
+                        onClick = {
+                            feedbackState.value = true
+                            sobreNosState.value = false
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Transparent
+                        )
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(
+                                text = "Feedback",
+                                textAlign = TextAlign.Center,
+                                fontFamily = Inter,
+                                fontStyle = if (feedbackState.value) {
+                                    FontStyle.Italic
+                                } else {
+                                    FontStyle.Normal
+                                },
+                                fontWeight = FontWeight.SemiBold,
+                                color = if (feedbackState.value) {
+                                    Color.Black
+                                } else {
+                                    Color(0xffC6C5C5)
+                                }
+                            )
+                            if (feedbackState.value) {
+                                Box(
+                                    modifier = Modifier
+                                        .background(Color(0xffF07B07))
+                                        .height(1.dp)
+                                        .width(100.dp)
+
+                                )
+                            }
+                        }
+                    }
+
+                }
+                Column (
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    if (sobreNosState.value) SobreNos()
+                    else Feedback()
                 }
             }
         }
@@ -119,14 +194,20 @@ fun ClientProfile(){
 
 @Composable
 fun SobreNos(){
-    OutlinedTextField(value = "teste", onValueChange = {}, enabled = false)
-    OutlinedTextField(value = "teste", onValueChange = {}, enabled = false)
+    OutlinedTextField(value = "Sobre Nós", onValueChange = {}, enabled = false)
+    OutlinedTextField(value = "Sobre Nós", onValueChange = {}, enabled = false)
 }
 
-@Preview(showSystemUi = true, showBackground = true)
 @Composable
-private fun ClientProfilePreview(){
-    Surface (modifier = Modifier.fillMaxSize(), color = Color(0xFFEBEBEB)) {
-      ClientProfile()
-    }
+fun Feedback(){
+    OutlinedTextField(value = "Feedback", onValueChange = {}, enabled = false)
+    OutlinedTextField(value = "Feedback", onValueChange = {}, enabled = false)
 }
+
+//@Preview(showSystemUi = true, showBackground = true)
+//@Composable
+//private fun ClientProfilePreview(){
+//    Surface (modifier = Modifier.fillMaxSize(), color = Color(0xFFEBEBEB)) {
+//      ClientProfile(navController)
+//    }
+//}
