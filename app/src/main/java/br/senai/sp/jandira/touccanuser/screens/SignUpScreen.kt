@@ -42,14 +42,10 @@ import androidx.navigation.NavHostController
 import br.senai.sp.jandira.touccanuser.ui.theme.Inter
 import br.senai.sp.jandira.touccanuser.R
 import br.senai.sp.jandira.touccanuser.model.User
-import br.senai.sp.jandira.touccanuser.ui.theme.Inter
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
-import java.util.Locale
 
+val user = User()
 
 //formata o número de telefone
 fun formatPhone(phone: String): String{
@@ -65,15 +61,39 @@ fun formatPhone(phone: String): String{
     return phone
 }
 
+fun formatDate (date: String): String{
+            date.replace("(\\d{2})(\\d{2})(\\d+)".toRegex(), "${1}/${2}/${3}")
+
+    return date
+}
+
 fun formatCep(){
 
 }
-fun formatDate (){}
-
 fun validateEmail(email: String): Boolean {
     //regex de email
     return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
 }
+
+fun clearInfos(
+    nome: String,
+    email: String,
+    telefone: String,
+    cpf: String,
+    cep: String,
+    data: String,) {
+    val nonAlphaNum = "[^a-zA-Z0-9]".toRegex()
+    val birthDate = data.split('/').reversed().joinToString("-")
+
+    user.nome = nome
+    user.email = email
+    user.telefone = telefone.replace(nonAlphaNum, "")
+    user.cpf = cpf.replace(nonAlphaNum, "")
+    user.cep = cep.replace(nonAlphaNum, "")
+    user.data_nascimento = birthDate
+
+}
+
 //val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.getDefault())
 //fun validateAge(date: String): Boolean{
 //    val birthLocalDate = LocalDate.parse(date, dateFormatter)
@@ -88,7 +108,7 @@ fun validateEmail(email: String): Boolean {
 @Composable
 fun SignUpScreen(navController: NavHostController) {
 
-    val user = User()
+
 
     val linearOrange = Brush.linearGradient(listOf(Color(0xffF07B07), Color(0xffE25401)))
     val mainOrange = 0xffF07B07
@@ -243,7 +263,7 @@ fun SignUpScreen(navController: NavHostController) {
                         onValueChange = {
 
 //                            val cleanText = it.filter { it.isDigit() }
-                            if (it.length <= 11) {
+                            if (it.length <= 15) {
                                 val formatted = formatPhone(it)
                                 phoneState.value = formatted
                             }
@@ -311,8 +331,11 @@ fun SignUpScreen(navController: NavHostController) {
                         value = birthdateState.value,
                         placeholder = { Text("Data de nascimento") },
                         onValueChange = {
+                            if (it.length <= 10){
+                                var formatedDate = formatDate(it)
+                                birthdateState.value = formatedDate
+                            }
 
-                            birthdateState.value = it
 //                            if(!validateAge(it))
 //                                isErrorState.value = true
 //                            messageErrorState.value = "Você deve estar acima de 18 anos."
@@ -382,13 +405,15 @@ fun SignUpScreen(navController: NavHostController) {
                                 isErrorState.value = true
                         }else{
 
-                            val birthDate = birthdateState.value.split('/').reversed().joinToString("-")
-                            user.nome = nameState.value
-                            user.email = emailState.value
-                            user.telefone = phoneState.value
-                            user.cpf = cpfState.value
-                            user.cep = cepState.value
-                            user.data_nascimento = birthDate
+
+                            clearInfos(
+                                nome = nameState.value,
+                                email = emailState.value,
+                                telefone = phoneState.value,
+                                cpf = cpfState.value,
+                                cep = cepState.value,
+                                data = birthdateState.value
+                                )
 
                             val dadosJson = Json.encodeToString(user)
 

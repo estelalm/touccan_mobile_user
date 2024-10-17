@@ -22,6 +22,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -65,6 +66,16 @@ fun Home(navController: NavHostController, idUser: UserId, mainActivity: MainAct
     var bicosList = remember {
         mutableStateOf(listOf<Bico>())
     }
+    var isLoadingPertoDeVoce = remember{
+        mutableStateOf(true)
+    }
+    var isLoadingUrgente = remember{
+        mutableStateOf(true)
+    }
+    var errorPertoDeVoce = remember {
+        mutableStateOf(false)
+    }
+
 
     val callBicoList = RetrofitFactory()
         .getBicoService()
@@ -74,10 +85,12 @@ fun Home(navController: NavHostController, idUser: UserId, mainActivity: MainAct
         override fun onResponse(call: Call<ResultBico>, res: Response<ResultBico>) {
             Log.i("Response: ", res.toString())
             bicosList.value = res.body()!!.bicos
+            isLoadingPertoDeVoce.value = false
         }
 
         override fun onFailure(call: Call<ResultBico>, t: Throwable) {
             Log.i("Falhou:", t.toString())
+            errorPertoDeVoce.value = true
         }
     })
 
@@ -272,10 +285,26 @@ fun Home(navController: NavHostController, idUser: UserId, mainActivity: MainAct
                 }
             }
             LazyColumn (contentPadding = PaddingValues(0.dp)){
-                items(bicosList.value){bico ->
-                    AnuncioCard(bico)
-                }
+                if(pertoDeVoceState.value){
+                    if (isLoadingPertoDeVoce.value) {
+                        item(){
+                            Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center){ CircularProgressIndicator(color = Color(laranja)) }
+                        }
+                    }else{
+                        items(bicosList.value){bico ->
+                            AnuncioCard(bico, navController)
+                        }
+                    }
 
+                }else{
+                    item(){
+                        Row (
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center
+                        ){ Text("Não há nenhum trabalho urgente", modifier = Modifier.padding(10.dp)) }
+
+                    }
+                }
 
             }
         }
@@ -285,26 +314,29 @@ fun Home(navController: NavHostController, idUser: UserId, mainActivity: MainAct
 }
 
 @Composable
-fun AnuncioCard(bico: Bico) {
+fun AnuncioCard(bico: Bico, navController: NavHostController) {
 
     val grayColor = 0xff6D6D6D
     val greenColor = 0xff106B16
     val cinzaEscuro = 0xff888888
 
     Row (modifier = Modifier.padding(16.dp)){
-        Card (
+        ElevatedCard (
             modifier = Modifier.size(35.dp),
             colors = CardDefaults.cardColors(
                 containerColor = Color.Black
             ),
-            shape = RoundedCornerShape(50.dp)
+            shape = RoundedCornerShape(50.dp),
+            elevation = CardDefaults.elevatedCardElevation(
+                defaultElevation = 40.dp
+            )
         ){  }
         Column (
             modifier = Modifier.padding(vertical = 4.dp, horizontal = 6.dp)
         ){
 
             Text(
-                text = "Empresa 1",
+                text = bico.cliente[0].nome_fantasia,
                 modifier = Modifier.padding(bottom = 10.dp, start = 4.dp),
                 fontFamily = Inter,
                 color = Color(cinzaEscuro),
@@ -315,21 +347,18 @@ fun AnuncioCard(bico: Bico) {
                     .height(180.dp)
                     .fillMaxWidth()
                     .background(Color.White)){
-                    ElevatedCard (
+                    Card (
                         modifier = Modifier
                             .fillMaxHeight()
                             .width(10.dp),
                         colors = CardDefaults.cardColors(
                             containerColor = Color(0xffF07B07),
                         ),
-                        shape = RectangleShape,
-                        elevation = CardDefaults.elevatedCardElevation(
-                            defaultElevation = 10.dp
-                        )
+                        shape = RectangleShape
                     ){}
                     Column (
                         modifier = Modifier
-                            .padding(6.dp)
+                            .padding(horizontal = 6.dp, vertical = 2.dp)
                             .fillMaxHeight(),
                         verticalArrangement = Arrangement.SpaceAround
                     ){
@@ -347,36 +376,48 @@ fun AnuncioCard(bico: Bico) {
                             lineHeight = 15.sp,
                             color = Color(cinzaEscuro)
                         )
-                        Text(
-                            text = "Jandira - SP",
-                            fontFamily = Inter,
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = Color(grayColor)
-                        )
-                        Row {
+                        Column {
                             Text(
-                                text = "Dificuldade: ",
+                                text = "Jandira - SP",
                                 fontFamily = Inter,
                                 fontSize = 15.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 color = Color(grayColor)
                             )
-                            Text(
-                                text = "Baixa",
-                                fontFamily = Inter,
-                                fontSize = 15.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = Color(greenColor)
-                            )
+                            Row {
+                                Text(
+                                    text = "Dificuldade: ",
+                                    fontFamily = Inter,
+                                    fontSize = 15.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = Color(grayColor)
+                                )
+                                Text(
+                                    text = "Baixa",
+                                    fontFamily = Inter,
+                                    fontSize = 15.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = Color(greenColor)
+                                )
+                            }
                         }
 
+
                         Row (
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.End
-                        ){ Button(
+                            modifier = Modifier.fillMaxWidth().padding(end=8.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ){
+                            Text(
+                                text ="R$" + bico.salario,
+                                fontFamily = Inter,
+                                fontWeight = FontWeight.Bold,
+                                lineHeight = 12.sp,
+                                color = Color(0xffF07B07)
+                            )
+                            Button(
                             modifier = Modifier.height(32.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xffF07B07)),
+                            shape = RoundedCornerShape(14.dp),
                             onClick = {}
                         ) {
                             Text(
