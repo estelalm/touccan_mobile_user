@@ -208,7 +208,7 @@ fun SignUpScreen(navController: NavHostController) {
                             emailState.value = it
                             if(!validateEmail(it))
                                 isErrorState.value = true
-                            messageErrorState.value = "Insira um email válido"
+                                messageErrorState.value = "Insira um email válido"
                                         },
                         leadingIcon = {
                             Image(
