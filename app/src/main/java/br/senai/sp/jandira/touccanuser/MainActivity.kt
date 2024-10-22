@@ -57,6 +57,7 @@ class MainActivity : ComponentActivity() {
                             Log.i("User: ", userId.toString())
                             val idUser = Json.decodeFromString<UserId>(userId ?: "")
                             Home(navController, idUser, this@MainActivity) }
+
                     }
 
                 }
