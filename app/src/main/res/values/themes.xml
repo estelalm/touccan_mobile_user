@@ -2,4 +2,5 @@
 <resources>
 
     <style name="Theme.TouccanUser" parent="android:Theme.Material.Light.NoActionBar" />
+
 </resources>

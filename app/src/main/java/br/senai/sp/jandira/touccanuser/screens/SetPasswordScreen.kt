@@ -231,6 +231,7 @@ fun SetPassword(navController: NavHostController, user: User, context : Context)
                                             Log.i("resposta", response.toString())
                                         if(response.isSuccessful){
                                             Toast.makeText(context, "Conta criada, redirecionando para a página de login...", Toast.LENGTH_SHORT).show()
+                                            navController.navigate("login")
                                         }
                                     }
 
