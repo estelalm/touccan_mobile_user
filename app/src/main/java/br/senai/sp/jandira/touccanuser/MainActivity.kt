@@ -13,12 +13,10 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import br.senai.sp.jandira.touccanuser.model.User
 import br.senai.sp.jandira.touccanuser.model.UserId
-import br.senai.sp.jandira.touccanuser.screens.ClientProfile
 import br.senai.sp.jandira.touccanuser.screens.Home
 import br.senai.sp.jandira.touccanuser.screens.Login
 import br.senai.sp.jandira.touccanuser.screens.SetPassword
 import br.senai.sp.jandira.touccanuser.screens.SignUpScreen
-import br.senai.sp.jandira.touccanuser.screens.UserProfile
 import br.senai.sp.jandira.touccanuser.ui.theme.TouccanUserTheme
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -59,9 +57,6 @@ class MainActivity : ComponentActivity() {
                             Log.i("User: ", userId.toString())
                             val idUser = Json.decodeFromString<UserId>(userId ?: "")
                             Home(navController, idUser, this@MainActivity) }
-
-                        composable(route = "perfilCliente"){ ClientProfile(navController) }
-                        composable(route = "perfilUsuario"){ UserProfile(navController) }
                     }
 
                 }

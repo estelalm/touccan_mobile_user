@@ -51,7 +51,7 @@ import androidx.navigation.NavHostController
 import br.senai.sp.jandira.touccanuser.MainActivity
 import br.senai.sp.jandira.touccanuser.R
 import br.senai.sp.jandira.touccanuser.model.Bico
-import br.senai.sp.jandira.touccanuser.model.ResultBico
+import br.senai.sp.jandira.touccanuser.model.ResultBicos
 import br.senai.sp.jandira.touccanuser.model.UserId
 import br.senai.sp.jandira.touccanuser.service.RetrofitFactory
 import br.senai.sp.jandira.touccanuser.ui.theme.Inter
@@ -84,14 +84,14 @@ fun Home(navController: NavHostController, idUser: UserId, mainActivity: MainAct
         .getBicoService()
         .getAllBicos()
 
-    callBicoList.enqueue(object: Callback<ResultBico>{
-        override fun onResponse(call: Call<ResultBico>, res: Response<ResultBico>) {
+    callBicoList.enqueue(object: Callback<ResultBicos>{
+        override fun onResponse(call: Call<ResultBicos>, res: Response<ResultBicos>) {
             Log.i("Response: ", res.toString())
             bicosList.value = res.body()!!.bicos
             isLoadingPertoDeVoce.value = false
         }
 
-        override fun onFailure(call: Call<ResultBico>, t: Throwable) {
+        override fun onFailure(call: Call<ResultBicos>, t: Throwable) {
             Log.i("Falhou:", t.toString())
             errorPertoDeVoce.value = true
         }
