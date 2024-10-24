@@ -1,8 +1,10 @@
 package br.senai.sp.jandira.touccanuser.screens
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,6 +40,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import br.senai.sp.jandira.touccanuser.R
+import br.senai.sp.jandira.touccanuser.model.LoginResult
+import br.senai.sp.jandira.touccanuser.model.UserId
 import br.senai.sp.jandira.touccanuser.ui.theme.Inter
 import br.senai.sp.jandira.touccanuser.screens.SobreNos as SobreNos
 
@@ -61,14 +65,14 @@ fun ClientProfile(navController: NavHostController) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ){
+//                Log.i("ID BACK HOME", LoginResult(UserId()).toString()
 
-
-
-//                Image(
-//                    painter = painterResource(R.drawable.seta_voltar),
-//                    contentDescription = "",
-//                    modifier = Modifier.width(30.dp)
-//                )
+                Image(
+                    painter = painterResource(R.drawable.seta_voltar),
+                    contentDescription = "",
+                    modifier = Modifier.width(30.dp)
+                        .clickable { navController.popBackStack()}
+                )
                 Image(
                     painter = painterResource(R.drawable.logo_touccan),
                     contentDescription = "",
