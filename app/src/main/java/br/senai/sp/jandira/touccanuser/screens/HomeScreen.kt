@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -39,6 +40,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -146,7 +149,9 @@ fun Home(navController: NavHostController, idUser: UserId, mainActivity: MainAct
                                 contentDescription = "Configurações: Ícone de engrenagem",
                             )
                         }
-                        IconButton(onClick = {}) {
+                        IconButton(onClick = {
+                            navController.navigate("perfilUsuario")
+                        }) {
                             Icon(
                                 painter = painterResource(R.drawable.person),
                                 contentDescription = "Configurações: Ícone de engrenagem",
@@ -334,13 +339,17 @@ fun AnuncioCard(bico: Bico, navController: NavHostController) {
         Column (
             modifier = Modifier.padding(vertical = 4.dp, horizontal = 6.dp)
         ){
-
-            Text(
-                text = bico.cliente[0].nome_fantasia,
+            ClickableText(
+                text = AnnotatedString(bico.cliente[0].nome_fantasia),
                 modifier = Modifier.padding(bottom = 10.dp, start = 4.dp),
-                fontFamily = Inter,
-                color = Color(cinzaEscuro),
-                fontWeight = FontWeight.Normal
+                style = TextStyle(
+                    fontFamily = Inter,
+                    color = Color(cinzaEscuro),
+                    fontWeight = FontWeight.Normal
+                ),
+                onClick = {
+                    navController.navigate("perfilCliente")
+                }
             )
             Card {
                 Row (modifier = Modifier

@@ -42,7 +42,7 @@ import br.senai.sp.jandira.touccanuser.ui.theme.Inter
 import br.senai.sp.jandira.touccanuser.screens.SobreNos as SobreNos
 
 @Composable
-fun ClientProfile(navController: NavHostController) {
+fun UserProfile(navController: NavHostController) {
     var sobreNosState = remember{
         mutableStateOf(false)
     }
@@ -61,14 +61,11 @@ fun ClientProfile(navController: NavHostController) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ){
-
-
-
-//                Image(
-//                    painter = painterResource(R.drawable.seta_voltar),
-//                    contentDescription = "",
-//                    modifier = Modifier.width(30.dp)
-//                )
+                Image(
+                    painter = painterResource(R.drawable.seta_voltar),
+                    contentDescription = "",
+                    modifier = Modifier.width(30.dp)
+                )
                 Image(
                     painter = painterResource(R.drawable.logo_touccan),
                     contentDescription = "",
@@ -187,8 +184,8 @@ fun ClientProfile(navController: NavHostController) {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    if (sobreNosState.value) SobreNos()
-                    else Feedback()
+                    if (sobreNosState.value) UserInfo()
+                    else HistoryUser()
                 }
             }
         }
@@ -196,21 +193,13 @@ fun ClientProfile(navController: NavHostController) {
 }
 
 @Composable
-fun SobreNos(){
+fun UserInfo(){
     OutlinedTextField(value = "Sobre Nós", onValueChange = {}, enabled = false)
     OutlinedTextField(value = "Sobre Nós", onValueChange = {}, enabled = false)
 }
 
 @Composable
-fun Feedback(){
+fun HistoryUser(){
     OutlinedTextField(value = "Feedback", onValueChange = {}, enabled = false)
     OutlinedTextField(value = "Feedback", onValueChange = {}, enabled = false)
 }
-
-//@Preview(showSystemUi = true, showBackground = true)
-//@Composable
-//private fun ClientProfilePreview(){
-//    Surface (modifier = Modifier.fillMaxSize(), color = Color(0xFFEBEBEB)) {
-//      ClientProfile(navController)
-//    }
-//}
