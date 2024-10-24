@@ -13,6 +13,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import br.senai.sp.jandira.touccanuser.model.User
 import br.senai.sp.jandira.touccanuser.model.UserId
+import br.senai.sp.jandira.touccanuser.screens.BicoDetails
 import br.senai.sp.jandira.touccanuser.screens.ClientProfile
 import br.senai.sp.jandira.touccanuser.screens.Home
 import br.senai.sp.jandira.touccanuser.screens.Login
@@ -59,7 +60,10 @@ class MainActivity : ComponentActivity() {
                             val idUser = Json.decodeFromString<UserId>(userId ?: "")
                             Home(navController, idUser, this@MainActivity) }
 
-                        composable(route = "perfilCliente/{id}",
+
+                        composable(route = "perfilCliente"){ ClientProfile(navController) }
+
+                        composable(route = "bico/{id}",
                             arguments = listOf(navArgument("id") {
 //                                type = NavType.StringType
                             })
@@ -70,6 +74,13 @@ class MainActivity : ComponentActivity() {
                                 ClientProfile(navController, clientId, this@MainActivity )
                             }
                         }
+                            val bicoId = backStackEntry.arguments?.getString("id")
+                            if (bicoId != null) {
+                                BicoDetails(navController, bicoId, this@MainActivity)
+                            }
+                        }
+
+
                     }
 
                 }
