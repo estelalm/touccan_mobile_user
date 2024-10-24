@@ -13,6 +13,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import br.senai.sp.jandira.touccanuser.model.User
 import br.senai.sp.jandira.touccanuser.model.UserId
+import br.senai.sp.jandira.touccanuser.screens.ClientProfile
 import br.senai.sp.jandira.touccanuser.screens.Home
 import br.senai.sp.jandira.touccanuser.screens.Login
 import br.senai.sp.jandira.touccanuser.screens.SetPassword
@@ -57,6 +58,7 @@ class MainActivity : ComponentActivity() {
                             Log.i("User: ", userId.toString())
                             val idUser = Json.decodeFromString<UserId>(userId ?: "")
                             Home(navController, idUser, this@MainActivity) }
+                        composable(route = "perfilCliente"){ ClientProfile(navController) }
                     }
 
                 }
