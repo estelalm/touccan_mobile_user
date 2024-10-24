@@ -60,6 +60,7 @@ class MainActivity : ComponentActivity() {
                             val idUser = Json.decodeFromString<UserId>(userId ?: "")
                             Home(navController, idUser, this@MainActivity) }
 
+
                         composable(route = "perfilCliente"){ ClientProfile(navController) }
 
                         composable(route = "bico/{id}",
@@ -67,6 +68,12 @@ class MainActivity : ComponentActivity() {
 //                                type = NavType.StringType
                             })
                         ){ backStackEntry ->
+                            val clientId = backStackEntry.arguments?.getString("id")
+                            Log.i("Client: ", clientId.toString())
+                            if (clientId != null) {
+                                ClientProfile(navController, clientId, this@MainActivity )
+                            }
+                        }
                             val bicoId = backStackEntry.arguments?.getString("id")
                             if (bicoId != null) {
                                 BicoDetails(navController, bicoId, this@MainActivity)
