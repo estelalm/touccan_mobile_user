@@ -39,14 +39,33 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import br.senai.sp.jandira.touccanuser.MainActivity
 import br.senai.sp.jandira.touccanuser.R
+import br.senai.sp.jandira.touccanuser.model.ClientePerfil
 import br.senai.sp.jandira.touccanuser.model.LoginResult
 import br.senai.sp.jandira.touccanuser.model.UserId
+import br.senai.sp.jandira.touccanuser.service.RetrofitFactory
 import br.senai.sp.jandira.touccanuser.ui.theme.Inter
 import br.senai.sp.jandira.touccanuser.screens.SobreNos as SobreNos
 
 @Composable
-fun ClientProfile(navController: NavHostController) {
+fun ClientProfile(navController: NavHostController,  idCliente: String, mainActivity: MainActivity) {
+
+   val clienteId = idCliente.toInt()
+
+    var perfilCliente = remember {
+        mutableStateOf(ClientePerfil())
+    }
+
+    val callClientPerfil = RetrofitFactory()
+        .getClientService()
+        .getClientById(clienteId)
+
+
+
+
+
+
     var sobreNosState = remember{
         mutableStateOf(false)
     }

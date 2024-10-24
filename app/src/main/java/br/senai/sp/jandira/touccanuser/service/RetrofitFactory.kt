@@ -24,4 +24,8 @@ class RetrofitFactory {
     fun getBicoService(): BicoService {
         return retrofitFactory.create(BicoService::class.java)
     }
+
+    fun getClientService(): ClientService{
+        return retrofitFactory.create(ClientService::class.java)
+    }
 }
