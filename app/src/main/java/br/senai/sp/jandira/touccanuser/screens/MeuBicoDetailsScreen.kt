@@ -5,23 +5,17 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,111 +39,10 @@ fun MeuBicoDetails() {
     Scaffold (
         containerColor = Color(0xFFEBEBEB),
         topBar = {
-            TopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFFEBEBEB)
-                ),
-                navigationIcon = {
-                    IconButton(
-                        onClick = {},
-                        modifier = Modifier
-                            .height(100.dp)
-                            .width(170.dp)) {
-                        Icon(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(horizontal = 10.dp),
-                            painter = painterResource(R.drawable.logo_touccan),
-                            tint = Color.Black,
-                            contentDescription = "Desenho de um, com o texto Touccan ao lado, a logo do aplicativo",
-                        )
-                    }
-
-                },
-                title = {
-                },
-                actions = {
-                    Row (horizontalArrangement = Arrangement.End){
-                        IconButton(onClick = {}) {
-                            Icon(
-                                painter = painterResource(R.drawable.configuracoes),
-                                contentDescription = "Configurações: Ícone de engrenagem",
-                                tint = Color.Black
-                            )
-                        }
-                        IconButton(onClick = {}) {
-                            Icon(
-                                painter = painterResource(R.drawable.carteira),
-                                tint = Color.Black,
-                                contentDescription = "Configurações: Ícone de engrenagem",
-                            )
-                        }
-                        IconButton(onClick = {}) {
-                            Icon(
-                                painter = painterResource(R.drawable.person),
-                                tint = Color.Black,
-                                contentDescription = "Configurações: Ícone de engrenagem",
-                            )
-                        } }
-                }
-
-            )
+           // br.senai.sp.jandira.touccanuser.utility.TopAppBar(navController)
         },
         bottomBar = {
-            BottomAppBar (
-                containerColor = Color(0xFFEBEBEB)
-            ){
-                Row (
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround) {
-
-
-                    IconButton(
-                        onClick = {}
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.home),
-                            contentDescription = "Home: Ícone de casa",
-                        )
-                    }
-                    IconButton(
-                        onClick = {}
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.historico),
-                            contentDescription = "Home: Ícone de casa",
-                        )
-                    }
-                    IconButton(
-                        onClick = {}
-                    ) {
-                        Icon(
-                            modifier = Modifier.size(35.dp),
-                            painter = painterResource(R.drawable.notificacao),
-                            contentDescription = "Home: Ícone de casa",
-                        )
-                    }
-
-                    IconButton(
-                        onClick = {}
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.chat),
-                            contentDescription = "Home: Ícone de casa",
-                        )
-                    }
-
-                    IconButton(
-                        onClick = {}
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.pesquisa),
-                            contentDescription = "Home: Ícone de casa",
-                        )
-                    }
-                }
-
-            }
+           // br.senai.sp.jandira.touccanuser.utility.BottomAppBar(navController)
         }
     ) { innerpadding ->
 
