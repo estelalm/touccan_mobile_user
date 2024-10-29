@@ -26,7 +26,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -39,10 +38,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import br.senai.sp.jandira.touccanuser.R
 import br.senai.sp.jandira.touccanuser.ui.theme.Inter
-import br.senai.sp.jandira.touccanuser.screens.SobreNos as SobreNos
 
 @Composable
-fun UserProfile(navController: NavHostController) {
+fun UserProfile(navController: NavHostController, userId: String) {
     var sobreNosState = remember{
         mutableStateOf(false)
     }
@@ -202,4 +200,4 @@ fun UserInfo(){
 fun HistoryUser(){
     OutlinedTextField(value = "Feedback", onValueChange = {}, enabled = false)
     OutlinedTextField(value = "Feedback", onValueChange = {}, enabled = false)
-}
+}}

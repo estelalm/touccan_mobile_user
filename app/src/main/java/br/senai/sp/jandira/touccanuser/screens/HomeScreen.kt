@@ -326,6 +326,9 @@ fun Home(navController: NavHostController, idUser: UserId, mainActivity: MainAct
 @Composable
 fun AnuncioCard(bico: Bico, navController: NavHostController, user: Int, mainActivity: MainActivity) {
 
+    val candidatou = remember{
+        mutableStateOf(false)
+    }
 
     var candidateList = remember {
         mutableStateOf(listOf<Candidatos>())
@@ -341,21 +344,28 @@ fun AnuncioCard(bico: Bico, navController: NavHostController, user: Int, mainAct
     callCandidateList.enqueue(object: Callback<ResultCandidatos>{
         override fun onResponse(call: Call<ResultCandidatos>, res: Response<ResultCandidatos>) {
             Log.i("Response: ", res.toString())
-            candidateList.value = res.body()!!.candidatos
+            if(res.code() == 200){
+                candidateList.value = res.body()!!.candidatos
+            }
         }
 
         override fun onFailure(call: Call<ResultCandidatos>, t: Throwable) {
             Log.i("Falhou:", t.toString())
-
+            t.printStackTrace()
         }
     })
 
     var candidatado = false
-    for (item in candidateList.value){
-        if (item.id_candidato == user){
-            candidatado = true
+    if(candidateList.value.isNotEmpty()){
+        for (item in candidateList.value){
+            if (item.id_candidato == user){
+                candidatado = true
+            }
         }
+    }else{
+
     }
+
 
 
     val grayColor = 0xff6D6D6D
@@ -463,16 +473,21 @@ fun AnuncioCard(bico: Bico, navController: NavHostController, user: Int, mainAct
                             )
                             Button(
                             modifier = Modifier.height(32.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = if(candidatado){Color(grayColor)}else{Color(0xffF07B07)}),
+                                enabled = if(candidatado){false}else{true},
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if(candidatado){Color(grayColor)}else{Color(0xffF07B07)},
+                                disabledContentColor = Color(grayColor)
+
+                            ),
                             shape = RoundedCornerShape(14.dp),
                             onClick = {
                                 val candidato = Candidato(
                                     id_bico = bico.id,
                                     id_user = user
                                 )
+                                candidatou.value = Candidatar(candidato)
 
-                                val candidatou = Candidatar(candidato)
-                                if(candidatou){
+                                if(candidatou.value){
                                     Toast.makeText(mainActivity, "Candidatou-se com sucesso", Toast.LENGTH_SHORT).show()
                                 }else{
                                     Toast.makeText(mainActivity, "Falha em se candidatar à vaga", Toast.LENGTH_SHORT).show()
