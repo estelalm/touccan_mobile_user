@@ -76,11 +76,7 @@ fun BicoDetails(navController: NavHostController, idBico: String, mainActivity: 
     callBico.enqueue(object: Callback<ResultBico> {
         override fun onResponse(call: Call<ResultBico>, res: Response<ResultBico>) {
             Log.i("Response: ", res.toString())
-            Log.i("ResponseBody:", res.body()!!.bico.toString())
             bico.value = res.body()!!.bico
-            Log.i("kkkkkkkk" , bico.toString())
-            Log.i("AAAAAAAA" , bico.value.cliente[0].toString())
-
 
             isLoadingState.value = false
         }
@@ -89,11 +85,7 @@ fun BicoDetails(navController: NavHostController, idBico: String, mainActivity: 
             Log.i("Falhou:", t.toString())
             errorState.value = true
         }
-
-
     })
-
-
 
 
     Scaffold (
@@ -213,8 +205,7 @@ fun BicoDetails(navController: NavHostController, idBico: String, mainActivity: 
             }
         }
     ) { innerpadding ->
-
-        Log.i("BBBBBB" , bico.value.toString())
+        
         Column (
             modifier = Modifier
                 .fillMaxSize()
@@ -243,12 +234,10 @@ fun BicoDetails(navController: NavHostController, idBico: String, mainActivity: 
                     ){
 
 
-                        Row (
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween,
+                        Column (
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Row (verticalAlignment = Alignment.CenterVertically){
+                            Row (verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()){
 
 
                                 Icon(painter = painterResource(R.drawable.person), contentDescription = "", tint = Color(0xff7E7E7E))
@@ -256,7 +245,7 @@ fun BicoDetails(navController: NavHostController, idBico: String, mainActivity: 
                                     color = Color(0xff504D4D),
                                     fontFamily = Inter,
                                     fontWeight = FontWeight.Normal,
-                                    modifier = Modifier.padding(start = 6.dp).width(100.dp))
+                                    modifier = Modifier.padding(start = 6.dp).fillMaxWidth())
                             }
                             Row {
                                 Text("Dificuldade: ",
@@ -272,12 +261,6 @@ fun BicoDetails(navController: NavHostController, idBico: String, mainActivity: 
                         Column (
                             modifier = Modifier.padding(start = 12.dp)
                         ){
-                            Text(
-                                bico.value.descricao,
-                                color = Color(0xff736C6C),
-                                fontFamily = Inter,
-                                fontWeight = FontWeight.Light,
-                                modifier = Modifier.padding(vertical = 12.dp))
                             Text(
                                 bico.value.titulo,
                                 color = Color(0xff464646),
@@ -306,7 +289,7 @@ fun BicoDetails(navController: NavHostController, idBico: String, mainActivity: 
                                     color = Color(0xff464646),
                                     fontFamily = Inter,
                                     fontWeight = FontWeight.Black)
-                                Text("Término: ${bico.value.horario_limite.split("T")[1].split(".")[0]  }",
+                                Text("Término: ${bico.value.horario_limite.split("T")[1].split(".")[0]}",
                                     color = Color(0xff464646),
                                     fontFamily = Inter,
                                     fontWeight = FontWeight.Black)
@@ -352,6 +335,7 @@ fun BicoDetails(navController: NavHostController, idBico: String, mainActivity: 
 
 
 }
+
 
 
 //@Preview(showBackground = true, showSystemUi = true)

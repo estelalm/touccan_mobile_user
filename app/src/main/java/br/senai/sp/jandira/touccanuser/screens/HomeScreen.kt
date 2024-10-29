@@ -155,7 +155,7 @@ fun Home(navController: NavHostController, idUser: UserId, mainActivity: MainAct
                             )
                         }
                         IconButton(onClick = {
-                            navController.navigate("perfilUsuario")
+                            navController.navigate("perfilUsuario/${idUser.id}")
                         }) {
                             Icon(
                                 painter = painterResource(R.drawable.person),
@@ -355,11 +355,14 @@ fun AnuncioCard(bico: Bico, navController: NavHostController, user: Int, mainAct
         }
     })
 
-    var candidatado = false
+    var candidatado = remember{
+        mutableStateOf(false)
+    }
+
     if(candidateList.value.isNotEmpty()){
         for (item in candidateList.value){
             if (item.id_candidato == user){
-                candidatado = true
+                candidatado.value = true
             }
         }
     }else{
@@ -473,9 +476,9 @@ fun AnuncioCard(bico: Bico, navController: NavHostController, user: Int, mainAct
                             )
                             Button(
                             modifier = Modifier.height(32.dp),
-                                enabled = if(candidatado){false}else{true},
+                                enabled = if(candidatado.value){false}else{true},
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = if(candidatado){Color(grayColor)}else{Color(0xffF07B07)},
+                                containerColor = if(candidatado.value){Color(grayColor)}else{Color(0xffF07B07)},
                                 disabledContentColor = Color(grayColor)
 
                             ),
@@ -497,7 +500,7 @@ fun AnuncioCard(bico: Bico, navController: NavHostController, user: Int, mainAct
                         ) {
 
                             Text(
-                                text = if(candidatado){"Candidatado"}else{"Candidatar-se"},
+                                text = if(candidatado.value){"Candidatado"}else{"Candidatar-se"},
                                 fontFamily = Inter,
                                 fontWeight = FontWeight.Normal,
                                 lineHeight = 12.sp,
@@ -530,6 +533,7 @@ fun Candidatar (candidato: Candidato): Boolean{
         }
     })
 
+    Log.i("Status:", status.toString())
     return status
 }
 
