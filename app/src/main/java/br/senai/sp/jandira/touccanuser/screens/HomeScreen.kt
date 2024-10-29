@@ -330,6 +330,9 @@ fun AnuncioCard(bico: Bico, navController: NavHostController, user: Int, mainAct
     var candidateList = remember {
         mutableStateOf(listOf<Candidatos>())
     }
+    var candidatadoState = remember{
+        mutableStateOf("Candidatar-se")
+    }
 
     val callCandidateList = RetrofitFactory()
         .getBicoService()
@@ -347,8 +350,12 @@ fun AnuncioCard(bico: Bico, navController: NavHostController, user: Int, mainAct
         }
     })
 
-    var candidatado = 0
-
+    var candidatado = false
+    for (item in candidateList.value){
+        if (item.id_candidato == user){
+            candidatado = true
+        }
+    }
 
 
     val grayColor = 0xff6D6D6D
@@ -441,7 +448,6 @@ fun AnuncioCard(bico: Bico, navController: NavHostController, user: Int, mainAct
                             }
                         }
 
-
                         Row (
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -457,7 +463,7 @@ fun AnuncioCard(bico: Bico, navController: NavHostController, user: Int, mainAct
                             )
                             Button(
                             modifier = Modifier.height(32.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xffF07B07)),
+                            colors = ButtonDefaults.buttonColors(containerColor = if(candidatado){Color(grayColor)}else{Color(0xffF07B07)}),
                             shape = RoundedCornerShape(14.dp),
                             onClick = {
                                 val candidato = Candidato(
@@ -474,8 +480,9 @@ fun AnuncioCard(bico: Bico, navController: NavHostController, user: Int, mainAct
 
                             }
                         ) {
+
                             Text(
-                                text ="Candidatar-se",
+                                text = if(candidatado){"Candidatado"}else{"Candidatar-se"},
                                 fontFamily = Inter,
                                 fontWeight = FontWeight.Normal,
                                 lineHeight = 12.sp,
