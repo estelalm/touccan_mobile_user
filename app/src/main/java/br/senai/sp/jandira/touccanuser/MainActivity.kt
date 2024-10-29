@@ -61,12 +61,10 @@ class MainActivity : ComponentActivity() {
                             Home(navController, idUser, this@MainActivity) }
 
 
-                        composable(route = "perfilCliente"){ ClientProfile(navController) }
 
-                        composable(route = "bico/{id}",
-                            arguments = listOf(navArgument("id") {
-//                                type = NavType.StringType
-                            })
+                        composable(route = "perfilCliente/{id}", arguments = listOf(navArgument("id"){
+
+                        })
                         ){ backStackEntry ->
                             val clientId = backStackEntry.arguments?.getString("id")
                             Log.i("Client: ", clientId.toString())
@@ -74,10 +72,20 @@ class MainActivity : ComponentActivity() {
                                 ClientProfile(navController, clientId, this@MainActivity )
                             }
                         }
+
+                        composable(route = "bico/{id}",
+                            arguments = listOf(navArgument("id") {
+//                                type = NavType.StringType
+                            })
+                        ){ backStackEntry ->
+
                             val bicoId = backStackEntry.arguments?.getString("id")
                             if (bicoId != null) {
                                 BicoDetails(navController, bicoId, this@MainActivity)
                             }
+
+                        }
+
                         }
 
 
