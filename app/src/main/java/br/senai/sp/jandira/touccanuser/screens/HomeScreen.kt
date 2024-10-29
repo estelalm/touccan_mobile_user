@@ -1,6 +1,7 @@
 package br.senai.sp.jandira.touccanuser.screens
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -52,7 +53,10 @@ import androidx.navigation.NavHostController
 import br.senai.sp.jandira.touccanuser.MainActivity
 import br.senai.sp.jandira.touccanuser.R
 import br.senai.sp.jandira.touccanuser.model.Bico
+import br.senai.sp.jandira.touccanuser.model.Candidato
+import br.senai.sp.jandira.touccanuser.model.Candidatos
 import br.senai.sp.jandira.touccanuser.model.ResultBicos
+import br.senai.sp.jandira.touccanuser.model.ResultCandidatos
 import br.senai.sp.jandira.touccanuser.model.UserId
 import br.senai.sp.jandira.touccanuser.service.RetrofitFactory
 import br.senai.sp.jandira.touccanuser.ui.theme.Inter
@@ -298,7 +302,7 @@ fun Home(navController: NavHostController, idUser: UserId, mainActivity: MainAct
                         }
                     }else{
                         items(bicosList.value){bico ->
-                            AnuncioCard(bico, navController)
+                            AnuncioCard(bico, navController, idUser.id, mainActivity)
                         }
                     }
 
@@ -320,7 +324,32 @@ fun Home(navController: NavHostController, idUser: UserId, mainActivity: MainAct
 }
 
 @Composable
-fun AnuncioCard(bico: Bico, navController: NavHostController) {
+fun AnuncioCard(bico: Bico, navController: NavHostController, user: Int, mainActivity: MainActivity) {
+
+
+    var candidateList = remember {
+        mutableStateOf(listOf<Candidatos>())
+    }
+
+    val callCandidateList = RetrofitFactory()
+        .getBicoService()
+        .getCandidatosByBico(bico.id)
+
+    callCandidateList.enqueue(object: Callback<ResultCandidatos>{
+        override fun onResponse(call: Call<ResultCandidatos>, res: Response<ResultCandidatos>) {
+            Log.i("Response: ", res.toString())
+            candidateList.value = res.body()!!.candidatos
+        }
+
+        override fun onFailure(call: Call<ResultCandidatos>, t: Throwable) {
+            Log.i("Falhou:", t.toString())
+
+        }
+    })
+
+    var candidatado = 0
+
+
 
     val grayColor = 0xff6D6D6D
     val greenColor = 0xff106B16
@@ -349,7 +378,7 @@ fun AnuncioCard(bico: Bico, navController: NavHostController) {
                     fontWeight = FontWeight.Normal
                 ),
                 onClick = {
-                    navController.navigate("perfilCliente")
+                    navController.navigate("perfilCliente/${bico.cliente[0].id}")
                 }
             )
             Card (modifier = Modifier.clickable { navController.navigate("bico/${bico.id}") }){
@@ -414,7 +443,9 @@ fun AnuncioCard(bico: Bico, navController: NavHostController) {
 
 
                         Row (
-                            modifier = Modifier.fillMaxWidth().padding(end=8.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(end = 8.dp),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ){
                             Text(
@@ -428,7 +459,20 @@ fun AnuncioCard(bico: Bico, navController: NavHostController) {
                             modifier = Modifier.height(32.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xffF07B07)),
                             shape = RoundedCornerShape(14.dp),
-                            onClick = {}
+                            onClick = {
+                                val candidato = Candidato(
+                                    id_bico = bico.id,
+                                    id_user = user
+                                )
+
+                                val candidatou = Candidatar(candidato)
+                                if(candidatou){
+                                    Toast.makeText(mainActivity, "Candidatou-se com sucesso", Toast.LENGTH_SHORT).show()
+                                }else{
+                                    Toast.makeText(mainActivity, "Falha em se candidatar à vaga", Toast.LENGTH_SHORT).show()
+                                }
+
+                            }
                         ) {
                             Text(
                                 text ="Candidatar-se",
@@ -446,6 +490,27 @@ fun AnuncioCard(bico: Bico, navController: NavHostController) {
     }
 
 }
+
+fun Candidatar (candidato: Candidato): Boolean{
+
+    var status = false
+    val postCandidato = RetrofitFactory()
+        .getBicoService()
+        .postCandidato(candidato)
+
+    postCandidato.enqueue(object: Callback<Candidato>{
+        override fun onResponse(call: Call<Candidato>, res: Response<Candidato>){
+            Log.i("Response: ", res.toString())
+            status = true
+        }
+        override fun onFailure(call: Call<Candidato>, t: Throwable){
+            Log.i("Falhou:", t.toString())
+        }
+    })
+
+    return status
+}
+
 
 
 //@Preview (showSystemUi = true, showBackground = true)
