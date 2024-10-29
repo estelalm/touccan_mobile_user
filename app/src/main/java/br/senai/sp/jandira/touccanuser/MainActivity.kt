@@ -34,7 +34,7 @@ class MainActivity : ComponentActivity() {
 
                     NavHost(
                         navController = navController,
-                        startDestination = "logIn") {
+                        startDestination = "home/1") {
 
                         composable(route = "signUp"){ SignUpScreen(navController)}
 
@@ -56,8 +56,12 @@ class MainActivity : ComponentActivity() {
                             })
                         ){ backStackEntry ->
                             val userId = backStackEntry.arguments?.getString("id")
-                            Log.i("User: ", userId.toString())
-                            val idUser = Json.decodeFromString<UserId>(userId ?: "")
+//                            val idUser = Json.decodeFromString<UserId>(userId ?: "")
+
+                            val idUser = UserId(
+                                id = 1
+                            )
+
                             Home(navController, idUser, this@MainActivity) }
 
 

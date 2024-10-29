@@ -5,6 +5,7 @@ import br.senai.sp.jandira.touccanuser.model.Login
 import br.senai.sp.jandira.touccanuser.model.LoginResult
 import br.senai.sp.jandira.touccanuser.model.ResultBico
 import br.senai.sp.jandira.touccanuser.model.ResultBicos
+import br.senai.sp.jandira.touccanuser.model.ResultCandidatos
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -23,5 +24,8 @@ interface BicoService {
     @Headers("Content-Type: application/json")
     @POST("candidato")
     fun postCandidato(@Body user: Candidato): Call<Candidato>
+
+    @GET("candidato/{id}")
+    fun getCandidatosByBico(@Path("id") id:Int): Call<ResultCandidatos>
 
 }
