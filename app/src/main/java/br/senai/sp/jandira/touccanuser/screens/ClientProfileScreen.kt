@@ -25,10 +25,10 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -42,16 +42,19 @@ import androidx.navigation.NavHostController
 import br.senai.sp.jandira.touccanuser.MainActivity
 import br.senai.sp.jandira.touccanuser.R
 import br.senai.sp.jandira.touccanuser.model.ClientePerfil
-import br.senai.sp.jandira.touccanuser.model.LoginResult
-import br.senai.sp.jandira.touccanuser.model.UserId
+import br.senai.sp.jandira.touccanuser.model.ResultClientProfile
 import br.senai.sp.jandira.touccanuser.service.RetrofitFactory
 import br.senai.sp.jandira.touccanuser.ui.theme.Inter
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import br.senai.sp.jandira.touccanuser.screens.SobreNos as SobreNos
 
 @Composable
 fun ClientProfile(navController: NavHostController,  idCliente: String, mainActivity: MainActivity) {
 
    val clienteId = idCliente.toInt()
+    Log.i("ID CLIENTE TELA PERFIL C", clienteId.toString())
 
     var perfilCliente = remember {
         mutableStateOf(ClientePerfil())
@@ -61,10 +64,16 @@ fun ClientProfile(navController: NavHostController,  idCliente: String, mainActi
         .getClientService()
         .getClientById(clienteId)
 
+    callClientPerfil.enqueue(object: Callback<ResultClientProfile> {
+        override fun onResponse(p0: Call<ResultClientProfile>, p1: Response<ResultClientProfile>) {
+            Log.i("response TelaC", p1.body()!!.toString())
+            perfilCliente.value = p1.body()!!.cliente
+        }
 
-
-
-
+        override fun onFailure(p0: Call<ResultClientProfile>, p1: Throwable) {
+            Log.i("Falhou!!!", p1.toString())
+        }
+    })
 
     var sobreNosState = remember{
         mutableStateOf(false)
@@ -78,7 +87,8 @@ fun ClientProfile(navController: NavHostController,  idCliente: String, mainActi
             modifier = Modifier.fillMaxWidth()
         ) {
             Row (
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .height(100.dp)
                     .padding(top = 4.dp, start = 14.dp, end = 14.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -89,8 +99,9 @@ fun ClientProfile(navController: NavHostController,  idCliente: String, mainActi
                 Image(
                     painter = painterResource(R.drawable.seta_voltar),
                     contentDescription = "",
-                    modifier = Modifier.width(30.dp)
-                        .clickable { navController.popBackStack()}
+                    modifier = Modifier
+                        .width(30.dp)
+                        .clickable { navController.popBackStack() }
                 )
                 Image(
                     painter = painterResource(R.drawable.logo_touccan),
@@ -118,7 +129,7 @@ fun ClientProfile(navController: NavHostController,  idCliente: String, mainActi
                 }
                 Spacer(Modifier.height(10.dp))
                 Text(
-                    "Mercado Bom Lugar",
+                    text = perfilCliente.value.nome_fanstasia,
                     fontSize = 19.sp,
                     fontWeight = FontWeight.Bold,
                     fontStyle = FontStyle.Italic
@@ -210,7 +221,7 @@ fun ClientProfile(navController: NavHostController,  idCliente: String, mainActi
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    if (sobreNosState.value) SobreNos()
+                    if (sobreNosState.value) SobreNos(perfilCliente)
                     else Feedback()
                 }
             }
@@ -219,14 +230,16 @@ fun ClientProfile(navController: NavHostController,  idCliente: String, mainActi
 }
 
 @Composable
-fun SobreNos(){
-    OutlinedTextField(value = "Sobre Nós", onValueChange = {}, enabled = false)
-    OutlinedTextField(value = "Sobre Nós", onValueChange = {}, enabled = false)
+fun SobreNos(clientePerfil: MutableState<ClientePerfil>){
+    OutlinedTextField(value = "Endereço: ${clientePerfil.value.cep}", onValueChange = {}, enabled = false)
+    OutlinedTextField(value = "Imagens da Localização:", onValueChange = {}, enabled = false)
+    OutlinedTextField(value = "Email de contato: ${clientePerfil.value.email}", onValueChange = {}, enabled = false)
+    OutlinedTextField(value = "Telefone de contato: ${clientePerfil.value.telefone}", onValueChange = {}, enabled = false)
 }
 
 @Composable
 fun Feedback(){
-    OutlinedTextField(value = "Feedback", onValueChange = {}, enabled = false)
+    OutlinedTextField(value = "Feedback", onValueChange = {}, enabled = false, modifier = Modifier)
     OutlinedTextField(value = "Feedback", onValueChange = {}, enabled = false)
 }
 

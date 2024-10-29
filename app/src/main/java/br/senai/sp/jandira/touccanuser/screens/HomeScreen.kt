@@ -349,7 +349,7 @@ fun AnuncioCard(bico: Bico, navController: NavHostController) {
                     fontWeight = FontWeight.Normal
                 ),
                 onClick = {
-                    navController.navigate("perfilCliente")
+                    navController.navigate("perfilCliente/${bico.cliente[0].id}")
                 }
             )
             Card (modifier = Modifier.clickable { navController.navigate("bico/${bico.id}") }){
