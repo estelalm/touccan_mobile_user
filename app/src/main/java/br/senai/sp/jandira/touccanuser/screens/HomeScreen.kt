@@ -66,6 +66,8 @@ import retrofit2.Response
 fun Home(navController: NavHostController, idUser: UserId, mainActivity: MainActivity) {
 
     Log.i("User:", idUser.toString())
+    val id = idUser.id.toString()
+    Log.i("ID USUARIO HOME", id)
 
     var bicosList = remember {
         mutableStateOf(listOf<Bico>())
@@ -151,7 +153,7 @@ fun Home(navController: NavHostController, idUser: UserId, mainActivity: MainAct
                             )
                         }
                         IconButton(onClick = {
-                            navController.navigate("perfilUsuario")
+                            navController.navigate("perfilUsuario/${id}")
                         }) {
                             Icon(
                                 painter = painterResource(R.drawable.person),

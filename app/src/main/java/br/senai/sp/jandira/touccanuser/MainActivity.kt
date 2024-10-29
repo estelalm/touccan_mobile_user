@@ -19,6 +19,7 @@ import br.senai.sp.jandira.touccanuser.screens.Home
 import br.senai.sp.jandira.touccanuser.screens.Login
 import br.senai.sp.jandira.touccanuser.screens.SetPassword
 import br.senai.sp.jandira.touccanuser.screens.SignUpScreen
+import br.senai.sp.jandira.touccanuser.screens.UserProfile
 import br.senai.sp.jandira.touccanuser.ui.theme.TouccanUserTheme
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -84,6 +85,17 @@ class MainActivity : ComponentActivity() {
                                 BicoDetails(navController, bicoId, this@MainActivity)
                             }
 
+                        }
+
+                        composable(route = "perfilUsuario/{id}", arguments = listOf(navArgument("id"){
+
+                        })
+                        ){ backStackEntry ->
+                            val usuarioId = backStackEntry.arguments?.getString("id")
+                            Log.i("Client: ", usuarioId.toString())
+                            if (usuarioId != null) {
+                                UserProfile(navController, usuarioId, this@MainActivity)
+                            }
                         }
 
                         }
