@@ -4,6 +4,9 @@ plugins {
     id("kotlin-kapt")
 //    kotlin("kapt") version "2.0.20"
     kotlin("plugin.serialization") version "2.0.20"
+
+    //Google services
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -91,6 +94,15 @@ dependencies {
 
     //NAVIGATION
     implementation("androidx.navigation:navigation-compose:2.7.7")
+
+    // Import the Firebase BoM
+    implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
+
+
+    // TODO: Add the dependencies for Firebase products you want to use
+    // When using the BoM, don't specify versions in Firebase dependencies
+    implementation("com.google.firebase:firebase-analytics")
+
 
 
     implementation("androidx.room:room-runtime:2.6.1")
