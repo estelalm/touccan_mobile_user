@@ -171,11 +171,17 @@ fun BicoDetails(navController: NavHostController, idBico: String, mainActivity: 
 
 
                             Column (){
-                                Text("Início: ${bico.value.horario_inicio.split("T")[1].split(".")[0]}",
+
+                                val sb = StringBuilder("")
+                                Text("${bico.value.data_inicio.split("T")[0].split("-").joinTo(sb, "/", "Data: ", )}",
                                     color = Color(0xff464646),
                                     fontFamily = Inter,
                                     fontWeight = FontWeight.Black)
-                                Text("Término: ${bico.value.horario_limite.split("T")[1].split(".")[0]}",
+                                Text("${bico.value.horario_inicio.split("T")[1].split(".")[0].split(":").slice(0..1).joinTo(sb, ":", "Início: ", "h")}",
+                                    color = Color(0xff464646),
+                                    fontFamily = Inter,
+                                    fontWeight = FontWeight.Black)
+                                Text("${bico.value.horario_limite.split("T")[1].split(".")[0].split(":").slice(0..1).joinTo(sb, ":", "Início: ", "h")}",
                                     color = Color(0xff464646),
                                     fontFamily = Inter,
                                     fontWeight = FontWeight.Black)
