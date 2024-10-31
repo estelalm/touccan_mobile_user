@@ -78,7 +78,7 @@ fun TopAppBar(navController: NavHostController, context: Context) {
                     )
                 }
                 IconButton(onClick = {
-
+                    navController.navigate("perfilUsuario/${userId}")
                 }) {
                     Icon(
                         painter = painterResource(R.drawable.person),
