@@ -90,20 +90,18 @@ class MainActivity : ComponentActivity() {
 
                         }
 
-                        composable(route = "perfilUsuario/{id}", arguments = listOf(navArgument("id"){
+                        composable(route = "perfilUsuario/{id}", arguments = listOf(navArgument("id")
 
                         })
                         ){ backStackEntry ->
-                            val userId = backStackEntry.arguments?.getString("id")
-                            Log.i("User: ", userId.toString())
-                            if (userId != null) {
-                                UserProfile(navController, userId )
+                            val usuarioId = backStackEntry.arguments?.getString("id")
+                            Log.i("Client: ", usuarioId.toString())
+                            if (usuarioId != null) {
+                                UserProfile(navController, usuarioId, this@MainActivity)
                             }
                         }
 
                         }
-
-
                     }
 
                 }

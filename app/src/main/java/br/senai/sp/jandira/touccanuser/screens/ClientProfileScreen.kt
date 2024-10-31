@@ -45,6 +45,7 @@ import br.senai.sp.jandira.touccanuser.model.ClientePerfil
 import br.senai.sp.jandira.touccanuser.model.ResultClientProfile
 import br.senai.sp.jandira.touccanuser.service.RetrofitFactory
 import br.senai.sp.jandira.touccanuser.ui.theme.Inter
+import coil.compose.AsyncImage
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -53,7 +54,7 @@ import br.senai.sp.jandira.touccanuser.screens.SobreNos as SobreNos
 @Composable
 fun ClientProfile(navController: NavHostController,  idCliente: String, mainActivity: MainActivity) {
 
-    val clienteId = idCliente.toInt()
+   val clienteId = idCliente.toInt()
     Log.i("ID CLIENTE TELA PERFIL C", clienteId.toString())
 
     var perfilCliente = remember {
@@ -120,12 +121,20 @@ fun ClientProfile(navController: NavHostController,  idCliente: String, mainActi
                     border = BorderStroke(5.dp, Color(0xffF07B07)),
                     elevation = CardDefaults.cardElevation(defaultElevation = 9.dp)
                 ) {
-                    Image(
-                        painter = painterResource(R.drawable.cliente_pfp),
-                        contentDescription = "",
+                    AsyncImage(
+                        model = "",
+                        if (perfilCliente.value.foto == "" || perfilCliente.value.foto == null) "https://pin.it/36EuigXZ6"
+                        else perfilCliente.value.foto,
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.FillBounds
                     )
+
+//                    Image(
+//                        painter = painterResource(R.drawable.cliente_pfp),
+//                        contentDescription = "",
+//                        modifier = Modifier.fillMaxSize(),
+//                        contentScale = ContentScale.FillBounds
+//                    )
                 }
                 Spacer(Modifier.height(10.dp))
                 Text(

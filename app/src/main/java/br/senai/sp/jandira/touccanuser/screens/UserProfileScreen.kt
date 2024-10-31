@@ -1,8 +1,10 @@
 package br.senai.sp.jandira.touccanuser.screens
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,11 +38,45 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import br.senai.sp.jandira.touccanuser.MainActivity
 import br.senai.sp.jandira.touccanuser.R
+import br.senai.sp.jandira.touccanuser.model.ResultClientProfile
+import br.senai.sp.jandira.touccanuser.model.ResultUserProfile
+import br.senai.sp.jandira.touccanuser.model.UserPerfil
+import br.senai.sp.jandira.touccanuser.service.RetrofitFactory
 import br.senai.sp.jandira.touccanuser.ui.theme.Inter
+import coil.compose.AsyncImage
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+
+@Composable
+fun UserProfile(navController: NavHostController, usuarioId: String, mainActivity: MainActivity) {
+    var perfilUsuario = remember{
+        mutableStateOf(UserPerfil())
+    }
+    val idUsuario = usuarioId.toInt()
+    val callUserPerfil = RetrofitFactory()
+        .getUserService()
+        .getUserById(idUsuario)
+
+    callUserPerfil.enqueue(object: Callback<ResultUserProfile> {
+        override fun onResponse(p0: Call<ResultUserProfile>, p1: Response<ResultUserProfile>) {
+            Log.i("response TelaC", p1.body()!!.toString())
+            perfilUsuario.value = p1.body()!!.usuario
+        }
+
+        override fun onFailure(p0: Call<ResultUserProfile>, p1: Throwable) {
+            Log.i("Falhou!!!", p1.toString())
+        }
+    })
+
+    var dataDate = perfilUsuario.value.data_nascimento
+
 
 @Composable
 fun UserProfile(navController: NavHostController, userId: String) {
+
     var sobreNosState = remember{
         mutableStateOf(false)
     }
@@ -63,6 +99,7 @@ fun UserProfile(navController: NavHostController, userId: String) {
                     painter = painterResource(R.drawable.seta_voltar),
                     contentDescription = "",
                     modifier = Modifier.width(30.dp)
+                        .clickable { navController.popBackStack() }
                 )
                 Image(
                     painter = painterResource(R.drawable.logo_touccan),
@@ -81,16 +118,18 @@ fun UserProfile(navController: NavHostController, userId: String) {
                     border = BorderStroke(5.dp, Color(0xffF07B07)),
                     elevation = CardDefaults.cardElevation(defaultElevation = 9.dp)
                 ) {
-                    Image(
-                        painter = painterResource(R.drawable.cliente_pfp),
-                        contentDescription = "",
+                    //|| perfilUsuario.value.foto == null
+                    AsyncImage(
+                        model = "",
+                        if (perfilUsuario.value.foto == "") "https://i.pinimg.com/564x/1e/f8/15/1ef8156889dba99417ff2b3a6d99988d.jpg"
+                        else perfilUsuario.value.foto,
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.FillBounds
                     )
                 }
                 Spacer(Modifier.height(10.dp))
                 Text(
-                    "Mercado Bom Lugar",
+                    text = perfilUsuario.value.nome,
                     fontSize = 19.sp,
                     fontWeight = FontWeight.Bold,
                     fontStyle = FontStyle.Italic
