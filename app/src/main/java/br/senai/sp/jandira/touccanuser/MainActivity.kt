@@ -40,9 +40,11 @@ class MainActivity : ComponentActivity() {
                         composable(route = "signUp"){ SignUpScreen(navController)}
 
                         composable(route = "setPassword/{dados}",
-                            arguments = listOf(navArgument("dados") {
+                            arguments = listOf(
+                                navArgument("dados") {
 //                                type = NavType.StringType
-                            })
+                                },
+                            )
                         ){ backStackEntry ->
                             val dadosJson = backStackEntry.arguments?.getString("dados")
                             Log.i("Dados: ", dadosJson.toString())
@@ -90,14 +92,13 @@ class MainActivity : ComponentActivity() {
 
                         }
 
-                        composable(route = "perfilUsuario/{id}", arguments = listOf(navArgument("id")
+                        composable(route = "perfilUsuario/{id}", arguments = listOf(navArgument("id"){
 
                         })
-                        ){ backStackEntry ->
-                            val usuarioId = backStackEntry.arguments?.getString("id")
-                            Log.i("Client: ", usuarioId.toString())
-                            if (usuarioId != null) {
-                                UserProfile(navController, usuarioId, this@MainActivity)
+                        ){backStackEntry->
+                            val userId = backStackEntry.arguments?.getString("id")
+                            if (userId != null){
+                                UserProfile(navController, userId, this@MainActivity)
                             }
                         }
 
