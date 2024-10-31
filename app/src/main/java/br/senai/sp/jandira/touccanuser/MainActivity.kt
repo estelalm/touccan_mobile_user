@@ -94,6 +94,7 @@ class MainActivity : ComponentActivity() {
 
                         composable(route = "perfilUsuario/{id}", arguments = listOf(navArgument("id"){
 
+
                         })
                         ){backStackEntry->
                             val userId = backStackEntry.arguments?.getString("id")

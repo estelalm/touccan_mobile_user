@@ -22,12 +22,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.navigation.NavHostController
 import br.senai.sp.jandira.touccanuser.R
 import br.senai.sp.jandira.touccanuser.UserPreferences
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -78,7 +75,9 @@ fun TopAppBar(navController: NavHostController, context: Context) {
                     )
                 }
                 IconButton(onClick = {
-                    navController.navigate("perfilUsuario/${userId}")
+                    val route = "perfilUsuario/${userIdFlow.value}"
+                    Log.i("Rota: ", route)
+                    navController.navigate(route)
                 }) {
                     Icon(
                         painter = painterResource(R.drawable.person),
