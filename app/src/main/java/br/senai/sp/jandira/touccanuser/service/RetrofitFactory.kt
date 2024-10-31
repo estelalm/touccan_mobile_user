@@ -1,5 +1,6 @@
 package br.senai.sp.jandira.touccanuser.service
 
+import br.senai.sp.jandira.touccanuser.model.Endereco
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -16,7 +17,6 @@ class RetrofitFactory {
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
-
     fun getUserService(): UserService {
         return retrofitFactory.create(UserService::class.java)
     }
@@ -28,4 +28,15 @@ class RetrofitFactory {
     fun getClientService(): ClientService{
         return retrofitFactory.create(ClientService::class.java)
     }
+
+    private val retrofitViaCep = Retrofit
+        .Builder()
+        .baseUrl("https://viacep.com.br/ws/")
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+
+    fun getEnderecoService(): EnderecoService{
+        return retrofitViaCep.create(EnderecoService::class.java)
+    }
+
 }

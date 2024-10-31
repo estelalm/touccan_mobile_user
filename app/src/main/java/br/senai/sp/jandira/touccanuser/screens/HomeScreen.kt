@@ -61,6 +61,8 @@ import retrofit2.Response
 @Composable
 fun Home(navController: NavHostController, idUser: UserId, mainActivity: MainActivity) {
 
+
+
     Log.i("User:", idUser.toString())
     val id = idUser.id.toString()
     Log.i("ID USUARIO HOME", id)
@@ -112,56 +114,8 @@ fun Home(navController: NavHostController, idUser: UserId, mainActivity: MainAct
     Scaffold (
         containerColor = Color(0xFFEBEBEB),
         topBar = {
-            TopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFFEBEBEB)
-                ),
-                navigationIcon = {
-                    IconButton(
-                        onClick = {},
-                        modifier = Modifier
-                            .height(100.dp)
-                            .width(170.dp)) {
-                        Icon(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(horizontal = 10.dp),
-                            painter = painterResource(R.drawable.logo_touccan),
-                            contentDescription = "Desenho de um, com o texto Touccan ao lado, a logo do aplicativo",
-                        )
-                    }
 
-                },
-                title = {
-                },
-                actions = {
-                    Row (horizontalArrangement = Arrangement.End){
-                        IconButton(onClick = {}) {
-                        Icon(
-                            painter = painterResource(R.drawable.configuracoes),
-                            contentDescription = "Configurações: Ícone de engrenagem",
-                        )
-                    }
-                        IconButton(onClick = {}) {
-                            Icon(
-                                painter = painterResource(R.drawable.carteira),
-                                contentDescription = "Configurações: Ícone de engrenagem",
-                            )
-                        }
-                        IconButton(onClick = {
-                            navController.navigate("perfilUsuario/${id}")
-                        }) {
-                            Icon(
-                                painter = painterResource(R.drawable.person),
-                                contentDescription = "Configurações: Ícone de engrenagem",
-                            )
-                        } }
-                }
-
-            )
-
-            br.senai.sp.jandira.touccanuser.utility.TopAppBar(navController)
-
+            br.senai.sp.jandira.touccanuser.utility.TopAppBar(navController, mainActivity)
         },
         bottomBar = {
             br.senai.sp.jandira.touccanuser.utility.BottomAppBar(navController)

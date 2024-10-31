@@ -42,6 +42,7 @@ import androidx.navigation.NavHostController
 import br.senai.sp.jandira.touccanuser.MainActivity
 import br.senai.sp.jandira.touccanuser.R
 import br.senai.sp.jandira.touccanuser.model.ClientePerfil
+import br.senai.sp.jandira.touccanuser.model.Endereco
 import br.senai.sp.jandira.touccanuser.model.ResultClientProfile
 import br.senai.sp.jandira.touccanuser.service.RetrofitFactory
 import br.senai.sp.jandira.touccanuser.ui.theme.Inter
@@ -74,6 +75,7 @@ fun ClientProfile(navController: NavHostController,  idCliente: String, mainActi
         override fun onFailure(p0: Call<ResultClientProfile>, p1: Throwable) {
             Log.i("Falhou!!!", p1.toString())
         }
+
     })
 
     var sobreNosState = remember{
@@ -83,6 +85,7 @@ fun ClientProfile(navController: NavHostController,  idCliente: String, mainActi
     var feedbackState = remember{
         mutableStateOf(true)
     }
+
     Surface(modifier = Modifier.fillMaxSize(), color = Color(0xFFEBEBEB)) {
         Column (
             modifier = Modifier.fillMaxWidth()
@@ -240,7 +243,30 @@ fun ClientProfile(navController: NavHostController,  idCliente: String, mainActi
 
 @Composable
 fun SobreNos(clientePerfil: MutableState<ClientePerfil>){
-    OutlinedTextField(value = "Endereço: ${clientePerfil.value.cep}", onValueChange = {}, enabled = false)
+
+    var enderecoCliente = remember {
+        mutableStateOf(Endereco())
+    }
+
+    
+
+    val callEndereco = RetrofitFactory()
+        .getEnderecoService()
+        .getViaCep(clientePerfil.value.cep)
+
+    callEndereco.enqueue(object: Callback<Endereco> {
+        override fun onResponse(p0: Call<Endereco>, res: Response<Endereco>) {
+            Log.i("response:", res.body()!!.toString())
+            enderecoCliente.value = res.body()!!
+        }
+
+        override fun onFailure(p0: Call<Endereco>, t: Throwable) {
+            Log.i("Falhou!!!", t.toString())
+        }
+
+    })
+
+    OutlinedTextField(value = "Endereço: ${enderecoCliente.value.logradouro}", onValueChange = {}, enabled = false)
     OutlinedTextField(value = "Imagens da Localização:", onValueChange = {}, enabled = false)
     OutlinedTextField(value = "Email de contato: ${clientePerfil.value.email}", onValueChange = {}, enabled = false)
     OutlinedTextField(value = "Telefone de contato: ${clientePerfil.value.telefone}", onValueChange = {}, enabled = false)
