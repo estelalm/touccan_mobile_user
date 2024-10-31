@@ -67,6 +67,8 @@ fun Home(
 ) {
 
     Log.i("User:", idUser.toString())
+    val id = idUser.id.toString()
+    Log.i("ID USUARIO HOME", id)
 
     var bicosList = remember {
         mutableStateOf(listOf<Bico>())
@@ -115,6 +117,7 @@ fun Home(
     Scaffold (
         containerColor = Color(0xFFEBEBEB),
         topBar = {
+
             br.senai.sp.jandira.touccanuser.utility.TopAppBar(navController, mainActivity)
         },
         bottomBar = {

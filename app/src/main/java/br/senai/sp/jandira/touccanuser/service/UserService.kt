@@ -2,6 +2,7 @@ package br.senai.sp.jandira.touccanuser.service
 
 import br.senai.sp.jandira.touccanuser.model.Login
 import br.senai.sp.jandira.touccanuser.model.LoginResult
+import br.senai.sp.jandira.touccanuser.model.ResultUserProfile
 import br.senai.sp.jandira.touccanuser.model.User
 import br.senai.sp.jandira.touccanuser.model.UserId
 import retrofit2.Call
@@ -22,7 +23,7 @@ interface UserService {
     fun loginUser(@Body user: Login): Call<LoginResult>
 
     @GET("usuario/{id}")
-    fun getUserById(@Path("id") id: Int): Call<User>
+    fun getUserById(@Path("id") id: Int): Call<ResultUserProfile>
 
 
 }
