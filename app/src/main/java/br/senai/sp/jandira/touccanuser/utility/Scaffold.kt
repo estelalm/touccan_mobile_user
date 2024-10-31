@@ -15,6 +15,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -22,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.navigation.NavHostController
 import br.senai.sp.jandira.touccanuser.R
-import br.senai.sp.jandira.touccanuser.screens.dataStore
+import br.senai.sp.jandira.touccanuser.UserPreferences
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -30,15 +33,12 @@ import kotlinx.coroutines.flow.map
 @Composable
 fun TopAppBar(navController: NavHostController, context: Context) {
 
-    val userId = 0
-    val user_id = intPreferencesKey("user_id")
-    val idFlow: Flow<Int> = context.dataStore.data
-        .map { preferences ->
-            preferences[user_id] ?: 0
-            Log.i("storagexxxxxx:", preferences[user_id].toString())
-        }
+    var userId = remember { mutableStateOf("") }
 
-    Log.i("storage:", idFlow.toString())
+    val userPreferences = UserPreferences(context)
+    val userIdFlow = userPreferences.userId.collectAsState(initial = null)
+
+    Log.i("ID DO USUÁRIO: ", userIdFlow.value.toString())
 
     androidx.compose.material3.TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
@@ -78,7 +78,7 @@ fun TopAppBar(navController: NavHostController, context: Context) {
                     )
                 }
                 IconButton(onClick = {
-
+                    navController.navigate("perfilUsuario/${userId}")
                 }) {
                     Icon(
                         painter = painterResource(R.drawable.person),

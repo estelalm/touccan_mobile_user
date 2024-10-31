@@ -2,8 +2,6 @@ package br.senai.sp.jandira.touccanuser.screens
 
 import android.content.Context
 import android.util.Log
-import android.widget.Toast
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,15 +21,15 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -40,20 +38,14 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.intPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
 import androidx.navigation.NavHostController
 import br.senai.sp.jandira.touccanuser.R
+import br.senai.sp.jandira.touccanuser.UserPreferences
 import br.senai.sp.jandira.touccanuser.model.Login
 import br.senai.sp.jandira.touccanuser.model.LoginResult
-import br.senai.sp.jandira.touccanuser.model.User
-import br.senai.sp.jandira.touccanuser.model.UserId
 import br.senai.sp.jandira.touccanuser.service.RetrofitFactory
 import br.senai.sp.jandira.touccanuser.ui.theme.Inter
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import retrofit2.Call
@@ -61,12 +53,11 @@ import retrofit2.Callback
 import retrofit2.Response
 
 
-
-val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
-val user_id = intPreferencesKey("user_id")
-
 @Composable
-fun Login (navController: NavHostController, context: Context) {
+fun Login (navController: NavHostController, context: Context, userPreferences: UserPreferences) {
+
+    var userId by remember { mutableStateOf("") }
+    val scope = rememberCoroutineScope()
 
     val linearOrange = Brush.linearGradient(listOf(Color(0xffF07B07), Color(0xffE25401)))
     val mainOrange = 0xffF07B07
@@ -248,6 +239,14 @@ fun Login (navController: NavHostController, context: Context) {
                                     Log.i("Response:", res.body().toString())
                                     val userJson = res.body()
                                         ?.let { Json.encodeToString(it.usuario) }
+
+                                    if(res.body() != null){
+                                        val userId = res.body()!!.usuario.id
+                                        if(userId != null)
+                                            scope.launch {
+                                                userPreferences.saveUserId(userId)
+                                            }
+                                    }
 
 
                                     if(res.isSuccessful){

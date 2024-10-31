@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import br.senai.sp.jandira.touccanuser.MainActivity
+import br.senai.sp.jandira.touccanuser.UserPreferences
 import br.senai.sp.jandira.touccanuser.model.Bico
 import br.senai.sp.jandira.touccanuser.model.Candidato
 import br.senai.sp.jandira.touccanuser.model.Candidatos
@@ -59,9 +60,11 @@ import retrofit2.Response
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Home(navController: NavHostController, idUser: UserId, mainActivity: MainActivity) {
-
-
+fun Home(
+    navController: NavHostController,
+    idUser: UserId,
+    mainActivity: MainActivity,
+) {
 
     Log.i("User:", idUser.toString())
     val id = idUser.id.toString()

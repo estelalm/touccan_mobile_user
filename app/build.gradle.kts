@@ -99,12 +99,12 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
 
 
-
     // When using the BoM, don't specify versions in Firebase dependencies
     implementation("com.google.firebase:firebase-analytics")
 
     //datastore
     implementation("androidx.datastore:datastore-preferences:1.1.1")
+    implementation ("androidx.datastore:datastore-preferences:1.0.0")
     implementation("androidx.datastore:datastore:1.1.1")
 
     //coroutines
