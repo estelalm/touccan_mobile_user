@@ -1,6 +1,5 @@
 package br.senai.sp.jandira.touccanuser
 
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -8,7 +7,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.Surface
 import androidx.compose.ui.graphics.Color
-import androidx.datastore.preferences.core.edit
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -22,11 +20,7 @@ import br.senai.sp.jandira.touccanuser.screens.Login
 import br.senai.sp.jandira.touccanuser.screens.SetPassword
 import br.senai.sp.jandira.touccanuser.screens.SignUpScreen
 import br.senai.sp.jandira.touccanuser.screens.UserProfile
-import br.senai.sp.jandira.touccanuser.screens.dataStore
-import br.senai.sp.jandira.touccanuser.screens.user_id
 import br.senai.sp.jandira.touccanuser.ui.theme.TouccanUserTheme
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
@@ -55,7 +49,10 @@ class MainActivity : ComponentActivity() {
                             val user = Json.decodeFromString<User>(dadosJson ?: "")
                             SetPassword(navController, user, this@MainActivity) }
 
-                        composable(route = "logIn"){ Login(navController, this@MainActivity) }
+                        composable(route = "logIn"){
+
+                            val userPreferences = UserPreferences(this@MainActivity)
+                            Login(navController, this@MainActivity, userPreferences) }
 
                         composable(route = "home/{id}",
                             arguments = listOf(navArgument("id") {
@@ -66,12 +63,6 @@ class MainActivity : ComponentActivity() {
                             val userId = backStackEntry.arguments?.getString("id")
                             val idUser = Json.decodeFromString<UserId>(userId ?: "")
 
-                            fun main() = runBlocking { // this: CoroutineScope
-                                launch { // launch a new coroutine and continue
-                                    saveId(this@MainActivity, idUser.id)
-                                }
-
-                            }
 
                             Home(navController, idUser, this@MainActivity) }
 
@@ -120,10 +111,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-
-
-suspend fun saveId (context: Context, id: Int){
-    context.dataStore.edit { settings ->
-        settings[user_id] = id
-    }
-}
