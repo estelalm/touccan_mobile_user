@@ -85,7 +85,7 @@ fun BicoDetails(navController: NavHostController, idBico: String, mainActivity: 
     Scaffold (
         containerColor = Color(0xFFEBEBEB),
         topBar = {
-            br.senai.sp.jandira.touccanuser.utility.TopAppBar(navController)
+            br.senai.sp.jandira.touccanuser.utility.TopAppBar(navController, mainActivity)
         },
         bottomBar = {
             br.senai.sp.jandira.touccanuser.utility.BottomAppBar(navController)

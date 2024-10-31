@@ -61,6 +61,8 @@ import retrofit2.Response
 @Composable
 fun Home(navController: NavHostController, idUser: UserId, mainActivity: MainActivity) {
 
+
+
     Log.i("User:", idUser.toString())
 
     var bicosList = remember {
@@ -110,7 +112,7 @@ fun Home(navController: NavHostController, idUser: UserId, mainActivity: MainAct
     Scaffold (
         containerColor = Color(0xFFEBEBEB),
         topBar = {
-            br.senai.sp.jandira.touccanuser.utility.TopAppBar(navController)
+            br.senai.sp.jandira.touccanuser.utility.TopAppBar(navController, mainActivity)
         },
         bottomBar = {
             br.senai.sp.jandira.touccanuser.utility.BottomAppBar(navController)
