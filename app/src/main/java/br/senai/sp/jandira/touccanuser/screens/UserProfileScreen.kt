@@ -73,6 +73,10 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
 
     var dataDate = perfilUsuario.value.data_nascimento
 
+
+@Composable
+fun UserProfile(navController: NavHostController, userId: String) {
+
     var sobreNosState = remember{
         mutableStateOf(false)
     }

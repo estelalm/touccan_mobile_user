@@ -2,7 +2,6 @@ package br.senai.sp.jandira.touccanuser.screens
 
 
 import android.util.Log
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,12 +9,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -26,8 +22,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -76,11 +70,7 @@ fun BicoDetails(navController: NavHostController, idBico: String, mainActivity: 
     callBico.enqueue(object: Callback<ResultBico> {
         override fun onResponse(call: Call<ResultBico>, res: Response<ResultBico>) {
             Log.i("Response: ", res.toString())
-            Log.i("ResponseBody:", res.body()!!.bico.toString())
             bico.value = res.body()!!.bico
-            Log.i("kkkkkkkk" , bico.toString())
-            Log.i("AAAAAAAA" , bico.value.cliente[0].toString())
-
 
             isLoadingState.value = false
         }
@@ -89,132 +79,19 @@ fun BicoDetails(navController: NavHostController, idBico: String, mainActivity: 
             Log.i("Falhou:", t.toString())
             errorState.value = true
         }
-
-
     })
-
-
 
 
     Scaffold (
         containerColor = Color(0xFFEBEBEB),
         topBar = {
-            TopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFFEBEBEB)
-                ),
-                navigationIcon = {
-                    IconButton(
-                        onClick = {},
-                        modifier = Modifier
-                            .height(100.dp)
-                            .width(170.dp)) {
-                        Icon(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(horizontal = 10.dp),
-                            painter = painterResource(R.drawable.logo_touccan),
-                            tint = Color.Black,
-                            contentDescription = "Desenho de um, com o texto Touccan ao lado, a logo do aplicativo",
-                        )
-                    }
-
-
-                },
-                title = {
-                },
-                actions = {
-                    Row (horizontalArrangement = Arrangement.End){
-                        IconButton(onClick = {}) {
-                            Icon(
-                                painter = painterResource(R.drawable.configuracoes),
-                                contentDescription = "Configurações: Ícone de engrenagem",
-                                tint = Color.Black
-                            )
-                        }
-                        IconButton(onClick = {}) {
-                            Icon(
-                                painter = painterResource(R.drawable.carteira),
-                                tint = Color.Black,
-                                contentDescription = "Configurações: Ícone de engrenagem",
-                            )
-                        }
-                        IconButton(onClick = {}) {
-                            Icon(
-                                painter = painterResource(R.drawable.person),
-                                tint = Color.Black,
-                                contentDescription = "Configurações: Ícone de engrenagem",
-                            )
-                        } }
-                }
-
-
-            )
+            br.senai.sp.jandira.touccanuser.utility.TopAppBar(navController)
         },
         bottomBar = {
-            BottomAppBar (
-                containerColor = Color(0xFFEBEBEB)
-            ){
-                Row (
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround) {
-
-
-
-
-                    IconButton(
-                        onClick = {}
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.home),
-                            contentDescription = "Home: Ícone de casa",
-                        )
-                    }
-                    IconButton(
-                        onClick = {}
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.historico),
-                            contentDescription = "Home: Ícone de casa",
-                        )
-                    }
-                    IconButton(
-                        onClick = {}
-                    ) {
-                        Icon(
-                            modifier = Modifier.size(35.dp),
-                            painter = painterResource(R.drawable.notificacao),
-                            contentDescription = "Home: Ícone de casa",
-                        )
-                    }
-
-
-                    IconButton(
-                        onClick = {}
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.chat),
-                            contentDescription = "Home: Ícone de casa",
-                        )
-                    }
-
-
-                    IconButton(
-                        onClick = {}
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.pesquisa),
-                            contentDescription = "Home: Ícone de casa",
-                        )
-                    }
-                }
-
-
-            }
+            br.senai.sp.jandira.touccanuser.utility.BottomAppBar(navController)
         }
     ) { innerpadding ->
-
-        Log.i("BBBBBB" , bico.value.toString())
+        
         Column (
             modifier = Modifier
                 .fillMaxSize()
@@ -243,12 +120,10 @@ fun BicoDetails(navController: NavHostController, idBico: String, mainActivity: 
                     ){
 
 
-                        Row (
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween,
+                        Column (
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Row (verticalAlignment = Alignment.CenterVertically){
+                            Row (verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()){
 
 
                                 Icon(painter = painterResource(R.drawable.person), contentDescription = "", tint = Color(0xff7E7E7E))
@@ -256,7 +131,7 @@ fun BicoDetails(navController: NavHostController, idBico: String, mainActivity: 
                                     color = Color(0xff504D4D),
                                     fontFamily = Inter,
                                     fontWeight = FontWeight.Normal,
-                                    modifier = Modifier.padding(start = 6.dp).width(100.dp))
+                                    modifier = Modifier.padding(start = 6.dp).fillMaxWidth())
                             }
                             Row {
                                 Text("Dificuldade: ",
@@ -272,12 +147,6 @@ fun BicoDetails(navController: NavHostController, idBico: String, mainActivity: 
                         Column (
                             modifier = Modifier.padding(start = 12.dp)
                         ){
-                            Text(
-                                bico.value.descricao,
-                                color = Color(0xff736C6C),
-                                fontFamily = Inter,
-                                fontWeight = FontWeight.Light,
-                                modifier = Modifier.padding(vertical = 12.dp))
                             Text(
                                 bico.value.titulo,
                                 color = Color(0xff464646),
@@ -306,7 +175,7 @@ fun BicoDetails(navController: NavHostController, idBico: String, mainActivity: 
                                     color = Color(0xff464646),
                                     fontFamily = Inter,
                                     fontWeight = FontWeight.Black)
-                                Text("Término: ${bico.value.horario_limite.split("T")[1].split(".")[0]  }",
+                                Text("Término: ${bico.value.horario_limite.split("T")[1].split(".")[0]}",
                                     color = Color(0xff464646),
                                     fontFamily = Inter,
                                     fontWeight = FontWeight.Black)
@@ -352,6 +221,7 @@ fun BicoDetails(navController: NavHostController, idBico: String, mainActivity: 
 
 
 }
+
 
 
 //@Preview(showBackground = true, showSystemUi = true)

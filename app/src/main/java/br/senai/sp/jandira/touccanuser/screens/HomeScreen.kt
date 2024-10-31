@@ -1,6 +1,7 @@
 package br.senai.sp.jandira.touccanuser.screens
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -9,7 +10,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -19,7 +19,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -27,12 +26,8 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,7 +35,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
@@ -50,9 +44,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import br.senai.sp.jandira.touccanuser.MainActivity
-import br.senai.sp.jandira.touccanuser.R
 import br.senai.sp.jandira.touccanuser.model.Bico
+import br.senai.sp.jandira.touccanuser.model.Candidato
+import br.senai.sp.jandira.touccanuser.model.Candidatos
 import br.senai.sp.jandira.touccanuser.model.ResultBicos
+import br.senai.sp.jandira.touccanuser.model.ResultCandidatos
 import br.senai.sp.jandira.touccanuser.model.UserId
 import br.senai.sp.jandira.touccanuser.service.RetrofitFactory
 import br.senai.sp.jandira.touccanuser.ui.theme.Inter
@@ -163,62 +159,12 @@ fun Home(navController: NavHostController, idUser: UserId, mainActivity: MainAct
                 }
 
             )
+
+            br.senai.sp.jandira.touccanuser.utility.TopAppBar(navController)
+
         },
         bottomBar = {
-            BottomAppBar (
-                containerColor = Color(0xFFEBEBEB)
-            ){
-                Row (
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround) {
-
-
-                    IconButton(
-                        onClick = {}
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.home),
-                            contentDescription = "Home: Ícone de casa",
-                        )
-                    }
-                    IconButton(
-                        onClick = {}
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.historico),
-                            contentDescription = "Home: Ícone de casa",
-                        )
-                    }
-                    IconButton(
-                        onClick = {}
-                    ) {
-                        Icon(
-                            modifier = Modifier.size(35.dp),
-                            painter = painterResource(R.drawable.notificacao),
-                            contentDescription = "Home: Ícone de casa",
-                        )
-                    }
-
-                    IconButton(
-                        onClick = {}
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.chat),
-                            contentDescription = "Home: Ícone de casa",
-                        )
-                    }
-
-                    IconButton(
-                        onClick = {}
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.pesquisa),
-                            contentDescription = "Home: Ícone de casa",
-                        )
-                    }
-                }
-
-            }
+            br.senai.sp.jandira.touccanuser.utility.BottomAppBar(navController)
         }
     ) { innerpadding ->
         Column (Modifier.padding(vertical = 100.dp)){
@@ -300,7 +246,7 @@ fun Home(navController: NavHostController, idUser: UserId, mainActivity: MainAct
                         }
                     }else{
                         items(bicosList.value){bico ->
-                            AnuncioCard(bico, navController)
+                            AnuncioCard(bico, navController, idUser.id, mainActivity)
                         }
                     }
 
@@ -322,7 +268,52 @@ fun Home(navController: NavHostController, idUser: UserId, mainActivity: MainAct
 }
 
 @Composable
-fun AnuncioCard(bico: Bico, navController: NavHostController) {
+fun AnuncioCard(bico: Bico, navController: NavHostController, user: Int, mainActivity: MainActivity) {
+
+    val candidatou = remember{
+        mutableStateOf(false)
+    }
+
+    var candidateList = remember {
+        mutableStateOf(listOf<Candidatos>())
+    }
+    var candidatadoState = remember{
+        mutableStateOf("Candidatar-se")
+    }
+
+    val callCandidateList = RetrofitFactory()
+        .getBicoService()
+        .getCandidatosByBico(bico.id)
+
+    callCandidateList.enqueue(object: Callback<ResultCandidatos>{
+        override fun onResponse(call: Call<ResultCandidatos>, res: Response<ResultCandidatos>) {
+            Log.i("Response: ", res.toString())
+            if(res.code() == 200){
+                candidateList.value = res.body()!!.candidatos
+            }
+        }
+
+        override fun onFailure(call: Call<ResultCandidatos>, t: Throwable) {
+            Log.i("Falhou:", t.toString())
+            t.printStackTrace()
+        }
+    })
+
+    var candidatado = remember{
+        mutableStateOf(false)
+    }
+
+    if(candidateList.value.isNotEmpty()){
+        for (item in candidateList.value){
+            if (item.id_candidato == user){
+                candidatado.value = true
+            }
+        }
+    }else{
+
+    }
+
+
 
     val grayColor = 0xff6D6D6D
     val greenColor = 0xff106B16
@@ -414,9 +405,10 @@ fun AnuncioCard(bico: Bico, navController: NavHostController) {
                             }
                         }
 
-
                         Row (
-                            modifier = Modifier.fillMaxWidth().padding(end=8.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(end = 8.dp),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ){
                             Text(
@@ -428,12 +420,31 @@ fun AnuncioCard(bico: Bico, navController: NavHostController) {
                             )
                             Button(
                             modifier = Modifier.height(32.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xffF07B07)),
+                                enabled = if(candidatado.value){false}else{true},
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if(candidatado.value){Color(grayColor)}else{Color(0xffF07B07)},
+                                disabledContentColor = Color(grayColor)
+
+                            ),
                             shape = RoundedCornerShape(14.dp),
-                            onClick = {}
+                            onClick = {
+                                val candidato = Candidato(
+                                    id_bico = bico.id,
+                                    id_user = user
+                                )
+                                candidatou.value = Candidatar(candidato)
+
+                                if(candidatou.value){
+                                    Toast.makeText(mainActivity, "Candidatou-se com sucesso", Toast.LENGTH_SHORT).show()
+                                }else{
+                                    Toast.makeText(mainActivity, "Falha em se candidatar à vaga", Toast.LENGTH_SHORT).show()
+                                }
+
+                            }
                         ) {
+
                             Text(
-                                text ="Candidatar-se",
+                                text = if(candidatado.value){"Candidatado"}else{"Candidatar-se"},
                                 fontFamily = Inter,
                                 fontWeight = FontWeight.Normal,
                                 lineHeight = 12.sp,
@@ -448,6 +459,28 @@ fun AnuncioCard(bico: Bico, navController: NavHostController) {
     }
 
 }
+
+fun Candidatar (candidato: Candidato): Boolean{
+
+    var status = false
+    val postCandidato = RetrofitFactory()
+        .getBicoService()
+        .postCandidato(candidato)
+
+    postCandidato.enqueue(object: Callback<Candidato>{
+        override fun onResponse(call: Call<Candidato>, res: Response<Candidato>){
+            Log.i("Response: ", res.toString())
+            status = true
+        }
+        override fun onFailure(call: Call<Candidato>, t: Throwable){
+            Log.i("Falhou:", t.toString())
+        }
+    })
+
+    Log.i("Status:", status.toString())
+    return status
+}
+
 
 
 //@Preview (showSystemUi = true, showBackground = true)

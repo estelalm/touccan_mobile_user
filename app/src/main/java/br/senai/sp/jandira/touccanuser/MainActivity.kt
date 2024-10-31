@@ -56,12 +56,15 @@ class MainActivity : ComponentActivity() {
 //                                type = NavType.StringType
                             })
                         ){ backStackEntry ->
+
                             val userId = backStackEntry.arguments?.getString("id")
-                            Log.i("User: ", userId.toString())
                             val idUser = Json.decodeFromString<UserId>(userId ?: "")
+
+//                            val idUser = UserId(
+//                                id = 1
+//                            )
+
                             Home(navController, idUser, this@MainActivity) }
-
-
 
                         composable(route = "perfilCliente/{id}", arguments = listOf(navArgument("id"){
 
@@ -87,7 +90,7 @@ class MainActivity : ComponentActivity() {
 
                         }
 
-                        composable(route = "perfilUsuario/{id}", arguments = listOf(navArgument("id"){
+                        composable(route = "perfilUsuario/{id}", arguments = listOf(navArgument("id")
 
                         })
                         ){ backStackEntry ->
@@ -105,5 +108,6 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
 
 
