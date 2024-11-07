@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import br.senai.sp.jandira.touccanuser.MainActivity
+import br.senai.sp.jandira.touccanuser.UserPreferences
 import br.senai.sp.jandira.touccanuser.model.Bico
 import br.senai.sp.jandira.touccanuser.model.Candidato
 import br.senai.sp.jandira.touccanuser.model.Candidatos
@@ -59,9 +60,15 @@ import retrofit2.Response
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Home(navController: NavHostController, idUser: UserId, mainActivity: MainActivity) {
+fun Home(
+    navController: NavHostController,
+    idUser: UserId,
+    mainActivity: MainActivity,
+) {
 
     Log.i("User:", idUser.toString())
+    val id = idUser.id.toString()
+    Log.i("ID USUARIO HOME", id)
 
     var bicosList = remember {
         mutableStateOf(listOf<Bico>())
@@ -110,7 +117,8 @@ fun Home(navController: NavHostController, idUser: UserId, mainActivity: MainAct
     Scaffold (
         containerColor = Color(0xFFEBEBEB),
         topBar = {
-            br.senai.sp.jandira.touccanuser.utility.TopAppBar(navController)
+
+            br.senai.sp.jandira.touccanuser.utility.TopAppBar(navController, mainActivity)
         },
         bottomBar = {
             br.senai.sp.jandira.touccanuser.utility.BottomAppBar(navController)
@@ -228,6 +236,10 @@ fun AnuncioCard(bico: Bico, navController: NavHostController, user: Int, mainAct
     }
     var candidatadoState = remember{
         mutableStateOf("Candidatar-se")
+    }
+
+    var toastMessageState = remember{
+        mutableStateOf("")
     }
 
     val callCandidateList = RetrofitFactory()
@@ -369,9 +381,9 @@ fun AnuncioCard(bico: Bico, navController: NavHostController, user: Int, mainAct
                             )
                             Button(
                             modifier = Modifier.height(32.dp),
-                                enabled = if(candidatado.value){false}else{true},
+                                enabled = if(candidatou.value){false}else{if(candidatado.value){false}else{true}},
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = if(candidatado.value){Color(grayColor)}else{Color(0xffF07B07)},
+                                containerColor = if(candidatou.value){Color(grayColor)}else{if(candidatado.value){Color(grayColor)}else{Color(0xffF07B07)}},
                                 disabledContentColor = Color(grayColor)
 
                             ),
@@ -381,19 +393,33 @@ fun AnuncioCard(bico: Bico, navController: NavHostController, user: Int, mainAct
                                     id_bico = bico.id,
                                     id_user = user
                                 )
-                                candidatou.value = Candidatar(candidato)
 
-                                if(candidatou.value){
-                                    Toast.makeText(mainActivity, "Candidatou-se com sucesso", Toast.LENGTH_SHORT).show()
-                                }else{
-                                    Toast.makeText(mainActivity, "Falha em se candidatar à vaga", Toast.LENGTH_SHORT).show()
-                                }
+                                val postCandidato = RetrofitFactory()
+                                    .getBicoService()
+                                    .postCandidato(candidato)
+
+                                postCandidato.enqueue(object: Callback<Candidato>{
+                                    override fun onResponse(call: Call<Candidato>, res: Response<Candidato>){
+                                        Log.i("Response: ", res.toString())
+                                        toastMessageState.value = "Candidatou-se com sucesso"
+                                        candidatou.value = true
+                                        Toast.makeText(mainActivity, toastMessageState.value, Toast.LENGTH_SHORT).show()
+
+                                    }
+                                    override fun onFailure(call: Call<Candidato>, t: Throwable){
+                                        Log.i("Falhou:", t.toString())
+                                        toastMessageState.value = "Falha em candidatar-se"
+                                        Toast.makeText(mainActivity, toastMessageState.value, Toast.LENGTH_SHORT).show()
+                                    }
+                                })
+
+
 
                             }
                         ) {
 
                             Text(
-                                text = if(candidatado.value){"Candidatado"}else{"Candidatar-se"},
+                                text = if(candidatou.value){"Candidatado"}else{ if(candidatado.value){"Candidatado"}else{"Candidatar-se"}},
                                 fontFamily = Inter,
                                 fontWeight = FontWeight.Normal,
                                 lineHeight = 12.sp,
@@ -408,28 +434,6 @@ fun AnuncioCard(bico: Bico, navController: NavHostController, user: Int, mainAct
     }
 
 }
-
-fun Candidatar (candidato: Candidato): Boolean{
-
-    var status = false
-    val postCandidato = RetrofitFactory()
-        .getBicoService()
-        .postCandidato(candidato)
-
-    postCandidato.enqueue(object: Callback<Candidato>{
-        override fun onResponse(call: Call<Candidato>, res: Response<Candidato>){
-            Log.i("Response: ", res.toString())
-            status = true
-        }
-        override fun onFailure(call: Call<Candidato>, t: Throwable){
-            Log.i("Falhou:", t.toString())
-        }
-    })
-
-    Log.i("Status:", status.toString())
-    return status
-}
-
 
 
 //@Preview (showSystemUi = true, showBackground = true)

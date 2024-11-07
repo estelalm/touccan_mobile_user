@@ -40,16 +40,21 @@ class MainActivity : ComponentActivity() {
                         composable(route = "signUp"){ SignUpScreen(navController)}
 
                         composable(route = "setPassword/{dados}",
-                            arguments = listOf(navArgument("dados") {
+                            arguments = listOf(
+                                navArgument("dados") {
 //                                type = NavType.StringType
-                            })
+                                },
+                            )
                         ){ backStackEntry ->
                             val dadosJson = backStackEntry.arguments?.getString("dados")
                             Log.i("Dados: ", dadosJson.toString())
                             val user = Json.decodeFromString<User>(dadosJson ?: "")
                             SetPassword(navController, user, this@MainActivity) }
 
-                        composable(route = "logIn"){ Login(navController) }
+                        composable(route = "logIn"){
+
+                            val userPreferences = UserPreferences(this@MainActivity)
+                            Login(navController, this@MainActivity, userPreferences) }
 
                         composable(route = "home/{id}",
                             arguments = listOf(navArgument("id") {
@@ -60,9 +65,6 @@ class MainActivity : ComponentActivity() {
                             val userId = backStackEntry.arguments?.getString("id")
                             val idUser = Json.decodeFromString<UserId>(userId ?: "")
 
-//                            val idUser = UserId(
-//                                id = 1
-//                            )
 
                             Home(navController, idUser, this@MainActivity) }
 
@@ -92,24 +94,20 @@ class MainActivity : ComponentActivity() {
 
                         composable(route = "perfilUsuario/{id}", arguments = listOf(navArgument("id"){
 
+
                         })
-                        ){ backStackEntry ->
+                        ){backStackEntry->
                             val userId = backStackEntry.arguments?.getString("id")
-                            Log.i("User: ", userId.toString())
-                            if (userId != null) {
-                                UserProfile(navController, userId )
+                            if (userId != null){
+                                UserProfile(navController, userId, this@MainActivity)
                             }
                         }
 
                         }
-
-
                     }
 
                 }
             }
         }
     }
-
-
 

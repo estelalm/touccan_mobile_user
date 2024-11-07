@@ -1,5 +1,7 @@
 package br.senai.sp.jandira.touccanuser.utility
 
+import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,16 +15,28 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import br.senai.sp.jandira.touccanuser.R
+import br.senai.sp.jandira.touccanuser.UserPreferences
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopAppBar(navController: NavHostController) {
+fun TopAppBar(navController: NavHostController, context: Context) {
+
+    var userId = remember { mutableStateOf("") }
+
+    val userPreferences = UserPreferences(context)
+    val userIdFlow = userPreferences.userId.collectAsState(initial = null)
+
+    Log.i("ID DO USUÁRIO: ", userIdFlow.value.toString())
+
     androidx.compose.material3.TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Color(0xFFEBEBEB)
@@ -61,7 +75,9 @@ fun TopAppBar(navController: NavHostController) {
                     )
                 }
                 IconButton(onClick = {
-
+                    val route = "perfilUsuario/${userIdFlow.value}"
+                    Log.i("Rota: ", route)
+                    navController.navigate(route)
                 }) {
                     Icon(
                         painter = painterResource(R.drawable.person),

@@ -99,11 +99,16 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
 
 
-    // TODO: Add the dependencies for Firebase products you want to use
     // When using the BoM, don't specify versions in Firebase dependencies
     implementation("com.google.firebase:firebase-analytics")
 
+    //datastore
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
+    implementation ("androidx.datastore:datastore-preferences:1.0.0")
+    implementation("androidx.datastore:datastore:1.1.1")
 
+    //coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9")
 
     implementation("androidx.room:room-runtime:2.6.1")
     annotationProcessor("androidx.room:room-compiler:2.6.1")
