@@ -94,7 +94,7 @@ fun ResetPassword() {
                         fontFamily = Inter,
                         fontSize = 22.sp
                     )
-                    Column (modifier = Modifier.fillMaxWidth()){
+                    Column (modifier = Modifier.fillMaxWidth().padding(horizontal = 6.dp)){
 
                         //input senha
                         TextField(
@@ -102,7 +102,7 @@ fun ResetPassword() {
                                 .fillMaxWidth()
                                 .height(60.dp),
                             value = passwordState.value,
-                            placeholder = { Text("Crie uma senha") },
+                            placeholder = { Text("Nova senha") },
                             onValueChange = {
 
                                 passwordState.value = it
@@ -117,7 +117,7 @@ fun ResetPassword() {
                             leadingIcon = {
                                 Image(
                                     modifier = Modifier
-                                        .size(20.dp)
+                                        .size(26.dp)
                                         .align(Alignment.Start),
                                     painter = painterResource(id = R.drawable.senha),
                                     contentDescription = "",
@@ -146,6 +146,7 @@ fun ResetPassword() {
                             ),
                             singleLine = true
                         )
+                        Spacer(modifier = Modifier.height(20.dp))
                         //input confirmar senha
                         TextField(
                             modifier = Modifier
@@ -160,7 +161,7 @@ fun ResetPassword() {
                             leadingIcon = {
                                 Image(
                                     modifier = Modifier
-                                        .size(20.dp)
+                                        .size(26.dp)
                                         .align(Alignment.Start),
                                     painter = painterResource(id = R.drawable.senha),
                                     contentDescription = "",
@@ -179,8 +180,8 @@ fun ResetPassword() {
                                     contentScale = ContentScale.Fit)
                             },
                             colors = TextFieldDefaults.colors(
-                                focusedContainerColor = Color(0xffEBEBEB),
-                                unfocusedContainerColor = Color(0xffEBEBEB),
+                                focusedContainerColor = Color.White,
+                                unfocusedContainerColor = Color.White,
                                 unfocusedIndicatorColor = Color.Black,
                                 focusedIndicatorColor = Color.Black,
                                 focusedTextColor = Color.Black,
@@ -201,7 +202,7 @@ fun ResetPassword() {
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MainOrange
                 ),
-                modifier = Modifier.padding(12.dp),
+                modifier = Modifier.padding(12.dp).width(200.dp),
                 onClick = {}
             ) {
                 Text(
@@ -209,7 +210,7 @@ fun ResetPassword() {
                     fontWeight = FontWeight.SemiBold,
                     textAlign = TextAlign.Center,
                     fontFamily = Inter,
-                    fontSize = 18.sp
+                    fontSize = 20.sp
                 )
             }
 
