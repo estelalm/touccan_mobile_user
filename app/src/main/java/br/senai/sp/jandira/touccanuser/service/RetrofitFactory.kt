@@ -29,6 +29,10 @@ class RetrofitFactory {
         return retrofitFactory.create(ClientService::class.java)
     }
 
+    fun getCartaoService(): CartaoService{
+        return retrofitFactory.create(CartaoService::class.java)
+    }
+
     private val retrofitViaCep = Retrofit
         .Builder()
         .baseUrl("https://viacep.com.br/ws/")
