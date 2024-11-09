@@ -42,7 +42,7 @@ import br.senai.sp.jandira.touccanuser.ui.theme.MainOrange
 @Composable
 fun History() {
 
-    var hiastoryList = remember {
+    var historyList = remember {
         mutableStateOf(listOf<Bico>())
     }
     var isLoadingState = remember {
