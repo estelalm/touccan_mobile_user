@@ -4,37 +4,53 @@ import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -45,6 +61,7 @@ import br.senai.sp.jandira.touccanuser.model.ResultUserProfile
 import br.senai.sp.jandira.touccanuser.model.UserPerfil
 import br.senai.sp.jandira.touccanuser.service.RetrofitFactory
 import br.senai.sp.jandira.touccanuser.ui.theme.Inter
+import br.senai.sp.jandira.touccanuser.ui.theme.MainOrange
 import coil.compose.AsyncImage
 import retrofit2.Call
 import retrofit2.Callback
@@ -74,6 +91,7 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
     var dataDate = perfilUsuario.value.data_nascimento
 
 
+
     var sobreNosState = remember{
         mutableStateOf(false)
     }
@@ -86,7 +104,8 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
             modifier = Modifier.fillMaxWidth()
         ) {
             Row (
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .height(100.dp)
                     .padding(top = 4.dp, start = 14.dp, end = 14.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -95,7 +114,8 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
                 Image(
                     painter = painterResource(R.drawable.seta_voltar),
                     contentDescription = "",
-                    modifier = Modifier.width(30.dp)
+                    modifier = Modifier
+                        .width(30.dp)
                         .clickable { navController.popBackStack() }
                 )
                 Image(
@@ -149,7 +169,7 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
 
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Text(
-                                text = "Sobre nós",
+                                text = "Sobre mim",
                                 textAlign = TextAlign.Center,
                                 fontFamily = Inter,
                                 fontStyle = if (sobreNosState.value) {
@@ -218,7 +238,8 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    if (sobreNosState.value) UserInfo()
+                    if (sobreNosState.value)
+                        UserInfo()
                     else HistoryUser()
                 }
             }
@@ -228,12 +249,244 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
 
 @Composable
 fun UserInfo(){
-    OutlinedTextField(value = "Sobre Nós", onValueChange = {}, enabled = false)
-    OutlinedTextField(value = "Sobre Nós", onValueChange = {}, enabled = false)
+
+    var editState = remember {
+        mutableStateOf(false)
+    }
+
+    var formacaoState = remember{
+        mutableStateOf("Ensino médio completo")
+    }
+    var bioState = remember{
+        mutableStateOf("Maria é  Autonoma , com experiência em Redes Sociais. Formada em tecnologia pelo senai, ela se destaca em comunicaçao.")
+    }
+    var habilidadeState = remember{
+        mutableStateOf("Comunicativa, bom trabalho em equipe e resiliente")
+    }
+    var disponibilidadeState = remember{
+        mutableStateOf("Disponível agora")
+    }
+
+    Column (
+        modifier = Modifier.padding(vertical = 24.dp, horizontal = 36.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        Card(modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Color.White
+            )
+        ){
+            Row (modifier = Modifier
+                .padding(horizontal = 10.dp, vertical = 2.dp).fillMaxSize(),
+                verticalAlignment = Alignment.CenterVertically){
+                Text("Formação: ",
+                    fontFamily = Inter,
+                    color = Color.Gray,
+                    fontWeight = FontWeight.SemiBold)
+                TextField(
+                    value = formacaoState.value,
+                    onValueChange = {},
+                    enabled = editState.value,
+                    textStyle = TextStyle(
+                        fontFamily = Inter
+                    ),
+                    colors = TextFieldDefaults.colors(
+                        unfocusedContainerColor = Color.Transparent,
+                        disabledContainerColor = Color.Transparent,
+                        focusedContainerColor = Color.Transparent,
+                        errorContainerColor = Color.Transparent,
+                        disabledIndicatorColor = Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent
+                    )
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(24.dp))
+        Card(modifier = Modifier
+            .fillMaxWidth()
+            .height(100.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Color.White
+            )
+        ){
+            Row (modifier = Modifier.padding(horizontal = 10.dp).fillMaxSize()){
+                Text("Biografia: ",
+                    fontFamily = Inter,
+                    color = Color.Gray,
+                    fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.padding(vertical = 16.dp))
+                TextField(
+                    modifier = Modifier.verticalScroll(rememberScrollState()),
+                    value = bioState.value,
+                    onValueChange = {},
+                    enabled = editState.value,
+                    textStyle = TextStyle(
+                        fontFamily = Inter
+                    ),
+                    colors = TextFieldDefaults.colors(
+                        unfocusedContainerColor = Color.Transparent,
+                        disabledContainerColor = Color.Transparent,
+                        focusedContainerColor = Color.Transparent,
+                        errorContainerColor = Color.Transparent,
+                        disabledIndicatorColor = Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent
+                    )
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(24.dp))
+        Card(modifier = Modifier
+            .fillMaxWidth()
+            .height(65.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Color.White
+            )
+        ){
+            Row (modifier = Modifier.padding(horizontal = 10.dp).fillMaxSize()){
+                Text("Habilidades: ",
+                    fontFamily = Inter,
+                    color = Color.Gray,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(vertical = 16.dp))
+                TextField(
+                    modifier = Modifier.verticalScroll(rememberScrollState()),
+                    value = habilidadeState.value,
+                    onValueChange = {},
+                    enabled = editState.value,
+                    textStyle = TextStyle(
+                        fontFamily = Inter
+                    ),
+                    colors = TextFieldDefaults.colors(
+                        unfocusedContainerColor = Color.Transparent,
+                        disabledContainerColor = Color.Transparent,
+                        focusedContainerColor = Color.Transparent,
+                        errorContainerColor = Color.Transparent,
+                        disabledIndicatorColor = Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent
+                    )
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(24.dp))
+        Card(modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Color.White
+            )
+        ){
+            Row (modifier = Modifier
+                .padding(horizontal = 10.dp, vertical = 2.dp).fillMaxSize(),
+                verticalAlignment = Alignment.CenterVertically){
+                Text("Disponibilidade: ",
+                    fontFamily = Inter,
+                    color = Color.Gray,
+                    fontWeight = FontWeight.SemiBold)
+                TextField(
+                    value = disponibilidadeState.value,
+                    onValueChange = {},
+                    enabled = editState.value,
+                    textStyle = TextStyle(
+                        fontFamily = Inter
+                    ),
+                    colors = TextFieldDefaults.colors(
+                        unfocusedContainerColor = Color.Transparent,
+                        disabledContainerColor = Color.Transparent,
+                        focusedContainerColor = Color.Transparent,
+                        errorContainerColor = Color.Transparent,
+                        disabledIndicatorColor = Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent
+                    )
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(24.dp))
+        Button(
+            shape = RoundedCornerShape(10.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MainOrange
+            ),
+            modifier = Modifier.padding(12.dp).width(200.dp),
+            onClick = {}
+        ) {
+            Text(
+                "Editar currículo",
+                fontWeight = FontWeight.Normal,
+                textAlign = TextAlign.Center,
+                fontFamily = Inter,
+                fontSize = 16.sp
+            )
+        }
+
+    }
+
+
 }
 
 @Composable
 fun HistoryUser(){
-    OutlinedTextField(value = "Feedback", onValueChange = {}, enabled = false)
-    OutlinedTextField(value = "Feedback", onValueChange = {}, enabled = false)
+
+    LazyColumn {
+        items(3){
+            ElevatedCard (modifier = Modifier.clickable { }
+                .padding(horizontal = 18.dp, vertical = 8.dp),
+                elevation = CardDefaults.elevatedCardElevation(
+                    defaultElevation = 3.dp
+                )){
+                Row (modifier = Modifier
+                    .height(90.dp)
+                    .fillMaxWidth()
+                    .background(Color.White)){
+                    Card (
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .width(10.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MainOrange,
+                        ),
+                        shape = RectangleShape
+                    ){}
+                    Column (
+                        modifier = Modifier
+                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                            .fillMaxHeight(),
+                        verticalArrangement = Arrangement.Center
+                    ){
+                        Text("Empresa 1 - Assistente Admnistrativo.",
+                            fontFamily = Inter,
+                            fontWeight = FontWeight.Bold)
+                        Text("Ótimo trabalho")
+                        Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 2.dp)){
+                            val stars = 3
+                            for (i in 1..5) {
+                                if(i <= stars) Icon(Icons.Filled.Star,contentDescription = "", tint = Color(0xFFFFBC06))
+                                else
+                                    Icon(Icons.Filled.Star,contentDescription = "", tint = Color(0xFF504D4D))
+                            }
+
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+
+}
+
+@Preview (showBackground = true)
+@Composable
+private fun UserInfoPrev() {
+
+    Surface (modifier = Modifier.padding(24.dp).height(600.dp), color = Color.DarkGray){
+        HistoryUser()
+    }
+
 }

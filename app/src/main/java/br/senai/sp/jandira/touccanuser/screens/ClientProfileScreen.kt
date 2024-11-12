@@ -61,22 +61,22 @@ fun ClientProfile(navController: NavHostController,  idCliente: String, mainActi
     var perfilCliente = remember {
         mutableStateOf(ClientePerfil())
     }
+//
+//    val callClientPerfil = RetrofitFactory()
+//        .getClientService()
+//        .getClientById(clienteId)
+//
+//    callClientPerfil.enqueue(object: Callback<ResultClientProfile> {
+//        override fun onResponse(p0: Call<ResultClientProfile>, p1: Response<ResultClientProfile>) {
+//            Log.i("response TelaC", p1.body()!!.toString())
+//            perfilCliente.value = p1.body()!!.cliente
+//        }
+//
+//        override fun onFailure(p0: Call<ResultClientProfile>, p1: Throwable) {
+//            Log.i("Falhou!!!", p1.toString())
+//        }
 
-    val callClientPerfil = RetrofitFactory()
-        .getClientService()
-        .getClientById(clienteId)
-
-    callClientPerfil.enqueue(object: Callback<ResultClientProfile> {
-        override fun onResponse(p0: Call<ResultClientProfile>, p1: Response<ResultClientProfile>) {
-            Log.i("response TelaC", p1.body()!!.toString())
-            perfilCliente.value = p1.body()!!.cliente
-        }
-
-        override fun onFailure(p0: Call<ResultClientProfile>, p1: Throwable) {
-            Log.i("Falhou!!!", p1.toString())
-        }
-
-    })
+//    })
 
     var sobreNosState = remember{
         mutableStateOf(false)
@@ -240,6 +240,7 @@ fun ClientProfile(navController: NavHostController,  idCliente: String, mainActi
         }
     }
 }
+
 
 @Composable
 fun SobreNos(clientePerfil: MutableState<ClientePerfil>){

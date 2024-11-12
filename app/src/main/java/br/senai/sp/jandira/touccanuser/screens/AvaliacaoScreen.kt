@@ -131,8 +131,6 @@ fun Avaliacao() {
                                         Icon(Icons.Filled.Star,contentDescription = "", tint = Color(0xFF504D4D))
                                     }
 
-
-
                                 }
 
                             }

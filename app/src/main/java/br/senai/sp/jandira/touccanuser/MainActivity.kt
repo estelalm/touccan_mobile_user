@@ -14,7 +14,6 @@ import androidx.navigation.navArgument
 import br.senai.sp.jandira.touccanuser.model.User
 import br.senai.sp.jandira.touccanuser.model.UserId
 import br.senai.sp.jandira.touccanuser.screens.BicoDetails
-import br.senai.sp.jandira.touccanuser.screens.CadastrarCartao
 import br.senai.sp.jandira.touccanuser.screens.ClientProfile
 import br.senai.sp.jandira.touccanuser.screens.Home
 import br.senai.sp.jandira.touccanuser.screens.Login
@@ -32,85 +31,84 @@ class MainActivity : ComponentActivity() {
         setContent {
             TouccanUserTheme {
                 Surface(color = Color(0xffEBEBEB)) {
-//                    val navController = rememberNavController()
-//
-//                    NavHost(
-//                        navController = navController,
-//                        startDestination = "logIn") {
-//
-//                        composable(route = "signUp"){ SignUpScreen(navController)}
-//
-//                        composable(route = "setPassword/{dados}",
-//                            arguments = listOf(
-//                                navArgument("dados") {
-////                                type = NavType.StringType
-//                                },
-//                            )
-//                        ){ backStackEntry ->
-//                            val dadosJson = backStackEntry.arguments?.getString("dados")
-//                            Log.i("Dados: ", dadosJson.toString())
-//                            val user = Json.decodeFromString<User>(dadosJson ?: "")
-//                            SetPassword(navController, user, this@MainActivity) }
-//
-//                        composable(route = "logIn"){
-//
-//                            val userPreferences = UserPreferences(this@MainActivity)
-//                            Login(navController, this@MainActivity, userPreferences) }
-//
-//                        composable(route = "home/{id}",
-//                            arguments = listOf(navArgument("id") {
-////                                type = NavType.StringType
-//                            })
-//                        ){ backStackEntry ->
-//
-//                            val userId = backStackEntry.arguments?.getString("id")
-//                            val idUser = Json.decodeFromString<UserId>(userId ?: "")
-//
-//
-//                            Home(navController, idUser, this@MainActivity) }
-//
-//                        composable(route = "perfilCliente/{id}", arguments = listOf(navArgument("id"){
-//
-//                        })
-//                        ){ backStackEntry ->
-//                            val clientId = backStackEntry.arguments?.getString("id")
-//                            Log.i("Client: ", clientId.toString())
-//                            if (clientId != null) {
-//                                ClientProfile(navController, clientId, this@MainActivity )
-//                            }
-//                        }
-//
-//                        composable(route = "bico/{id}",
-//                            arguments = listOf(navArgument("id") {
-////                                type = NavType.StringType
-//                            })
-//                        ){ backStackEntry ->
-//
-//                            val bicoId = backStackEntry.arguments?.getString("id")
-//                            if (bicoId != null) {
-//                                BicoDetails(navController, bicoId, this@MainActivity)
-//                            }
-//
-//                        }
-//
-//                        composable(route = "perfilUsuario/{id}", arguments = listOf(navArgument("id"){
-//
-//
-//                        })
-//                        ){backStackEntry->
-//                            val userId = backStackEntry.arguments?.getString("id")
-//                            if (userId != null){
-//                                UserProfile(navController, userId, this@MainActivity)
-//                            }
-//                        }
-//
-//                        }
-//                    }
+                    val navController = rememberNavController()
 
-                    CadastrarCartao()
+                    NavHost(
+                        navController = navController,
+                        startDestination = "logIn") {
+
+                        composable(route = "signUp"){ SignUpScreen(navController)}
+
+                        composable(route = "setPassword/{dados}",
+                            arguments = listOf(
+                                navArgument("dados") {
+//                                type = NavType.StringType
+                                },
+                            )
+                        ){ backStackEntry ->
+                            val dadosJson = backStackEntry.arguments?.getString("dados")
+                            Log.i("Dados: ", dadosJson.toString())
+                            val user = Json.decodeFromString<User>(dadosJson ?: "")
+                            SetPassword(navController, user, this@MainActivity) }
+
+                        composable(route = "logIn"){
+
+                            val userPreferences = UserPreferences(this@MainActivity)
+                            Login(navController, this@MainActivity, userPreferences) }
+
+                        composable(route = "home/{id}",
+                            arguments = listOf(navArgument("id") {
+//                                type = NavType.StringType
+                            })
+                        ){ backStackEntry ->
+
+                            val userId = backStackEntry.arguments?.getString("id")
+                            val idUser = Json.decodeFromString<UserId>(userId ?: "")
+
+
+                            Home(navController, idUser, this@MainActivity) }
+
+                        composable(route = "perfilCliente/{id}", arguments = listOf(navArgument("id"){
+
+                        })
+                        ){ backStackEntry ->
+                            val clientId = backStackEntry.arguments?.getString("id")
+                            Log.i("Client: ", clientId.toString())
+                            if (clientId != null) {
+                                ClientProfile(navController, clientId, this@MainActivity )
+                            }
+                        }
+
+                        composable(route = "bico/{id}",
+                            arguments = listOf(navArgument("id") {
+//                                type = NavType.StringType
+                            })
+                        ){ backStackEntry ->
+
+                            val bicoId = backStackEntry.arguments?.getString("id")
+                            if (bicoId != null) {
+                                BicoDetails(navController, bicoId, this@MainActivity)
+                            }
+
+                        }
+
+                        composable(route = "perfilUsuario/{id}", arguments = listOf(navArgument("id"){
+
+
+                        })
+                        ){backStackEntry->
+                            val userId = backStackEntry.arguments?.getString("id")
+                            if (userId != null){
+                                UserProfile(navController, userId, this@MainActivity)
+                            }
+                        }
+
+                        }
+                    }
+
                 }
             }
         }
     }
-}
+
 
