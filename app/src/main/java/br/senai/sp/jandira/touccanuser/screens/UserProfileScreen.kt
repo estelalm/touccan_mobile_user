@@ -414,10 +414,13 @@ fun UserInfo(){
                 containerColor = MainOrange
             ),
             modifier = Modifier.padding(12.dp).width(200.dp),
-            onClick = {}
+            onClick = {
+
+                editState.value = !editState.value
+            }
         ) {
             Text(
-                "Editar currículo",
+                if(editState.value) "Salvar alterações" else "Editar currículo",
                 fontWeight = FontWeight.Normal,
                 textAlign = TextAlign.Center,
                 fontFamily = Inter,
