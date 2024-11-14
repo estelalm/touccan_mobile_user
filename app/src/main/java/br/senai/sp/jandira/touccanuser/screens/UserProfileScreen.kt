@@ -78,6 +78,7 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
     }
 
     val idUsuario = usuarioId.toInt()
+
     val callUserPerfil = RetrofitFactory()
         .getUserService()
         .getUserById(idUsuario)
@@ -162,18 +163,19 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
                             contentScale = ContentScale.Fit,
                             modifier = Modifier.padding(24.dp)
                         )
+                    }else{
                         var asyncModel = remember {
                             mutableStateOf("")
                         }
-                        if (perfilUsuario.value.foto == "") {
+                        if (perfilUsuario.value.foto == "" || perfilUsuario.value.foto == null) {
                             asyncModel.value =
                                 "https://i.pinimg.com/236x/21/9e/ae/219eaea67aafa864db091919ce3f5d82.jpg"
                         } else {
                             asyncModel.value = perfilUsuario.value.foto
                         }
+                        Log.i("smtttt", asyncModel.value)
 
-                        AsyncImage(asyncModel.value, "", contentScale = ContentScale.FillBounds)
-
+                        AsyncImage(asyncModel.value, "", contentScale = ContentScale.FillWidth, alignment = Alignment.Center)
                     }
                 }
                     Spacer(Modifier.height(10.dp))
@@ -280,8 +282,25 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
                     ) {
                         Log.i("Value: ", sobreNosState.value.toString())
 
+                        var formacaoState = remember {
+                            mutableStateOf(if(perfilUsuario.value.id_formacao == 0){"Escolha a formação"}else{perfilUsuario.value.id_formacao.toString()})
+                        }
+                        var bioState = remember {
+                            mutableStateOf(if(perfilUsuario.value.biografia == null){"Nenhuma biografia escrita ainda!"}else{perfilUsuario.value.biografia})
+                        }
+
+                        Log.i("habilidade  =", perfilUsuario.value.habilidade)
+                        var habilidadeState = remember {
+                            mutableStateOf(if(perfilUsuario.value.habilidade == null){"Nenhuma habilidade descrita ainda!"}else{perfilUsuario.value.habilidade})
+                        }
+                        var disponibilidadeState = remember {
+                            mutableStateOf(if(perfilUsuario.value.id_disponibilidade == 0){"Escolha a disponibilidade"}else{perfilUsuario.value.id_disponibilidade.toString()})
+                        }
+
+                        Log.i("haha", "${perfilUsuario.value.id_disponibilidade == 0}")
+
                         if (sobreNosState.value) {
-                            UserInfo(editState, perfilUsuario)
+                            UserInfo(editState, perfilUsuario, formacaoState, bioState, habilidadeState, disponibilidadeState)
                             Button(
                                 shape = RoundedCornerShape(10.dp),
                                 colors = ButtonDefaults.buttonColors(
@@ -291,11 +310,34 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
                                     .padding(12.dp)
                                     .width(200.dp),
                                 onClick = {
-                                    editState.value = !editState.value
-
                                     if (editState.value) {
+                                        val user = UserPerfil()
+                                        perfilUsuario.value.nome = perfilUsuario.value.nome
+                                        perfilUsuario.value.data_nascimento = perfilUsuario.value.data_nascimento.split("T")[0]
+                                        perfilUsuario.value.biografia = bioState.value
+                                        perfilUsuario.value.habilidade = habilidadeState.value
+                                        perfilUsuario.value.id_disponibilidade = 1
+                                        perfilUsuario.value.id_formacao = 1
+                                        perfilUsuario.value.foto = "https://i.pinimg.com/236x/a8/da/22/a8da222be70a71e7858bf752065d5cc3.jpg"
+
+                                        Log.i("User:", perfilUsuario.value.toString() )
+
+                                        val callUserPerfil = RetrofitFactory()
+                                            .getUserService()
+                                            .updateUser(perfilUsuario.value, idUsuario)
+
+                                        callUserPerfil.enqueue(object : Callback<UserPerfil> {
+                                            override fun onResponse(call: Call<UserPerfil>, res: Response<UserPerfil>) {
+                                                Log.i("response edit", res.toString())
+                                            }
+
+                                            override fun onFailure(p0: Call<UserPerfil>, t: Throwable) {
+                                                Log.i("Falhou!!!", t.toString())
+                                            }
+                                        })
 
                                     }
+                                    editState.value = !editState.value
                                 }
                             ) {
                                 Text(
@@ -317,21 +359,14 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
     }
 
     @Composable
-    fun UserInfo(editState: MutableState<Boolean>, perfilUsuario: MutableState<UserPerfil>) {
-
-        var formacaoState = remember {
-            mutableStateOf("Ensino médio completo")
-        }
-        var bioState = remember {
-            mutableStateOf("Maria é  Autonoma , com experiência em Redes Sociais. Formada em tecnologia pelo senai, ela se destaca em comunicaçao.")
-        }
-        var habilidadeState = remember {
-            mutableStateOf("Comunicativa, bom trabalho em equipe e resiliente")
-        }
-        var disponibilidadeState = remember {
-            mutableStateOf("Disponível agora")
-        }
-
+    fun UserInfo(
+        editState: MutableState<Boolean>,
+        perfilUsuario: MutableState<UserPerfil>,
+        formacaoState: MutableState<String>,
+        bioState: MutableState<String>,
+        habilidadeState: MutableState<String>,
+        disponibilidadeState: MutableState<String>
+    ) {
 
         Column(
             modifier = Modifier.padding(vertical = 24.dp, horizontal = 36.dp),

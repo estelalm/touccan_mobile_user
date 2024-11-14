@@ -90,7 +90,6 @@ fun Home(
 
     callBicoList.enqueue(object: Callback<ResultBicos>{
         override fun onResponse(call: Call<ResultBicos>, res: Response<ResultBicos>) {
-            Log.i("Response: ", res.toString())
             bicosList.value = res.body()!!.bicos
             isLoadingPertoDeVoce.value = false
         }
@@ -248,7 +247,6 @@ fun AnuncioCard(bico: Bico, navController: NavHostController, user: Int, mainAct
 
     callCandidateList.enqueue(object: Callback<ResultCandidatos>{
         override fun onResponse(call: Call<ResultCandidatos>, res: Response<ResultCandidatos>) {
-            Log.i("Response: ", res.toString())
             if(res.code() == 200){
                 candidateList.value = res.body()!!.candidatos
             }
@@ -400,7 +398,6 @@ fun AnuncioCard(bico: Bico, navController: NavHostController, user: Int, mainAct
 
                                 postCandidato.enqueue(object: Callback<Candidato>{
                                     override fun onResponse(call: Call<Candidato>, res: Response<Candidato>){
-                                        Log.i("Response: ", res.toString())
                                         toastMessageState.value = "Candidatou-se com sucesso"
                                         candidatou.value = true
                                         Toast.makeText(mainActivity, toastMessageState.value, Toast.LENGTH_SHORT).show()
