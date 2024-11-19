@@ -91,10 +91,17 @@ fun TopAppBar(navController: NavHostController, context: Context) {
 }
 
 @Composable
-fun BottomAppBar(navController: NavHostController) {
+fun BottomAppBar(navController: NavHostController, context: Context) {
     androidx.compose.material3.BottomAppBar(
         containerColor = Color(0xFFEBEBEB)
     ) {
+
+        var userId = remember { mutableStateOf("") }
+
+        val userPreferences = UserPreferences(context)
+        val userIdFlow = userPreferences.userId.collectAsState(initial = null)
+
+        Log.i("ID DO USUÁRIO: ", userIdFlow.value.toString())
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceAround
@@ -110,11 +117,13 @@ fun BottomAppBar(navController: NavHostController) {
                 )
             }
             IconButton(
-                onClick = {}
+                onClick = {
+                    navController.navigate("historico/${userIdFlow.value}")
+                }
             ) {
                 Icon(
                     painter = painterResource(R.drawable.historico),
-                    contentDescription = "Home: Ícone de casa",
+                    contentDescription = "Home: Ícone de relógio",
                 )
             }
             IconButton(

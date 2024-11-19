@@ -15,6 +15,7 @@ import br.senai.sp.jandira.touccanuser.model.User
 import br.senai.sp.jandira.touccanuser.model.UserId
 import br.senai.sp.jandira.touccanuser.screens.BicoDetails
 import br.senai.sp.jandira.touccanuser.screens.ClientProfile
+import br.senai.sp.jandira.touccanuser.screens.History
 import br.senai.sp.jandira.touccanuser.screens.Home
 import br.senai.sp.jandira.touccanuser.screens.Login
 import br.senai.sp.jandira.touccanuser.screens.SetPassword
@@ -102,6 +103,16 @@ class MainActivity : ComponentActivity() {
                                 UserProfile(navController, userId, this@MainActivity)
                             }
                         }
+
+                        composable(route = "historico/{id}",
+                            arguments = listOf(navArgument("id") {
+//                                type = NavType.StringType
+                            })
+                        ){ backStackEntry ->
+
+                            val userId = backStackEntry.arguments?.getString("id")
+                            val idUser = Json.decodeFromString<UserId>(userId ?: "")
+                            History(navController, idUser, this@MainActivity) }
 
                         }
                     }

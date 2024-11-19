@@ -88,7 +88,7 @@ fun BicoDetails(navController: NavHostController, idBico: String, mainActivity: 
             br.senai.sp.jandira.touccanuser.utility.TopAppBar(navController, mainActivity)
         },
         bottomBar = {
-            br.senai.sp.jandira.touccanuser.utility.BottomAppBar(navController)
+            br.senai.sp.jandira.touccanuser.utility.BottomAppBar(navController, mainActivity)
         }
     ) { innerpadding ->
         

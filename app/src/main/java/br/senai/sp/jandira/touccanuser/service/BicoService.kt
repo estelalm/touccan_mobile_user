@@ -28,4 +28,7 @@ interface BicoService {
     @GET("candidato/{id}")
     fun getCandidatosByBico(@Path("id") id:Int): Call<ResultCandidatos>
 
+    @GET("bico/candidato/{id}")
+    fun getBicoByUsuario(@Path("id") id: Int): Call<ResultBicos>
+
 }
