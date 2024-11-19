@@ -2,5 +2,7 @@
 <resources>
 
     <style name="Theme.TouccanUser" parent="android:Theme.Material.Light.NoActionBar" />
-
+    <style name="Theme.App.Splash" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:windowBackground">@drawable/splash_screen_background</item>
+    </style>
 </resources>
