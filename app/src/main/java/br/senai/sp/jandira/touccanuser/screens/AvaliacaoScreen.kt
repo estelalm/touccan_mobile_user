@@ -1,6 +1,8 @@
 package br.senai.sp.jandira.touccanuser.screens
 
 
+import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -42,14 +44,26 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import br.senai.sp.jandira.touccanuser.R
+import br.senai.sp.jandira.touccanuser.model.Bico
+import br.senai.sp.jandira.touccanuser.model.ResultBico
+import br.senai.sp.jandira.touccanuser.service.RetrofitFactory
 import br.senai.sp.jandira.touccanuser.ui.theme.Inter
 import br.senai.sp.jandira.touccanuser.ui.theme.MainOrange
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 
+@SuppressLint("SuspiciousIndentation")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Avaliacao() {
 
+    var commentState = remember{
+        mutableStateOf("")
+    }
+
+    var bico = remember{ mutableStateOf( Bico())}
 
     var isLoadingState = remember{
         mutableStateOf(true)
@@ -57,21 +71,34 @@ fun Avaliacao() {
     var errorState = remember {
         mutableStateOf(false)
     }
-    var commentState = remember{
-        mutableStateOf("")
-    }
+
+    val callBico = RetrofitFactory()
+        .getBicoService()
+        .getBicoById(4)
 
 
+    callBico.enqueue(object: Callback<ResultBico> {
+        override fun onResponse(call: Call<ResultBico>, res: Response<ResultBico>) {
+            Log.i("Response: ", res.toString())
+            bico.value = res.body()!!.bico
 
+            isLoadingState.value = false
+        }
+
+        override fun onFailure(call: Call<ResultBico>, t: Throwable) {
+            Log.i("Falhou:", t.toString())
+            errorState.value = true
+        }
+    })
 
 
     Scaffold (
         containerColor = Color(0xFFEBEBEB),
         topBar = {
-            //br.senai.sp.jandira.touccanuser.utility.TopAppBar(navController)
+            //br.senai.sp.jandira.touccanuser.utility.TopAppBar(navController, mainActivity)
         },
         bottomBar = {
-            //br.senai.sp.jandira.touccanuser.utility.BottomAppBar(navController)
+            //br.senai.sp.jandira.touccanuser.utility.BottomAppBar(navController, mainActivity)
         }
     ) { innerpadding ->
 

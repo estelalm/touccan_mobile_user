@@ -35,6 +35,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -156,6 +157,32 @@ fun History(navController: NavHostController, idUser: Int, mainActivity: MainAct
 @Composable
 fun HistoryCard(bico: BicoHistorico) {
 
+    val dataInicio = LocalDate.parse(bico.data_inicio.split("T")[0].split("-").joinToString("-"))
+    val horarioInicio = LocalTime.parse(bico.horario_inicio.split("T")[1].split(".")[0].split(
+        ":"
+    ).slice(0..1).joinToString(":"))
+
+    val dataFinal = LocalDate.parse(bico.data_limite.split("T")[0].split("-").joinToString("-"))
+    val horarioFinal = LocalTime.parse(bico.horario_limite.split("T")[1].split(".")[0].split(
+        ":"
+    ).slice(0..1).joinToString(":"))
+
+    val dataHoraInicio = LocalDateTime.of(dataInicio, horarioInicio)
+    val dataHoraFinal = LocalDateTime.of(dataFinal, horarioFinal)
+
+    var mensagem = remember{ mutableStateOf("") }
+    LaunchedEffect(Unit) {
+        while (true) { // Atualiza a cada segundo
+            val agora = LocalDateTime.now()
+            mensagem.value = when {
+                dataHoraInicio.isBefore(agora) -> "Em andamento"
+                dataHoraInicio.isAfter(agora) -> "Pendente"
+                else -> "Em andamento"
+            }
+            delay(2000) // Espera 1 segundo
+        }
+    }
+
 
     ElevatedCard (modifier = Modifier.clickable { }.padding(horizontal = 18.dp, vertical = 8.dp),
         elevation = CardDefaults.elevatedCardElevation(
@@ -179,55 +206,50 @@ fun HistoryCard(bico: BicoHistorico) {
                 Column (
                     modifier = Modifier
                         .padding(horizontal = 6.dp, vertical = 2.dp)
-                        .fillMaxHeight(),
+                        .fillMaxHeight()
+                        .fillMaxWidth(),
                     verticalArrangement = Arrangement.Center
                 ){
-                    Text( "${bico.nome_cliente} - ${bico.bico}",
-                        fontFamily = Inter,
-                        fontWeight = FontWeight.Bold)
-                    Text(bico.data_inicio.split("T")[0].split("-").reversed().joinToString("/", "Data: "))
-                }
-
-
-
-                val dataInicio = LocalDate.parse(bico.data_inicio.split("T")[0].split("-").joinToString("-"))
-                val horarioInicio = LocalTime.parse(bico.horario_inicio.split("T")[1].split(".")[0].split(
-                    ":"
-                ).slice(0..1).joinToString(":"))
-
-                val dataHoraInicio = LocalDateTime.of(dataInicio, horarioInicio)
-
-                var mensagem = remember{ mutableStateOf("") }
-                LaunchedEffect(Unit) {
-                    while (true) { // Atualiza a cada segundo
-                        val agora = LocalDateTime.now()
-                        mensagem.value = when {
-                            dataHoraInicio.isBefore(agora) -> "Em andamento"
-                            dataHoraInicio.isAfter(agora) -> "Pendente"
-                            else -> "Em andamento"
-                        }
-                        delay(2000) // Espera 1 segundo
-                    }
-                }
-
-
-                if(bico.finalizado == 1){
-                    Button(onClick = {}, modifier = Modifier.height(28.dp).width(70.dp).padding(0.dp),
-                            shape = RoundedCornerShape(16.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = MainOrange)
-                    ) {
-                        Text("Avalie",
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ){
+                        Text( "${bico.nome_cliente} - ${bico.bico}",
                             fontFamily = Inter,
-                            fontSize = 8.sp,
-                            modifier = Modifier.fillMaxWidth())
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.width(200.dp),
+                            overflow = TextOverflow.Ellipsis,
+                            color = Color.Black
+                        )
+                        if(bico.finalizado == 1){
+                            Button(onClick = {}, modifier = Modifier.height(28.dp).width(70.dp).padding(0.dp),
+                                shape = RoundedCornerShape(16.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = MainOrange)
+                            ) {
+                                Text("Avalie",
+                                    fontFamily = Inter,
+                                    fontSize = 8.sp,
+                                    modifier = Modifier.fillMaxWidth())
+                            }
+                        }
                     }
-                    }else{
-                    Text(mensagem.value,
-                        fontFamily = Inter,
-                        fontSize = 8.sp,
-                        color = if(mensagem.value == "Em andamento"){Color(0xFFFFCC01)}else{Color(0xFF8F0B0B)},
-                        modifier = Modifier.fillMaxWidth())
+
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ){
+                        if(bico.finalizado == 0){
+                            Text(bico.data_inicio.split("T")[0].split("-").slice(0..1).reversed().joinToString("/"), color = Color.Black)
+                            Text(mensagem.value,
+                                fontFamily = Inter,
+                                fontSize = 10.sp,
+                                color = if(mensagem.value == "Em andamento"){Color(0xFFFFCC01)}else{Color(0xFF8F0B0B)},
+                                modifier = Modifier.fillMaxWidth())
+                        }
                     }
+                }
+
 
 
                 }

@@ -33,6 +33,10 @@ class RetrofitFactory {
         return retrofitFactory.create(CartaoService::class.java)
     }
 
+    fun getFeedbackService(): FeedbackService{
+        return retrofitFactory.create(FeedbackService::class.java)
+    }
+
     private val retrofitViaCep = Retrofit
         .Builder()
         .baseUrl("https://viacep.com.br/ws/")

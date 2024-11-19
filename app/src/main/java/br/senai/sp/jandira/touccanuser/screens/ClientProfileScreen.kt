@@ -10,20 +10,30 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -31,8 +41,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -44,8 +56,10 @@ import br.senai.sp.jandira.touccanuser.R
 import br.senai.sp.jandira.touccanuser.model.ClientePerfil
 import br.senai.sp.jandira.touccanuser.model.Endereco
 import br.senai.sp.jandira.touccanuser.model.ResultClientProfile
+import br.senai.sp.jandira.touccanuser.model.UserPerfil
 import br.senai.sp.jandira.touccanuser.service.RetrofitFactory
 import br.senai.sp.jandira.touccanuser.ui.theme.Inter
+import br.senai.sp.jandira.touccanuser.ui.theme.MainOrange
 import coil.compose.AsyncImage
 import retrofit2.Call
 import retrofit2.Callback
@@ -274,9 +288,151 @@ fun SobreNos(clientePerfil: MutableState<ClientePerfil>){
 }
 
 @Composable
+fun ClientInfo() {
+
+    Column(
+        modifier = Modifier.padding(vertical = 24.dp, horizontal = 36.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Color.White
+            )
+        ) {
+            Row(
+                modifier = Modifier
+                    .padding(horizontal = 10.dp, vertical = 2.dp)
+                    .fillMaxSize(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    "Endereço: ",
+                    fontFamily = Inter,
+                    color = Color.Gray,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Text(
+                    "Rua numero cep endereco ",
+                    fontFamily = Inter,
+                    color = Color.Gray,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(24.dp))
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(100.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Color.White
+            )
+        ) {
+            Row(
+                modifier = Modifier
+                    .padding(horizontal = 10.dp)
+                    .fillMaxSize()
+            ) {
+                Text(
+                    "Fotos da localização: ",
+                    fontFamily = Inter,
+                    color = Color.Gray,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(24.dp))
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(65.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Color.White
+            )
+        ) {
+            Row(
+                modifier = Modifier
+                    .padding(horizontal = 10.dp)
+                    .fillMaxSize()
+            ) {
+                Text(
+                    "Contatos ",
+                    fontFamily = Inter,
+                    color = Color.Gray,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Column {
+
+                    Text(
+                        "+55 11 93938-4756 ",
+                        fontFamily = Inter,
+                        color = Color.Gray,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            }
+        }
+        Spacer(modifier = Modifier.height(24.dp))
+
+
+    }
+
+}
+
+@Composable
 fun Feedback(){
-    OutlinedTextField(value = "Feedback", onValueChange = {}, enabled = false, modifier = Modifier)
-    OutlinedTextField(value = "Feedback", onValueChange = {}, enabled = false)
+    LazyColumn {
+        items(3){
+            ElevatedCard (modifier = Modifier
+                .clickable { }
+                .padding(horizontal = 18.dp, vertical = 8.dp),
+                elevation = CardDefaults.elevatedCardElevation(
+                    defaultElevation = 3.dp
+                )){
+                Row (modifier = Modifier
+                    .height(90.dp)
+                    .fillMaxWidth()
+                    .background(Color.White)){
+                    Card (
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .width(10.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MainOrange,
+                        ),
+                        shape = RectangleShape
+                    ){}
+                    Column (
+                        modifier = Modifier
+                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                            .fillMaxHeight(),
+                        verticalArrangement = Arrangement.Center
+                    ){
+                        Text("Usuario tal - Assistente Admnistrativo.",
+                            fontFamily = Inter,
+                            fontWeight = FontWeight.Bold)
+                        Text("Ótimo trabalho")
+                        Row(modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 2.dp)){
+                            val stars = 3
+                            for (i in 1..5) {
+                                if(i <= stars) Icon(Icons.Filled.Star,contentDescription = "", tint = Color(0xFFFFBC06))
+                                else
+                                    Icon(Icons.Filled.Star,contentDescription = "", tint = Color(0xFF504D4D))
+                            }
+
+                        }
+                    }
+
+                }
+            }
+        }
+    }
 }
 
 //@Preview(showSystemUi = true, showBackground = true)

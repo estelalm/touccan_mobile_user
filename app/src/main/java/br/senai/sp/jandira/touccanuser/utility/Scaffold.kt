@@ -53,6 +53,7 @@ fun TopAppBar(navController: NavHostController, context: Context) {
                         .fillMaxSize()
                         .padding(horizontal = 10.dp),
                     painter = painterResource(R.drawable.logo_touccan),
+                    tint= Color.Black,
                     contentDescription = "Desenho de um, com o texto Touccan ao lado, a logo do aplicativo",
                 )
             }
@@ -66,12 +67,14 @@ fun TopAppBar(navController: NavHostController, context: Context) {
                     Icon(
                         painter = painterResource(R.drawable.configuracoes),
                         contentDescription = "Configurações: Ícone de engrenagem",
+                        tint= Color.Black
                     )
                 }
                 IconButton(onClick = {}) {
                     Icon(
                         painter = painterResource(R.drawable.carteira),
                         contentDescription = "Carteira: Ícone de carteira",
+                        tint= Color.Black
                     )
                 }
                 IconButton(onClick = {
@@ -82,6 +85,7 @@ fun TopAppBar(navController: NavHostController, context: Context) {
                     Icon(
                         painter = painterResource(R.drawable.person),
                         contentDescription = "Perfil: Ícone de pessoa",
+                        tint= Color.Black
                     )
                 }
             }

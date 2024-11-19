@@ -64,9 +64,6 @@ fun Denuncia() {
     }
 
 
-
-
-
     Scaffold (
         containerColor = Color(0xFFEBEBEB),
         topBar = {
