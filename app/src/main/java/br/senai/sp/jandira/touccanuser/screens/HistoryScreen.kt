@@ -34,14 +34,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import br.senai.sp.jandira.touccanuser.MainActivity
 import br.senai.sp.jandira.touccanuser.model.Bico
+import br.senai.sp.jandira.touccanuser.model.BicoHistorico
+import br.senai.sp.jandira.touccanuser.model.HistoryResult
 import br.senai.sp.jandira.touccanuser.model.ResultBicos
-import br.senai.sp.jandira.touccanuser.model.UserId
 import br.senai.sp.jandira.touccanuser.service.RetrofitFactory
 import br.senai.sp.jandira.touccanuser.ui.theme.Inter
 import br.senai.sp.jandira.touccanuser.ui.theme.MainOrange
@@ -55,12 +56,10 @@ import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun History(navController: NavHostController, idUser: UserId, mainActivity: MainActivity) {
-
-    val idUser = 0
+fun History(navController: NavHostController, idUser: Int, mainActivity: MainActivity) {
 
     var historyList = remember {
-        mutableStateOf(listOf<Bico>())
+        mutableStateOf(listOf<BicoHistorico>())
     }
     var isLoadingState = remember {
         mutableStateOf(true)
@@ -74,15 +73,22 @@ fun History(navController: NavHostController, idUser: UserId, mainActivity: Main
         .getBicoByUsuario(idUser.toInt())
 
 
-    callBico.enqueue(object: Callback<ResultBicos> {
-        override fun onResponse(call: Call<ResultBicos>, res: Response<ResultBicos>) {
+    callBico.enqueue(object: Callback<HistoryResult> {
+        override fun onResponse(call: Call<HistoryResult>, res: Response<HistoryResult>) {
             Log.i("Response: ", res.toString())
-            historyList.value = res.body()!!.bicos
+
+            val bicos = res.body()?.bicos
+            Log.i("Bicos: ", bicos.toString())
+            if(bicos != null){
+                historyList.value = bicos
+            }else{
+                Log.i("Error: ", "A lista de bicos retornou nula")
+            }
 
             isLoadingState.value = false
         }
 
-        override fun onFailure(call: Call<ResultBicos>, t: Throwable) {
+        override fun onFailure(call: Call<HistoryResult>, t: Throwable) {
             Log.i("Falhou:", t.toString())
             errorState.value = true
         }
@@ -108,7 +114,7 @@ fun History(navController: NavHostController, idUser: UserId, mainActivity: Main
             Column (horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxWidth()) {
                 Text(
-                    "Notificações",
+                    "Histórico",
                     fontFamily = Inter,
                     fontWeight = FontWeight.Bold,
                     fontStyle = FontStyle.Italic,
@@ -124,8 +130,20 @@ fun History(navController: NavHostController, idUser: UserId, mainActivity: Main
             }
 
             LazyColumn (modifier = Modifier.padding(top = 24.dp).fillMaxSize()) {
-                items(historyList.value){ bico ->
-                    HistoryCard(bico)
+
+                if(historyList.value.isEmpty()){
+                    item {
+                        Text("Seu histórico está vazio",
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth())
+                    }
+                }else{
+                    items(historyList.value){ bico ->
+                        HistoryCard(bico)
+
+                    }
+                }
+
                 }
 
             }
@@ -133,10 +151,10 @@ fun History(navController: NavHostController, idUser: UserId, mainActivity: Main
         }
 
     }
-}
+
 
 @Composable
-fun HistoryCard(bico: Bico) {
+fun HistoryCard(bico: BicoHistorico) {
 
 
     ElevatedCard (modifier = Modifier.clickable { }.padding(horizontal = 18.dp, vertical = 8.dp),
@@ -164,16 +182,18 @@ fun HistoryCard(bico: Bico) {
                         .fillMaxHeight(),
                     verticalArrangement = Arrangement.Center
                 ){
-                    Text( "${bico.cliente[0].nome_fantasia} - ${bico.titulo}",
+                    Text( "${bico.nome_cliente} - ${bico.bico}",
                         fontFamily = Inter,
                         fontWeight = FontWeight.Bold)
-                    Text("${bico.data_inicio.split("T")[0].split("-").joinTo(StringBuilder(""), "/", "Data: ")}")
+                    Text(bico.data_inicio.split("T")[0].split("-").reversed().joinToString("/", "Data: "))
                 }
 
 
 
-                val dataInicio = LocalDate.parse(bico.data_inicio)
-                val horarioInicio = LocalTime.parse(bico.horario_inicio)
+                val dataInicio = LocalDate.parse(bico.data_inicio.split("T")[0].split("-").joinToString("-"))
+                val horarioInicio = LocalTime.parse(bico.horario_inicio.split("T")[1].split(".")[0].split(
+                    ":"
+                ).slice(0..1).joinToString(":"))
 
                 val dataHoraInicio = LocalDateTime.of(dataInicio, horarioInicio)
 

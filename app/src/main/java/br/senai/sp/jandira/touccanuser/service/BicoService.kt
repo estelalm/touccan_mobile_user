@@ -1,6 +1,7 @@
 package br.senai.sp.jandira.touccanuser.service
 
 import br.senai.sp.jandira.touccanuser.model.Candidato
+import br.senai.sp.jandira.touccanuser.model.HistoryResult
 import br.senai.sp.jandira.touccanuser.model.Login
 import br.senai.sp.jandira.touccanuser.model.LoginResult
 import br.senai.sp.jandira.touccanuser.model.ResultBico
@@ -28,7 +29,10 @@ interface BicoService {
     @GET("candidato/{id}")
     fun getCandidatosByBico(@Path("id") id:Int): Call<ResultCandidatos>
 
+    @GET("bico/premium")
+    fun getBicosPremium(): Call<ResultBicos>
+
     @GET("bico/candidato/{id}")
-    fun getBicoByUsuario(@Path("id") id: Int): Call<ResultBicos>
+    fun getBicoByUsuario(@Path("id") id: Int): Call<HistoryResult>
 
 }

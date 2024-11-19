@@ -131,7 +131,9 @@ fun BicoDetails(navController: NavHostController, idBico: String, mainActivity: 
                                     color = Color(0xff504D4D),
                                     fontFamily = Inter,
                                     fontWeight = FontWeight.Normal,
-                                    modifier = Modifier.padding(start = 6.dp).fillMaxWidth())
+                                    modifier = Modifier
+                                        .padding(start = 6.dp)
+                                        .fillMaxWidth())
                             }
                             Row {
                                 Text("Dificuldade: ",
@@ -173,18 +175,34 @@ fun BicoDetails(navController: NavHostController, idBico: String, mainActivity: 
                             Column (){
 
                                 val sb = StringBuilder("")
-                                Text("${bico.value.data_inicio.split("T")[0].split("-").joinTo(sb, "/", "Data: ", )}",
+                                Text(
+                                    "Data: ${
+                                        bico.value.data_inicio.split("T")[0].split("-").reversed()
+                                            .joinToString( "/")
+                                    }",
                                     color = Color(0xff464646),
                                     fontFamily = Inter,
-                                    fontWeight = FontWeight.Black)
-                                Text("${bico.value.horario_inicio.split("T")[1].split(".")[0].split(":").slice(0..1).joinTo(sb, ":", "Início: ", "h")}",
+                                    fontWeight = FontWeight.Black
+                                )
+                                Text(
+                                    "Início: ${
+                                        bico.value.horario_inicio.split("T")[1].split(".")[0].split(
+                                            ":").slice(0..1).joinToString(":", postfix = "h")
+                                    }",
                                     color = Color(0xff464646),
                                     fontFamily = Inter,
-                                    fontWeight = FontWeight.Black)
-                                Text("${bico.value.horario_limite.split("T")[1].split(".")[0].split(":").slice(0..1).joinTo(sb, ":", "Início: ", "h")}",
+                                    fontWeight = FontWeight.Black
+                                )
+                                Text(
+                                    "Término: ${
+                                        bico.value.horario_limite.split("T")[1].split(".")[0].split(
+                                            ":"
+                                        ).slice(0..1).joinToString(":", postfix = "h")
+                                    }",
                                     color = Color(0xff464646),
                                     fontFamily = Inter,
-                                    fontWeight = FontWeight.Black)
+                                    fontWeight = FontWeight.Black
+                                )
                                 Row {
                                     Text("Pagamento: ",
                                         color = Color(0xff464646),

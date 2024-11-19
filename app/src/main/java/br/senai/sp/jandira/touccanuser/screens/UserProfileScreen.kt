@@ -175,7 +175,7 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
                         }
                         Log.i("smtttt", asyncModel.value)
 
-                        AsyncImage(asyncModel.value, "", contentScale = ContentScale.FillWidth, alignment = Alignment.Center)
+                        AsyncImage(asyncModel.value, "", contentScale = ContentScale.FillWidth, alignment = Alignment.Center, modifier = Modifier.fillMaxSize())
                     }
                 }
                     Spacer(Modifier.height(10.dp))
@@ -280,24 +280,24 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
                         modifier = Modifier.fillMaxWidth(),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Log.i("Value: ", sobreNosState.value.toString())
 
                         var formacaoState = remember {
-                            mutableStateOf(if(perfilUsuario.value.id_formacao == 0){"Escolha a formação"}else{perfilUsuario.value.id_formacao.toString()})
+                            mutableStateOf(if(perfilUsuario.value.id_formacao == 0){"Escolha a formação"
+                            }else{perfilUsuario.value.id_formacao.toString()})
                         }
                         var bioState = remember {
-                            mutableStateOf(if(perfilUsuario.value.biografia == null){"Nenhuma biografia escrita ainda!"}else{perfilUsuario.value.biografia})
+                            mutableStateOf("Nenhuma biografia descrita ainda!")
                         }
+                        bioState.value = perfilUsuario.value.biografia
 
-                        Log.i("habilidade  =", perfilUsuario.value.habilidade)
                         var habilidadeState = remember {
-                            mutableStateOf(if(perfilUsuario.value.habilidade == null){"Nenhuma habilidade descrita ainda!"}else{perfilUsuario.value.habilidade})
+                            mutableStateOf("Nenhuma habilidade descrita ainda!")
                         }
+                        habilidadeState.value = perfilUsuario.value.habilidade
+
                         var disponibilidadeState = remember {
                             mutableStateOf(if(perfilUsuario.value.id_disponibilidade == 0){"Escolha a disponibilidade"}else{perfilUsuario.value.id_disponibilidade.toString()})
                         }
-
-                        Log.i("haha", "${perfilUsuario.value.id_disponibilidade == 0}")
 
                         if (sobreNosState.value) {
                             UserInfo(editState, perfilUsuario, formacaoState, bioState, habilidadeState, disponibilidadeState)
@@ -435,6 +435,7 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
                         fontWeight = FontWeight.SemiBold,
                         modifier = Modifier.padding(vertical = 16.dp)
                     )
+
                     TextField(
                         modifier = Modifier.verticalScroll(rememberScrollState()),
                         value = bioState.value,

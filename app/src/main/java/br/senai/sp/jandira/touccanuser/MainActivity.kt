@@ -110,9 +110,11 @@ class MainActivity : ComponentActivity() {
                             })
                         ){ backStackEntry ->
 
-                            val userId = backStackEntry.arguments?.getString("id")
-                            val idUser = Json.decodeFromString<UserId>(userId ?: "")
-                            History(navController, idUser, this@MainActivity) }
+                            val userId = backStackEntry.arguments?.getString("id")?.toInt()
+                            if (userId != null) {
+                                History(navController, userId, this@MainActivity)
+                            }
+                        }
 
                         }
                     }

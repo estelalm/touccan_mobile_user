@@ -90,7 +90,12 @@ fun Home(
 
     callBicoList.enqueue(object: Callback<ResultBicos>{
         override fun onResponse(call: Call<ResultBicos>, res: Response<ResultBicos>) {
-            bicosList.value = res.body()!!.bicos
+            val bicos = res.body()?.bicos
+            if(bicos != null){
+                bicosList.value = bicos
+            }else{
+                Log.i("Error: ", "A lista de bicos retornou nula")
+            }
             isLoadingPertoDeVoce.value = false
         }
 
