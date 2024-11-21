@@ -320,6 +320,8 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
                                 onClick = {
                                     if (editState.value) {
                                         val user = UserPerfil()
+                                        Log.i("disponibilidade", disponibilidadeState.value.id.toString())
+     
                                         perfilUsuario.value.nome = perfilUsuario.value.nome
                                         perfilUsuario.value.data_nascimento = perfilUsuario.value.data_nascimento.split("T")[0]
                                         perfilUsuario.value.biografia = bioState.value
@@ -327,6 +329,7 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
                                         perfilUsuario.value.id_disponibilidade = disponibilidadeState.value.id
                                         perfilUsuario.value.formacao = formacaoState.value
                                         perfilUsuario.value.foto = "https://static.todamateria.com.br/upload/ar/is/aristoteles-cke.jpg"
+                                        Log.i("dados a serem enviados", perfilUsuario.value.toString())
 
                                         Log.i("User:", perfilUsuario.value.toString() )
 
