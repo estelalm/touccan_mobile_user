@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -30,6 +31,9 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
@@ -50,12 +54,16 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import br.senai.sp.jandira.touccanuser.MainActivity
 import br.senai.sp.jandira.touccanuser.R
+import br.senai.sp.jandira.touccanuser.model.AvaliacaoUser
+import br.senai.sp.jandira.touccanuser.model.Bico
+import br.senai.sp.jandira.touccanuser.model.Disponibilidade
+import br.senai.sp.jandira.touccanuser.model.FeedbackUser
+import br.senai.sp.jandira.touccanuser.model.ResultBico
 import br.senai.sp.jandira.touccanuser.model.ResultUserProfile
 import br.senai.sp.jandira.touccanuser.model.UserPerfil
 import br.senai.sp.jandira.touccanuser.service.RetrofitFactory
@@ -297,7 +305,7 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
                         habilidadeState.value = perfilUsuario.value.habilidade
 
                         var disponibilidadeState = remember {
-                            mutableStateOf(if(perfilUsuario.value.id_disponibilidade == 0){"Manhã"}else{perfilUsuario.value.id_disponibilidade.toString()})
+                            mutableStateOf(Disponibilidade(id = perfilUsuario.value.id_disponibilidade, disponibilidade = "Escolher"))
                         }
 
                         if (sobreNosState.value) {
@@ -316,7 +324,7 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
                                         perfilUsuario.value.data_nascimento = perfilUsuario.value.data_nascimento.split("T")[0]
                                         perfilUsuario.value.biografia = bioState.value
                                         perfilUsuario.value.habilidade = habilidadeState.value
-                                        perfilUsuario.value.id_disponibilidade = 1
+                                        perfilUsuario.value.id_disponibilidade = disponibilidadeState.value.id
                                         perfilUsuario.value.formacao = formacaoState.value
                                         perfilUsuario.value.foto = "https://static.todamateria.com.br/upload/ar/is/aristoteles-cke.jpg"
 
@@ -351,13 +359,14 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
                             Spacer(modifier = Modifier.height(100.dp))
 
                         } else {
-                            HistoryUser()
+                            HistoryUser(perfilUsuario.value.id)
                         }
                     }
                 }
             }
         }
     }
+
 
     @Composable
     fun UserInfo(
@@ -366,7 +375,7 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
         formacaoState: MutableState<String>,
         bioState: MutableState<String>,
         habilidadeState: MutableState<String>,
-        disponibilidadeState: MutableState<String>
+        disponibilidadeState: MutableState<Disponibilidade>
     ) {
 
         Column(
@@ -514,11 +523,17 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
                     containerColor = Color.White
                 )
             ) {
+
+                val isDropDownExpanded = remember {
+                    mutableStateOf(false)
+                }
+
                 Row(
                     modifier = Modifier
                         .padding(horizontal = 10.dp, vertical = 2.dp)
                         .fillMaxSize(),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
                         "Disponibilidade: ",
@@ -526,25 +541,67 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
                         color = Color.Gray,
                         fontWeight = FontWeight.SemiBold
                     )
-                    TextField(
-                        value = disponibilidadeState.value,
-                        onValueChange = {
-                            disponibilidadeState.value = it
-                        },
-                        enabled = editState.value,
-                        textStyle = TextStyle(
-                            fontFamily = Inter
-                        ),
-                        colors = TextFieldDefaults.colors(
-                            unfocusedContainerColor = Color.Transparent,
-                            disabledContainerColor = Color.Transparent,
-                            focusedContainerColor = Color.Transparent,
-                            errorContainerColor = Color.Transparent,
-                            disabledIndicatorColor = Color.Transparent,
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent
-                        )
-                    )
+
+
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.clickable {
+                            if(editState.value){
+                                isDropDownExpanded.value = true
+                            }}
+
+                    ) {
+
+                            Text(disponibilidadeState.value.disponibilidade, fontFamily = Inter)
+                            Image(
+                                painter = painterResource(id = R.drawable.arrow_drop_down),
+                                contentDescription = "DropDown Icon"
+                            ) }
+
+                    }
+                    DropdownMenu(
+                        expanded = isDropDownExpanded.value,
+                        onDismissRequest = {
+                            isDropDownExpanded.value = false
+                        }) {
+
+                        val itemPosition = remember {
+                            mutableStateOf(0)
+                        }
+
+
+                        val disponibilidadeList = listOf(Disponibilidade(id = 1, disponibilidade = "Manhã"), Disponibilidade(id = 2, disponibilidade = "Tarde"), Disponibilidade(id = 3, disponibilidade = "Noite"))
+                        disponibilidadeList.forEachIndexed { index, disp ->
+                            DropdownMenuItem(text = {
+                                Text(text = disp.disponibilidade)
+                            },
+                                onClick = {
+                                    isDropDownExpanded.value = false
+                                    itemPosition.value = index
+                                    disponibilidadeState.value = disp
+                                })
+                        }
+                    }
+//                    TextField(
+//                        value = disponibilidadeState.value,
+//                        onValueChange = {
+//                            disponibilidadeState.value = it
+//                        },
+//                        enabled = editState.value,
+//                        textStyle = TextStyle(
+//                            fontFamily = Inter
+//                        ),
+//                        colors = TextFieldDefaults.colors(
+//                            unfocusedContainerColor = Color.Transparent,
+//                            disabledContainerColor = Color.Transparent,
+//                            focusedContainerColor = Color.Transparent,
+//                            errorContainerColor = Color.Transparent,
+//                            disabledIndicatorColor = Color.Transparent,
+//                            focusedIndicatorColor = Color.Transparent,
+//                            unfocusedIndicatorColor = Color.Transparent
+//                        )
+//                    )
                 }
             }
             Spacer(modifier = Modifier.height(24.dp))
@@ -552,69 +609,117 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
 
         }
 
-    }
 
 @Composable
-fun HistoryUser(){
+fun HistoryUser(userId: Int){
+
+    var avaliacoesState = remember {
+        mutableStateOf(listOf<AvaliacaoUser>())
+    }
+    var avaliacaoLoadState = remember {
+        mutableStateOf(true)
+    }
+
+    val callFeedback = RetrofitFactory()
+        .getFeedbackService()
+        .getFeedbackUser(userId)
+
+    callFeedback.enqueue(object : Callback<FeedbackUser> {
+        override fun onResponse(p0: Call<FeedbackUser>, res: Response<FeedbackUser>) {
+            Log.i("response feedback", res.body()!!.toString())
+            avaliacoesState.value = res.body()!!.avaliacoes
+            avaliacaoLoadState.value = false
+        }
+
+        override fun onFailure(p0: Call<FeedbackUser>, p1: Throwable) {
+            Log.i("Falhou!!!", p1.toString())
+        }
+    })
+
 
     LazyColumn {
-        items(3){
-            ElevatedCard (modifier = Modifier
-                .clickable { }
-                .padding(horizontal = 18.dp, vertical = 8.dp),
-                elevation = CardDefaults.elevatedCardElevation(
-                    defaultElevation = 3.dp
-                )){
-                Row (modifier = Modifier
-                    .height(90.dp)
-                    .fillMaxWidth()
-                    .background(Color.White)){
-                    Card (
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .width(10.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MainOrange,
-                        ),
-                        shape = RectangleShape
-                    ){}
-                    Column (
-                        modifier = Modifier
-                            .padding(horizontal = 6.dp, vertical = 2.dp)
-                            .fillMaxHeight(),
-                        verticalArrangement = Arrangement.Center
-                    ){
-                        Text("Empresa 1 - Assistente Admnistrativo.",
-                            fontFamily = Inter,
-                            fontWeight = FontWeight.Bold)
-                        Text("Ótimo trabalho")
-                        Row(modifier = Modifier
+
+        if(avaliacaoLoadState.value){
+            item { Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center){ CircularProgressIndicator(color = MainOrange) } }
+        }else{
+            if(avaliacoesState.value.isEmpty()){
+                item {
+                    Text(
+                    "Você ainda não foi avaliado!: ",
+                    fontFamily = Inter,
+                    color = Color.Black,
+                        textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.SemiBold
+                ) }
+            }else{
+                items(avaliacoesState.value){ avaliacao ->
+
+                    var bico = remember{ mutableStateOf( Bico())}
+
+                    val callBico = RetrofitFactory()
+                        .getBicoService()
+                        .getBicoById(avaliacao.id_bico)
+
+                    callBico.enqueue(object: Callback<ResultBico> {
+                        override fun onResponse(call: Call<ResultBico>, res: Response<ResultBico>) {
+                            Log.i("Response: ", res.toString())
+                            bico.value = res.body()!!.bico
+                        }
+
+                        override fun onFailure(call: Call<ResultBico>, t: Throwable) {
+                            Log.i("Falhou:", t.toString())
+                        }
+                    })
+
+
+                    ElevatedCard (modifier = Modifier
+                        .clickable { }
+                        .padding(horizontal = 18.dp, vertical = 8.dp),
+                        elevation = CardDefaults.elevatedCardElevation(
+                            defaultElevation = 3.dp
+                        )){
+                        Row (modifier = Modifier
+                            .height(90.dp)
                             .fillMaxWidth()
-                            .padding(horizontal = 2.dp)){
-                            val stars = 3
-                            for (i in 1..5) {
-                                if(i <= stars) Icon(Icons.Filled.Star,contentDescription = "", tint = Color(0xFFFFBC06))
-                                else
-                                    Icon(Icons.Filled.Star,contentDescription = "", tint = Color(0xFF504D4D))
+                            .background(Color.White)){
+                            Card (
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .width(10.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MainOrange,
+                                ),
+                                shape = RectangleShape
+                            ){}
+                            Column (
+                                modifier = Modifier
+                                    .padding(horizontal = 6.dp, vertical = 2.dp)
+                                    .fillMaxHeight(),
+                                verticalArrangement = Arrangement.Center
+                            ){
+                                Text("${bico.value.cliente[0].nome_fantasia} - ${bico.value.titulo}.",
+                                    fontFamily = Inter,
+                                    fontWeight = FontWeight.Bold)
+                                Text(avaliacao.avaliacao)
+                                Row(modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 2.dp)){
+                                    val stars = avaliacao.nota
+                                    for (i in 1..5) {
+                                        if(i <= stars) Icon(Icons.Filled.Star,contentDescription = "", tint = Color(0xFFFFBC06))
+                                        else
+                                            Icon(Icons.Filled.Star,contentDescription = "", tint = Color(0xFF504D4D))
+                                    }
+
+                                }
                             }
 
                         }
                     }
-
                 }
             }
         }
-    }
 
-}
-
-@Preview (showBackground = true)
-@Composable
-private fun UserInfoPrev() {
-    Surface (modifier = Modifier
-        .padding(24.dp)
-        .height(600.dp), color = Color.DarkGray){
-        HistoryUser()
     }
 
 }

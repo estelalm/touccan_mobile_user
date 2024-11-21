@@ -26,6 +26,8 @@ import androidx.navigation.NavHostController
 import br.senai.sp.jandira.touccanuser.R
 import br.senai.sp.jandira.touccanuser.UserPreferences
 import br.senai.sp.jandira.touccanuser.model.UserId
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -113,7 +115,7 @@ fun BottomAppBar(navController: NavHostController, context: Context) {
         ) {
             IconButton(
                 onClick = {
-                    val userId = userIdFlow.value?.let { UserId(id = it) }
+                    val userId = Json.encodeToString(userIdFlow.value?.let { UserId(id = it) })
                     navController.navigate("home/${userId}")
                 }
             ) {

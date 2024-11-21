@@ -24,7 +24,7 @@ import br.senai.sp.jandira.touccanuser.ui.theme.MainOrange
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchScreen(modifier: Modifier = Modifier) {
+fun SearchScreen() {
     Scaffold (
         containerColor = Color(0xFFEBEBEB),
         topBar = {
@@ -36,6 +36,10 @@ fun SearchScreen(modifier: Modifier = Modifier) {
     ) { innerpadding ->
 
         Column (modifier = Modifier.padding(innerpadding)){
+            Card(){
+
+            }
+
             SearchBar(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -44,7 +48,7 @@ fun SearchScreen(modifier: Modifier = Modifier) {
                     query = "",
                     onQueryChange = {},
                     active = true,
-                    onActiveChange = {}, 
+                    onActiveChange = {},
                     onSearch = {}
             ) {}
             Column {

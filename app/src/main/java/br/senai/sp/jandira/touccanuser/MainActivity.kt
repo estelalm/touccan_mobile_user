@@ -22,6 +22,7 @@ import br.senai.sp.jandira.touccanuser.screens.History
 import br.senai.sp.jandira.touccanuser.screens.Home
 import br.senai.sp.jandira.touccanuser.screens.Login
 import br.senai.sp.jandira.touccanuser.screens.MeuBicoDetails
+import br.senai.sp.jandira.touccanuser.screens.MeuCartao
 import br.senai.sp.jandira.touccanuser.screens.SetPassword
 import br.senai.sp.jandira.touccanuser.screens.SignUpScreen
 import br.senai.sp.jandira.touccanuser.screens.UserProfile
@@ -69,7 +70,6 @@ class MainActivity : ComponentActivity() {
 
                             val userId = backStackEntry.arguments?.getString("id")
                             val idUser = Json.decodeFromString<UserId>(userId ?: "")
-
 
                             Home(navController, idUser, this@MainActivity) }
 
@@ -158,6 +158,16 @@ class MainActivity : ComponentActivity() {
                                 Denuncia(navController, bicoId, this@MainActivity)
                             }
                         }
+
+                        composable(route = "cartao/{id}",
+                            arguments = listOf(navArgument("id") {
+//                                type = NavType.StringType
+                            })
+                        ){ backStackEntry ->
+
+                            val userId = backStackEntry.arguments?.getString("id")
+
+                            MeuCartao(navController, userId, this@MainActivity) }
 
                         }
                     }

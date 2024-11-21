@@ -28,6 +28,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
@@ -52,15 +53,20 @@ import androidx.navigation.NavHostController
 import br.senai.sp.jandira.touccanuser.MainActivity
 import br.senai.sp.jandira.touccanuser.R
 import br.senai.sp.jandira.touccanuser.UserPreferences
+import br.senai.sp.jandira.touccanuser.model.AvaliacaoUser
 import br.senai.sp.jandira.touccanuser.model.Bico
 import br.senai.sp.jandira.touccanuser.model.Candidatos
 import br.senai.sp.jandira.touccanuser.model.ClienteId
 import br.senai.sp.jandira.touccanuser.model.ClientePerfil
 import br.senai.sp.jandira.touccanuser.model.Endereco
+import br.senai.sp.jandira.touccanuser.model.FeedbackUser
+import br.senai.sp.jandira.touccanuser.model.ResultBico
 import br.senai.sp.jandira.touccanuser.model.ResultBicos
 import br.senai.sp.jandira.touccanuser.model.ResultBicosPremium
 import br.senai.sp.jandira.touccanuser.model.ResultCandidatos
 import br.senai.sp.jandira.touccanuser.model.ResultClientProfile
+import br.senai.sp.jandira.touccanuser.model.ResultUserProfile
+import br.senai.sp.jandira.touccanuser.model.UserPerfil
 import br.senai.sp.jandira.touccanuser.service.RetrofitFactory
 import br.senai.sp.jandira.touccanuser.ui.theme.Inter
 import br.senai.sp.jandira.touccanuser.ui.theme.MainOrange
@@ -97,11 +103,11 @@ fun ClientProfile(navController: NavHostController,  idCliente: String, mainActi
     })
 
     var sobreNosState = remember{
-        mutableStateOf(false)
+        mutableStateOf(true)
     }
 
     var feedbackState = remember{
-        mutableStateOf(true)
+        mutableStateOf(false)
     }
 
     Surface(modifier = Modifier.fillMaxSize(), color = Color(0xFFEBEBEB)) {
@@ -252,7 +258,7 @@ fun ClientProfile(navController: NavHostController,  idCliente: String, mainActi
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     if (sobreNosState.value) SobreNos(perfilCliente,navController, mainActivity)
-                    else Feedback()
+                    else Feedback(perfilCliente.value.id)
                 }
             }
         }
@@ -301,23 +307,6 @@ fun SobreNos(clientePerfil: MutableState<ClientePerfil>, navController: NavHostC
     })
 
 
-
-//    val callEndereco = RetrofitFactory()
-//        .getEnderecoService()
-//        .getViaCep(clientePerfil.value.cep)
-//
-//    callEndereco.enqueue(object: Callback<Endereco> {
-//        override fun onResponse(p0: Call<Endereco>, res: Response<Endereco>) {
-//            Log.i("response:", res.body()!!.toString())
-//            enderecoCliente.value = res.body()!!
-//        }
-//
-//        override fun onFailure(p0: Call<Endereco>, t: Throwable) {
-//            Log.i("Falhou!!!", t.toString())
-//        }
-//
-//    })
-
     Column(
         modifier = Modifier.padding(vertical = 24.dp, horizontal = 36.dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -343,11 +332,13 @@ fun SobreNos(clientePerfil: MutableState<ClientePerfil>, navController: NavHostC
                     color = Color.Gray,
                     fontWeight = FontWeight.SemiBold
                 )
+
+                Log.i("Endereço: ", clientePerfil.value.endereco.toString())
                 if(clientePerfil.value.endereco.isNotEmpty()){
 
                     val enderecoPerfil = clientePerfil.value.endereco[0]
                     Text(
-                        "${enderecoPerfil.logradouro}",
+                        "${enderecoPerfil.rua}, ${enderecoPerfil.bairro} - ${enderecoPerfil.cidade}, ${enderecoPerfil.estado}",
                         fontFamily = Inter,
                         color = Color.Gray,
                         fontWeight = FontWeight.SemiBold
@@ -373,7 +364,7 @@ fun SobreNos(clientePerfil: MutableState<ClientePerfil>, navController: NavHostC
         ) {
             Row(
                 modifier = Modifier
-                    .padding(horizontal = 10.dp)
+                    .padding(horizontal = 10.dp, vertical = 10.dp)
                     .fillMaxSize()
             ) {
                 Column {
@@ -539,54 +530,136 @@ fun BicoCard(bico: Bico, navController: NavHostController, context: Context) {
 
 
 @Composable
-fun Feedback(){
+fun Feedback(clientId: Int){
+
+    var avaliacoesState = remember {
+        mutableStateOf(listOf<AvaliacaoUser>())
+    }
+    var avaliacaoLoadState = remember {
+        mutableStateOf(true)
+    }
+
+    val callFeedback = RetrofitFactory()
+        .getFeedbackService()
+        .getFeedbackUser(clientId)
+
+    callFeedback.enqueue(object : Callback<FeedbackUser> {
+        override fun onResponse(p0: Call<FeedbackUser>, res: Response<FeedbackUser>) {
+            Log.i("response feedback", res.body()!!.toString())
+            avaliacoesState.value = res.body()!!.avaliacoes
+            avaliacaoLoadState.value = false
+        }
+
+        override fun onFailure(p0: Call<FeedbackUser>, p1: Throwable) {
+            Log.i("Falhou!!!", p1.toString())
+        }
+    })
+
+
+
+
     LazyColumn {
-        items(3){
-            ElevatedCard (modifier = Modifier
-                .clickable { }
-                .padding(horizontal = 18.dp, vertical = 8.dp),
-                elevation = CardDefaults.elevatedCardElevation(
-                    defaultElevation = 3.dp
-                )){
-                Row (modifier = Modifier
-                    .height(90.dp)
-                    .fillMaxWidth()
-                    .background(Color.White)){
-                    Card (
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .width(10.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MainOrange,
-                        ),
-                        shape = RectangleShape
-                    ){}
-                    Column (
-                        modifier = Modifier
-                            .padding(horizontal = 6.dp, vertical = 2.dp)
-                            .fillMaxHeight(),
-                        verticalArrangement = Arrangement.Center
-                    ){
-                        Text("Usuario tal - Assistente Admnistrativo.",
-                            fontFamily = Inter,
-                            fontWeight = FontWeight.Bold)
-                        Text("Ótimo trabalho")
-                        Row(modifier = Modifier
+
+        if(avaliacaoLoadState.value){
+            item { Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center){ CircularProgressIndicator(color = MainOrange) } }
+        }else{
+            if(avaliacoesState.value.isEmpty()){
+                item {
+                    Text(
+                        "Você ainda não foi avaliado!: ",
+                        fontFamily = Inter,
+                        color = Color.Black,
+                        textAlign = TextAlign.Center,
+                        fontWeight = FontWeight.SemiBold
+                    ) }
+            }else{
+                items(avaliacoesState.value){ avaliacao ->
+
+                    var usuario = remember {
+                        mutableStateOf(UserPerfil())
+                    }
+
+                    val idUsuario = avaliacao.id_usuario
+
+                    val callUserPerfil = RetrofitFactory()
+                        .getUserService()
+                        .getUserById(idUsuario)
+
+                    callUserPerfil.enqueue(object : Callback<ResultUserProfile> {
+                        override fun onResponse(p0: Call<ResultUserProfile>, p1: Response<ResultUserProfile>) {
+                            usuario.value = p1.body()!!.usuario
+                        }
+
+                        override fun onFailure(p0: Call<ResultUserProfile>, p1: Throwable) {
+                            Log.i("Falhou!!!", p1.toString())
+                        }
+                    })
+
+
+                    var bico = remember{ mutableStateOf( Bico())}
+
+                    val callBico = RetrofitFactory()
+                        .getBicoService()
+                        .getBicoById(avaliacao.id_bico)
+
+                    callBico.enqueue(object: Callback<ResultBico> {
+                        override fun onResponse(call: Call<ResultBico>, res: Response<ResultBico>) {
+                            bico.value = res.body()!!.bico
+                        }
+
+                        override fun onFailure(call: Call<ResultBico>, t: Throwable) {
+                            Log.i("Falhou:", t.toString())
+                        }
+                    })
+
+                    ElevatedCard (modifier = Modifier
+                        .clickable { }
+                        .padding(horizontal = 18.dp, vertical = 8.dp),
+                        elevation = CardDefaults.elevatedCardElevation(
+                            defaultElevation = 3.dp
+                        )){
+                        Row (modifier = Modifier
+                            .height(90.dp)
                             .fillMaxWidth()
-                            .padding(horizontal = 2.dp)){
-                            val stars = 3
-                            for (i in 1..5) {
-                                if(i <= stars) Icon(Icons.Filled.Star,contentDescription = "", tint = Color(0xFFFFBC06))
-                                else
-                                    Icon(Icons.Filled.Star,contentDescription = "", tint = Color(0xFF504D4D))
+                            .background(Color.White)){
+                            Card (
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .width(10.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MainOrange,
+                                ),
+                                shape = RectangleShape
+                            ){}
+                            Column (
+                                modifier = Modifier
+                                    .padding(horizontal = 6.dp, vertical = 2.dp)
+                                    .fillMaxHeight(),
+                                verticalArrangement = Arrangement.Center
+                            ){
+                                Text("${usuario.value.nome} - ${bico.value.titulo}",
+                                    fontFamily = Inter,
+                                    fontWeight = FontWeight.Bold)
+                                Text(avaliacao.avaliacao)
+                                Row(modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 2.dp)){
+                                    val stars = avaliacao.nota
+                                    for (i in 1..5) {
+                                        if(i <= stars) Icon(Icons.Filled.Star,contentDescription = "", tint = Color(0xFFFFBC06))
+                                        else
+                                            Icon(Icons.Filled.Star,contentDescription = "", tint = Color(0xFF504D4D))
+                                    }
+
+                                }
                             }
 
                         }
                     }
-
                 }
             }
         }
+
     }
 }
 

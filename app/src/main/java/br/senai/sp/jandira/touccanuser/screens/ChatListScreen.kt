@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -155,29 +156,37 @@ fun ChatList() {
                     .fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                SearchBar(
+                
+                Card(
                     modifier = Modifier
-                        .width(300.dp)
-                        .height(70.dp)
-                        .padding(bottom = 24.dp),
-                    colors = SearchBarDefaults.colors(containerColor = Color.White),
-                    query = "",
-                    onQueryChange = {},
-                    active = true,
-                    onActiveChange = {},
-                    onSearch = {},
-                    placeholder = {
-                        Text("Pesquisar conversas")
-                    },
-                    shadowElevation = 14.dp
-                ) {}
-                Box(
-                    modifier = Modifier
-                        .background(Color(MainOrange.value))
-                        .height(1.dp)
-                        .width(200.dp)
+                    .width(300.dp)
+                    .height(70.dp)
+                    .padding(bottom = 24.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color.White
+                    )
 
-                )
+                ) {
+                    SearchBar(
+                        colors = SearchBarDefaults.colors(containerColor = Color.Transparent),
+                        query = "",
+                        onQueryChange = {},
+                        active = true,
+                        onActiveChange = {},
+                        onSearch = {},
+                        placeholder = {
+                            Text("Pesquisar conversas")
+                        }
+                    ) {
+                        
+                    }
+                    Box(
+                        modifier = Modifier
+                            .background(Color(MainOrange.value))
+                            .height(1.dp)
+                            .width(200.dp)
+                    )
+                }
 
                 if (!chatListState.value) {
                     Column (

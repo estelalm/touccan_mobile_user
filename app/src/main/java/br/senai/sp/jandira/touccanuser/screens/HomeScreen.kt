@@ -83,7 +83,6 @@ fun Home(
 
     callUserPerfil.enqueue(object : Callback<ResultUserProfile> {
         override fun onResponse(p0: Call<ResultUserProfile>, p1: Response<ResultUserProfile>) {
-            Log.i("response TelaC", p1.body()!!.toString())
             perfilUsuario.value = p1.body()!!.usuario
         }
 
@@ -93,7 +92,6 @@ fun Home(
     })
 
 
-    Log.i("User:", idUser.toString())
     val id = idUser.id.toString()
 
     var bicosList = remember {
@@ -129,14 +127,12 @@ fun Home(
     callBicoList.enqueue(object: Callback<ResultBicos>{
         override fun onResponse(call: Call<ResultBicos>, res: Response<ResultBicos>) {
             val bicos = res.body()?.bicos
-            Log.i("Cep bicos: ", bicos.toString())
-
+            isLoadingPertoDeVoce.value = false
             if(bicos != null){
                 bicosList.value = bicos
             }else{
                 Log.i("Error: ", "A lista de bicos retornou nula")
             }
-            isLoadingPertoDeVoce.value = false
         }
 
         override fun onFailure(call: Call<ResultBicos>, t: Throwable) {
@@ -357,7 +353,6 @@ fun AnuncioCard(
     }
 
 
-
     val grayColor = 0xff6D6D6D
     val greenColor = 0xff106B16
     val cinzaEscuro = 0xff888888
@@ -372,7 +367,9 @@ fun AnuncioCard(
             elevation = CardDefaults.elevatedCardElevation(
                 defaultElevation = 40.dp
             )
-        ){  }
+        ){
+
+        }
         Column (
             modifier = Modifier.padding(vertical = 4.dp, horizontal = 6.dp)
         ){

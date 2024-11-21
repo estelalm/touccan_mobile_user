@@ -84,7 +84,6 @@ fun Avaliacao(navController: NavHostController, idBico: String, mainActivity: Ma
 
     val bicoId =  idBico.toInt()
 
-
     var commentState = remember{
         mutableStateOf("")
     }
@@ -140,7 +139,7 @@ fun Avaliacao(navController: NavHostController, idBico: String, mainActivity: Ma
 //                Log.i("BICO DA AVALIAÇÃO: ", res.body().toString())
 //
 //                val body = res.body()
-//                if (body != null && body.bico != null) {
+//                if (body != null && body.bico.id != 0) {
 //                    bico = body.bico
 //                    clienteIdState.value = bico.cliente[0].id
 //                } else {
@@ -195,7 +194,7 @@ fun Avaliacao(navController: NavHostController, idBico: String, mainActivity: Ma
 
                                 Log.i("CLIENTE FORAAAAA: ", "AHAHAHHAH"+ bico.toString()) //não aparece no logcat
                                 Icon(painter = painterResource(R.drawable.person), contentDescription = "", tint = Color(0xff7E7E7E))
-                                if (bico != null) {
+                                if (bico.id != 0) {
                                     Text(if(bico.cliente.isNotEmpty()){bico.cliente[0].nome_fantasia}else{"Nome não encontrado"}, //da erro de empty list
                                         color = Color(0xff504D4D),
                                         fontFamily = Inter,
@@ -231,16 +230,17 @@ fun Avaliacao(navController: NavHostController, idBico: String, mainActivity: Ma
                         ){
 
                             Column (){
-                                if (bico != null) {
-                                    Text("Início: ${
-                                        bico.horario_inicio.split("T")[1].split(".")[0].split(
-                                            ":").slice(0..1).joinToString(":", postfix = "h")
-                                    }",
-                                        color = Color(0xff464646),
-                                        fontFamily = Inter,
-                                        fontWeight = FontWeight.Black)
-                                }
-                                if (bico != null) {
+//                                if (bico.id != 0) {
+//                                    Text("Início: ${
+//                                        bico.horario_inicio.split("T")[1].split(".")[0].split(
+//                                            ":").slice(0..1).joinToString(":", postfix = "h")
+//                                    }",
+//                                        color = Color(0xff464646),
+//                                        fontFamily = Inter,
+//                                        fontWeight = FontWeight.Black)
+//                                }
+                                if (bico.id != 0) {
+                                    Log.i("log.i bico blablabl", bico.toString())
                                     Text("Término: ${
                                         bico.horario_limite.split("T")[1].split(".")[0].split(
                                             ":"
@@ -255,7 +255,7 @@ fun Avaliacao(navController: NavHostController, idBico: String, mainActivity: Ma
                                         color = Color(0xff464646),
                                         fontFamily = Inter,
                                         fontWeight = FontWeight.Black)
-                                    if (bico != null) {
+                                    if (bico.id != 0) {
                                         Text("R$${bico.salario}",
                                             color = Color(0xff378420),
                                             fontFamily = Inter,
@@ -327,7 +327,8 @@ fun Avaliacao(navController: NavHostController, idBico: String, mainActivity: Ma
                         val avaliacao = userIdFlow.value?.let {
                             bico?.let { it1 ->
                                 AvaliacaoUser(
-                                    id_cliente = bico.cliente[0].id,
+//                                    id_cliente = bico.cliente[0].id,
+                                    id_cliente = 1,
                                     id_usuario = it,
                                     id_bico = it1.id,
                                     avaliacao = review,

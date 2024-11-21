@@ -348,8 +348,8 @@ fun HistoryCard(bico: BicoHistorico, idUser: Int, navController: NavHostControll
                                     ) {
                                         Text("Avalie",
                                             fontFamily = Inter,
-                                            fontSize = 8.sp,
-                                            modifier = Modifier.fillMaxWidth())
+                                            fontSize = 12.sp,
+                                            modifier = Modifier.fillMaxHeight().width(40.dp))
                                     }
                                 }
                             }else{
