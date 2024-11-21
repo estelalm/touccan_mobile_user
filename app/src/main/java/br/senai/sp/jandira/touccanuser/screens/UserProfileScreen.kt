@@ -5,6 +5,8 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -105,15 +107,16 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
     }
 
     var sobreNosState = remember {
-        mutableStateOf(false)
+        mutableStateOf(true)
     }
 
     var feedbackState = remember {
-        mutableStateOf(true)
+        mutableStateOf(false)
     }
     Surface(modifier = Modifier.fillMaxSize(), color = Color(0xFFEBEBEB)) {
         Column(
             modifier = Modifier.fillMaxWidth()
+                .scrollable(rememberScrollState(0), orientation = Orientation.Vertical)
         ) {
             Row(
                 modifier = Modifier
@@ -348,6 +351,7 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
                                     fontSize = 16.sp
                                 )
                             }
+                            Spacer(modifier = Modifier.height(100.dp))
 
                         } else {
                             HistoryUser()

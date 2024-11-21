@@ -31,6 +31,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -57,6 +58,7 @@ import br.senai.sp.jandira.touccanuser.model.ResultBico
 import br.senai.sp.jandira.touccanuser.service.RetrofitFactory
 import br.senai.sp.jandira.touccanuser.ui.theme.Inter
 import br.senai.sp.jandira.touccanuser.ui.theme.MainOrange
+import br.senai.sp.jandira.touccanuser.viewmodel.AvBicoViewModel
 import br.senai.sp.jandira.touccanuser.viewmodel.FeedbackViewModel
 import retrofit2.Call
 import retrofit2.Callback
@@ -78,6 +80,7 @@ fun Avaliacao(navController: NavHostController, idBico: String, mainActivity: Ma
 
     val bicoId =  idBico.toInt()
 
+
     var commentState = remember{
         mutableStateOf("")
     }
@@ -98,41 +101,58 @@ fun Avaliacao(navController: NavHostController, idBico: String, mainActivity: Ma
             br.senai.sp.jandira.touccanuser.utility.BottomAppBar(navController, mainActivity)
         }
     ) { innerpadding ->
-        var bico = remember{ mutableStateOf(Bico())}
+        val viewModel: AvBicoViewModel = viewModel()
 
-        var isLoadingState = remember{
-            mutableStateOf(true)
-        }
-        var errorState = remember {
-            mutableStateOf(false)
+
+        LaunchedEffect(bicoId) {
+            viewModel.fetchBico(bicoId)
         }
 
-        val callBico = RetrofitFactory()
-            .getBicoService()
-            .getBicoById(bicoId)
+        val bicoState by viewModel.bico.collectAsState()
+        val isLoading by viewModel.isLoading.collectAsState()
+        val isError by viewModel.error.collectAsState()
 
 
-        callBico.enqueue(object: Callback<ResultBico> {
-            override fun onResponse(call: Call<ResultBico>, res: Response<ResultBico>) {
-                Log.i("BICO DA AVALIAÇÃO: ", res.body().toString())
 
-                val body = res.body()
-                if (body != null && body.bico != null) {
-                    bico.value = body.bico
-                } else {
-                    // voltou nulo vishhh
-                }
-                Log.i("CLIENTE DO BICO: ", bico.value.cliente[0].toString())
+        var bico = Bico()
 
-                isLoadingState.value = false
-            }
+//        var isLoadingState = remember{
+//            mutableStateOf(true)
+//        }
+//        var errorState = remember {
+//            mutableStateOf(false)
+//        }
+        var clienteIdState = remember{
+            mutableStateOf(0)
+        }
 
-            override fun onFailure(call: Call<ResultBico>, t: Throwable) {
-                Log.i("Falhou:", t.toString())
-                errorState.value = true
-                isLoadingState.value = false
-            }
-        })
+//        val callBico = RetrofitFactory()
+//            .getBicoService()
+//            .getBicoById(bicoId)
+//
+//
+//        callBico.enqueue(object: Callback<ResultBico> {
+//            override fun onResponse(call: Call<ResultBico>, res: Response<ResultBico>) {
+//                Log.i("BICO DA AVALIAÇÃO: ", res.body().toString())
+//
+//                val body = res.body()
+//                if (body != null && body.bico != null) {
+//                    bico = body.bico
+//                    clienteIdState.value = bico.cliente[0].id
+//                } else {
+//                    // voltou nulo vishhh
+//                }
+//                Log.i("CLIENTE DO BICO: ", bico.cliente[0].toString())
+//
+//                isLoadingState.value = false
+//            }
+//
+//            override fun onFailure(call: Call<ResultBico>, t: Throwable) {
+//                Log.i("Falhou:", t.toString())
+//                errorState.value = true
+//                isLoadingState.value = false
+//            }
+//        })
 
         Column (
             modifier = Modifier
@@ -147,8 +167,7 @@ fun Avaliacao(navController: NavHostController, idBico: String, mainActivity: Ma
 
 
             }
-            if(!isLoadingState.value){ CircularProgressIndicator(color = MainOrange)
-            }else{
+
                 Spacer(modifier = Modifier.height(50.dp))
                 Card (
                     modifier = Modifier.padding(12.dp),
@@ -168,13 +187,15 @@ fun Avaliacao(navController: NavHostController, idBico: String, mainActivity: Ma
                         ) {
                             Row (verticalAlignment = Alignment.CenterVertically){
 
-                                Log.i("CLIENTE FORAAAAA: ", "AHAHAHHAH"+ bico.value.toString()) //não aparece no logcat
+                                Log.i("CLIENTE FORAAAAA: ", "AHAHAHHAH"+ bico.toString()) //não aparece no logcat
                                 Icon(painter = painterResource(R.drawable.person), contentDescription = "", tint = Color(0xff7E7E7E))
-                                Text(bico.value.cliente[0].nome_fantasia, //da erro de empty list
-                                    color = Color(0xff504D4D),
-                                    fontFamily = Inter,
-                                    fontWeight = FontWeight.Normal,
-                                    modifier = Modifier.padding(start = 6.dp).width(100.dp))
+                                if (bico != null) {
+                                    Text(if(bico.cliente.isNotEmpty()){bico.cliente[0].nome_fantasia}else{"Nome não encontrado"}, //da erro de empty list
+                                        color = Color(0xff504D4D),
+                                        fontFamily = Inter,
+                                        fontWeight = FontWeight.Normal,
+                                        modifier = Modifier.padding(start = 6.dp).width(100.dp))
+                                }
                             }
                             Column (horizontalAlignment = Alignment.End){
                                 Text("Avalie o estabelecimento: ",
@@ -200,30 +221,36 @@ fun Avaliacao(navController: NavHostController, idBico: String, mainActivity: Ma
                         ){
 
                             Column (){
-                                Text("Início: ${
-                                    bico.value.horario_inicio.split("T")[1].split(".")[0].split(
-                                        ":").slice(0..1).joinToString(":", postfix = "h")
-                                }",
-                                    color = Color(0xff464646),
-                                    fontFamily = Inter,
-                                    fontWeight = FontWeight.Black)
-                                Text("Término: ${
-                                    bico.value.horario_limite.split("T")[1].split(".")[0].split(
-                                        ":"
-                                    ).slice(0..1).joinToString(":", postfix = "h")
-                                }",
-                                    color = Color(0xff464646),
-                                    fontFamily = Inter,
-                                    fontWeight = FontWeight.Black)
+                                if (bico != null) {
+                                    Text("Início: ${
+                                        bico.horario_inicio.split("T")[1].split(".")[0].split(
+                                            ":").slice(0..1).joinToString(":", postfix = "h")
+                                    }",
+                                        color = Color(0xff464646),
+                                        fontFamily = Inter,
+                                        fontWeight = FontWeight.Black)
+                                }
+                                if (bico != null) {
+                                    Text("Término: ${
+                                        bico.horario_limite.split("T")[1].split(".")[0].split(
+                                            ":"
+                                        ).slice(0..1).joinToString(":", postfix = "h")
+                                    }",
+                                        color = Color(0xff464646),
+                                        fontFamily = Inter,
+                                        fontWeight = FontWeight.Black)
+                                }
                                 Row {
                                     Text("Pagamento: ",
                                         color = Color(0xff464646),
                                         fontFamily = Inter,
                                         fontWeight = FontWeight.Black)
-                                    Text("R$${bico.value.salario}",
-                                        color = Color(0xff378420),
-                                        fontFamily = Inter,
-                                        fontWeight = FontWeight.Black)
+                                    if (bico != null) {
+                                        Text("R$${bico.salario}",
+                                            color = Color(0xff378420),
+                                            fontFamily = Inter,
+                                            fontWeight = FontWeight.Black)
+                                    }
                                 }
                             }
                             Text("Av. Diniz, 57  Jandira-SP",
@@ -285,13 +312,15 @@ fun Avaliacao(navController: NavHostController, idBico: String, mainActivity: Ma
                     onClick = {
 
                         val avaliacao = userIdFlow.value?.let {
-                            AvaliacaoUser(
-                                id_cliente = bico.value.cliente[0].id,
-                                id_usuario = it,
-                                id_bico = bico.value.id,
-                                avaliacao = review,
-                                nota = stars
+                            bico?.let { it1 ->
+                                AvaliacaoUser(
+                                    id_cliente = bico.cliente[0].id,
+                                    id_usuario = it,
+                                    id_bico = it1.id,
+                                    avaliacao = review,
+                                    nota = stars
                                 )
+                            }
                         }
 
                         val sendAvaliacao = avaliacao?.let {
@@ -323,7 +352,7 @@ fun Avaliacao(navController: NavHostController, idBico: String, mainActivity: Ma
                 ) {
                     Text("Salvar", fontFamily = Inter, fontWeight = FontWeight.Black)
                 }
-            }
+
 
 
 

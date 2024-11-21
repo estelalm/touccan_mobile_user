@@ -340,7 +340,7 @@ fun HistoryCard(bico: BicoHistorico, idUser: Int, navController: NavHostControll
                                         modifier = Modifier.fillMaxWidth())
                                 }else{
                                     Button(onClick = {
-                                        navController.navigate("avaliacao/${idUser}")
+                                        navController.navigate("avaliacao/${bico.id_bico}")
 
                                     }, modifier = Modifier.height(28.dp).width(70.dp).padding(0.dp),
                                         shape = RoundedCornerShape(16.dp),
