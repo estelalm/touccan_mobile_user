@@ -1,5 +1,6 @@
 package br.senai.sp.jandira.touccanuser.screens
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -18,24 +19,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -44,7 +43,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -53,10 +51,16 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import br.senai.sp.jandira.touccanuser.MainActivity
 import br.senai.sp.jandira.touccanuser.R
+import br.senai.sp.jandira.touccanuser.UserPreferences
+import br.senai.sp.jandira.touccanuser.model.Bico
+import br.senai.sp.jandira.touccanuser.model.Candidatos
+import br.senai.sp.jandira.touccanuser.model.ClienteId
 import br.senai.sp.jandira.touccanuser.model.ClientePerfil
 import br.senai.sp.jandira.touccanuser.model.Endereco
+import br.senai.sp.jandira.touccanuser.model.ResultBicos
+import br.senai.sp.jandira.touccanuser.model.ResultBicosPremium
+import br.senai.sp.jandira.touccanuser.model.ResultCandidatos
 import br.senai.sp.jandira.touccanuser.model.ResultClientProfile
-import br.senai.sp.jandira.touccanuser.model.UserPerfil
 import br.senai.sp.jandira.touccanuser.service.RetrofitFactory
 import br.senai.sp.jandira.touccanuser.ui.theme.Inter
 import br.senai.sp.jandira.touccanuser.ui.theme.MainOrange
@@ -75,22 +79,22 @@ fun ClientProfile(navController: NavHostController,  idCliente: String, mainActi
     var perfilCliente = remember {
         mutableStateOf(ClientePerfil())
     }
-//
-//    val callClientPerfil = RetrofitFactory()
-//        .getClientService()
-//        .getClientById(clienteId)
-//
-//    callClientPerfil.enqueue(object: Callback<ResultClientProfile> {
-//        override fun onResponse(p0: Call<ResultClientProfile>, p1: Response<ResultClientProfile>) {
-//            Log.i("response TelaC", p1.body()!!.toString())
-//            perfilCliente.value = p1.body()!!.cliente
-//        }
-//
-//        override fun onFailure(p0: Call<ResultClientProfile>, p1: Throwable) {
-//            Log.i("Falhou!!!", p1.toString())
-//        }
 
-//    })
+    val callClientPerfil = RetrofitFactory()
+        .getClientService()
+        .getClientById(clienteId)
+
+    callClientPerfil.enqueue(object: Callback<ResultClientProfile> {
+        override fun onResponse(p0: Call<ResultClientProfile>, p1: Response<ResultClientProfile>) {
+            Log.i("response TelaC", p1.body()!!.toString())
+            perfilCliente.value = p1.body()!!.cliente
+        }
+
+        override fun onFailure(p0: Call<ResultClientProfile>, p1: Throwable) {
+            Log.i("Falhou!!!", p1.toString())
+        }
+
+    })
 
     var sobreNosState = remember{
         mutableStateOf(false)
@@ -155,10 +159,12 @@ fun ClientProfile(navController: NavHostController,  idCliente: String, mainActi
                 }
                 Spacer(Modifier.height(10.dp))
                 Text(
-                    text = perfilCliente.value.nome_fanstasia,
+                    text = perfilCliente.value.nome_fantasia,
                     fontSize = 19.sp,
                     fontWeight = FontWeight.Bold,
-                    fontStyle = FontStyle.Italic
+                    fontStyle = FontStyle.Italic,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(horizontal = 6.dp)
                 )
                 Spacer(Modifier.height(30.dp))
                 Row(
@@ -247,7 +253,7 @@ fun ClientProfile(navController: NavHostController,  idCliente: String, mainActi
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    if (sobreNosState.value) SobreNos(perfilCliente)
+                    if (sobreNosState.value) SobreNos(perfilCliente,navController, mainActivity)
                     else Feedback()
                 }
             }
@@ -257,38 +263,62 @@ fun ClientProfile(navController: NavHostController,  idCliente: String, mainActi
 
 
 @Composable
-fun SobreNos(clientePerfil: MutableState<ClientePerfil>){
+fun SobreNos(clientePerfil: MutableState<ClientePerfil>, navController: NavHostController, context: Context){
 
     var enderecoCliente = remember {
         mutableStateOf(Endereco())
     }
 
-    
+    var bicosList = remember {
+        mutableStateOf(listOf<Bico>())
+    }
+    var isLoadingState = remember{
+        mutableStateOf(true)
+    }
+    var errorState = remember{
+        mutableStateOf(true)
+    }
 
-    val callEndereco = RetrofitFactory()
-        .getEnderecoService()
-        .getViaCep(clientePerfil.value.cep)
+    val cliente = ClienteId(id_cliente = clientePerfil.value.id)
 
-    callEndereco.enqueue(object: Callback<Endereco> {
-        override fun onResponse(p0: Call<Endereco>, res: Response<Endereco>) {
-            Log.i("response:", res.body()!!.toString())
-            enderecoCliente.value = res.body()!!
+    val callBicoList = RetrofitFactory()
+        .getBicoService()
+        .getBicosByCLiente(cliente)
+
+    callBicoList.enqueue(object: Callback<ResultBicosPremium>{
+        override fun onResponse(call: Call<ResultBicosPremium>, res: Response<ResultBicosPremium>) {
+            val bicos = res.body()?.bico
+            if(bicos != null){
+                bicosList.value = bicos
+            }else{
+                Log.i("Error: ", "A lista de bicos retornou nula")
+            }
+            isLoadingState.value = false
         }
 
-        override fun onFailure(p0: Call<Endereco>, t: Throwable) {
-            Log.i("Falhou!!!", t.toString())
+        override fun onFailure(call: Call<ResultBicosPremium>, t: Throwable) {
+            Log.i("Falhou:", t.toString())
+            errorState.value = true
         }
-
     })
 
-    OutlinedTextField(value = "Endereço: ${enderecoCliente.value.logradouro}", onValueChange = {}, enabled = false)
-    OutlinedTextField(value = "Imagens da Localização:", onValueChange = {}, enabled = false)
-    OutlinedTextField(value = "Email de contato: ${clientePerfil.value.email}", onValueChange = {}, enabled = false)
-    OutlinedTextField(value = "Telefone de contato: ${clientePerfil.value.telefone}", onValueChange = {}, enabled = false)
-}
 
-@Composable
-fun ClientInfo() {
+
+//    val callEndereco = RetrofitFactory()
+//        .getEnderecoService()
+//        .getViaCep(clientePerfil.value.cep)
+//
+//    callEndereco.enqueue(object: Callback<Endereco> {
+//        override fun onResponse(p0: Call<Endereco>, res: Response<Endereco>) {
+//            Log.i("response:", res.body()!!.toString())
+//            enderecoCliente.value = res.body()!!
+//        }
+//
+//        override fun onFailure(p0: Call<Endereco>, t: Throwable) {
+//            Log.i("Falhou!!!", t.toString())
+//        }
+//
+//    })
 
     Column(
         modifier = Modifier.padding(vertical = 24.dp, horizontal = 36.dp),
@@ -307,7 +337,7 @@ fun ClientInfo() {
                 modifier = Modifier
                     .padding(horizontal = 10.dp, vertical = 2.dp)
                     .fillMaxSize(),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.Top
             ) {
                 Text(
                     "Endereço: ",
@@ -327,23 +357,11 @@ fun ClientInfo() {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(100.dp),
+                .height(50.dp),
             colors = CardDefaults.cardColors(
                 containerColor = Color.White
             )
         ) {
-            Row(
-                modifier = Modifier
-                    .padding(horizontal = 10.dp)
-                    .fillMaxSize()
-            ) {
-                Text(
-                    "Fotos da localização: ",
-                    fontFamily = Inter,
-                    color = Color.Gray,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
         }
         Spacer(modifier = Modifier.height(24.dp))
         Card(
@@ -359,16 +377,16 @@ fun ClientInfo() {
                     .padding(horizontal = 10.dp)
                     .fillMaxSize()
             ) {
-                Text(
-                    "Contatos ",
-                    fontFamily = Inter,
-                    color = Color.Gray,
-                    fontWeight = FontWeight.SemiBold
-                )
                 Column {
 
                     Text(
-                        "+55 11 93938-4756 ",
+                        "Telefone: +55 ${clientePerfil.value.telefone}",
+                        fontFamily = Inter,
+                        color = Color.Gray,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Text(
+                        "Email: ${clientePerfil.value.email}",
                         fontFamily = Inter,
                         color = Color.Gray,
                         fontWeight = FontWeight.SemiBold
@@ -376,12 +394,151 @@ fun ClientInfo() {
                 }
             }
         }
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(Modifier.height(10.dp))
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                text = "Anúncios",
+                textAlign = TextAlign.Center,
+                fontFamily = Inter,
+                fontStyle = FontStyle.Italic,
+                fontWeight = FontWeight.SemiBold,
+                color = Color.Black
 
+            )
+                Box(
+                    modifier = Modifier
+                        .background(Color(0xffF07B07))
+                        .height(1.dp)
+                        .width(100.dp)
+
+                )
+        }
+        LazyColumn {
+            items(bicosList.value){ bico ->
+                BicoCard(bico, navController, context)
+            }
+
+        }
+}
+
+
+
+}
+@Composable
+fun BicoCard(bico: Bico, navController: NavHostController, context: Context) {
+
+    val userPreferences = UserPreferences(context)
+    val userIdFlow = userPreferences.userId.collectAsState(initial = null)
+    val user = userIdFlow.value
+
+    var candidateList = remember {
+        mutableStateOf(listOf<Candidatos>())
+    }
+
+    val callCandidateList = RetrofitFactory()
+        .getBicoService()
+        .getCandidatosByBico(bico.id)
+
+    callCandidateList.enqueue(object: Callback<ResultCandidatos>{
+        override fun onResponse(call: Call<ResultCandidatos>, res: Response<ResultCandidatos>) {
+            if(res.code() == 200){
+                candidateList.value = res.body()!!.candidatos
+            }
+        }
+
+        override fun onFailure(call: Call<ResultCandidatos>, t: Throwable) {
+            Log.i("Falhou:", t.toString())
+            t.printStackTrace()
+        }
+    })
+
+    var candidatado = remember{
+        mutableStateOf(false)
+    }
+
+    if(candidateList.value.isNotEmpty()){
+        for (item in candidateList.value){
+            if (item.id_candidato == user){
+                candidatado.value = true
+            }
+        }
+    }else{
 
     }
 
+    val grayColor = 0xff6D6D6D
+    val cinzaEscuro = 0xff888888
+
+    Row (modifier = Modifier.padding(16.dp)){
+        Column (
+            modifier = Modifier.padding(vertical = 4.dp, horizontal = 6.dp)
+        ){
+            Card (modifier = Modifier.clickable { navController.navigate("bico/${bico.id}/${candidatado.value}") }){
+                Row (modifier = Modifier
+                    .height(180.dp)
+                    .fillMaxWidth()
+                    .background(Color.White)){
+                    Card (
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .width(10.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color(0xffF07B07),
+                        ),
+                        shape = RectangleShape
+                    ){}
+                    Column (
+                        modifier = Modifier
+                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                            .fillMaxHeight(),
+                        verticalArrangement = Arrangement.SpaceAround
+                    ){
+                        Text(
+                            text = bico.titulo,
+                            fontFamily = Inter,
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color(grayColor)
+                        )
+                        Text(
+                            text = bico.descricao,
+                            fontFamily = Inter,
+                            fontSize = 15.sp,
+                            lineHeight = 15.sp,
+                            color = Color(cinzaEscuro)
+                        )
+                        Column {
+                            Text(
+                                text = "Jandira - SP",
+                                fontFamily = Inter,
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color(grayColor)
+                            )
+                        }
+
+                        Row (
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(end = 8.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ){
+                            Text(
+                                text ="R$" + bico.salario,
+                                fontFamily = Inter,
+                                fontWeight = FontWeight.Bold,
+                                lineHeight = 12.sp,
+                                color = Color(0xffF07B07)
+                            ) }
+                    }
+                }
+            }
+
+        }
+    }
+
 }
+
 
 @Composable
 fun Feedback(){

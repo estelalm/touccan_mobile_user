@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import br.senai.sp.jandira.touccanuser.R
 import br.senai.sp.jandira.touccanuser.UserPreferences
+import br.senai.sp.jandira.touccanuser.model.UserId
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -110,10 +111,11 @@ fun BottomAppBar(navController: NavHostController, context: Context) {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceAround
         ) {
-
-
             IconButton(
-                onClick = {}
+                onClick = {
+                    val userId = userIdFlow.value?.let { UserId(id = it) }
+                    navController.navigate("home/${userId}")
+                }
             ) {
                 Icon(
                     painter = painterResource(R.drawable.home),

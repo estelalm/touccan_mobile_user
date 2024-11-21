@@ -2,6 +2,7 @@ package br.senai.sp.jandira.touccanuser.screens
 
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -23,6 +24,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -35,20 +38,33 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import br.senai.sp.jandira.touccanuser.MainActivity
 import br.senai.sp.jandira.touccanuser.R
+import br.senai.sp.jandira.touccanuser.UserPreferences
 import br.senai.sp.jandira.touccanuser.model.Bico
+import br.senai.sp.jandira.touccanuser.model.Candidato
 import br.senai.sp.jandira.touccanuser.model.ResultBico
 import br.senai.sp.jandira.touccanuser.service.RetrofitFactory
 import br.senai.sp.jandira.touccanuser.ui.theme.Inter
+import kotlinx.coroutines.delay
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BicoDetails(navController: NavHostController, idBico: String, mainActivity: MainActivity) {
+fun BicoDetails(
+    navController: NavHostController,
+    idBico: String,
+    mainActivity: MainActivity,
+    candidatado: Boolean, ) {
 
-    Log.i("ID DO BICO", idBico)
+    val userPreferences = UserPreferences(mainActivity)
+    val userIdFlow = userPreferences.userId.collectAsState(initial = null)
+    val user = userIdFlow.value
+
     val mainOrange = 0xffF07B07
 
     var bico = remember{ mutableStateOf( Bico())}
@@ -218,19 +234,103 @@ fun BicoDetails(navController: NavHostController, idBico: String, mainActivity: 
                     }
                 }
 
-
-                Button(
-                    onClick = {
-
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(mainOrange)
-                    ),
-                    shape = RoundedCornerShape(10.dp),
-                    modifier = Modifier.padding(top = 24.dp)
-                ) {
-                    Text("Candidatar-se", fontFamily = Inter, fontWeight = FontWeight.Black)
+                val dataFinal = LocalDate.parse(bico.value.data_limite.split("T")[0].split("-").joinToString("-"))
+                val horarioFinal = LocalTime.parse(bico.value.horario_limite.split("T")[1].split(".")[0].split(
+                    ":"
+                ).slice(0..1).joinToString(":"))
+                val dataHoraFinal = LocalDateTime.of(dataFinal, horarioFinal)
+                var finishState = remember{ mutableStateOf(false) }
+                LaunchedEffect(Unit) {
+                    while (true) { // Atualiza a cada segundo
+                        val agora = LocalDateTime.now()
+                        finishState.value = when {
+                            dataHoraFinal.isBefore(agora) -> false
+                            dataHoraFinal.isAfter(agora) -> true
+                            else -> true
+                        }
+                        delay(2000) // Espera 1 segundo
+                    }
                 }
+                val candidatou = remember{
+                    mutableStateOf(false)
+                }
+                if(candidatado || candidatou.value){
+                    Text("Aguardando confirmação", fontFamily = Inter, fontWeight = FontWeight.Black)
+//                    Button(
+//                        onClick = {
+//
+//                        },
+//                        colors = ButtonDefaults.buttonColors(
+//                            containerColor = Color(mainOrange)
+//                        ),
+//                        shape = RoundedCornerShape(10.dp),
+//                        modifier = Modifier.padding(top = 24.dp)
+//                    ) {
+//                        Text("Iniciar um bate-papo", fontFamily = Inter, fontWeight = FontWeight.Black)
+//                    }
+//                    Button(
+//                        onClick = {
+//
+//                        },
+//                        enabled = finishState.value,
+//                        colors = ButtonDefaults.buttonColors(
+//                            containerColor = Color(mainOrange)
+//                        ),
+//                        shape = RoundedCornerShape(10.dp),
+//                        modifier = Modifier.padding(top = 24.dp)
+//                    ) {
+//                        Text("Finalizar trabalho", fontFamily = Inter, fontWeight = FontWeight.Black)
+//                    }
+                }else{
+                    var toastMessageState = remember{
+                        mutableStateOf("")
+                    }
+
+                    Button(
+
+                        onClick = {
+
+
+                            val candidato = user?.let {
+                                Candidato(
+                                    id_bico = bico.value.id,
+                                    id_user = it
+                                )
+                            }
+
+                            val postCandidato = candidato?.let {
+                                RetrofitFactory()
+                                    .getBicoService()
+                                    .postCandidato(it)
+                            }
+
+                            if (postCandidato != null) {
+                                postCandidato.enqueue(object: Callback<Candidato>{
+                                    override fun onResponse(call: Call<Candidato>, res: Response<Candidato>){
+                                        toastMessageState.value = "Candidatou-se com sucesso"
+                                        candidatou.value = true
+                                        Toast.makeText(mainActivity, toastMessageState.value, Toast.LENGTH_SHORT).show()
+
+                                    }
+
+                                    override fun onFailure(call: Call<Candidato>, t: Throwable){
+                                        Log.i("Falhou:", t.toString())
+                                        toastMessageState.value = "Falha em candidatar-se"
+                                        Toast.makeText(mainActivity, toastMessageState.value, Toast.LENGTH_SHORT).show()
+                                    }
+                                })
+                            }
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(mainOrange)
+                        ),
+                        shape = RoundedCornerShape(10.dp),
+                        modifier = Modifier.padding(top = 24.dp)
+                    ) {
+                        Text("Candidatar-se", fontFamily = Inter, fontWeight = FontWeight.Black)
+                    }
+                }
+
             }
 
 

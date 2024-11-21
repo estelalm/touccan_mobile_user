@@ -26,6 +26,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
@@ -44,15 +46,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import br.senai.sp.jandira.touccanuser.MainActivity
-import br.senai.sp.jandira.touccanuser.UserPreferences
+import br.senai.sp.jandira.touccanuser.R
 import br.senai.sp.jandira.touccanuser.model.Bico
+import br.senai.sp.jandira.touccanuser.model.BicoPremium
 import br.senai.sp.jandira.touccanuser.model.Candidato
 import br.senai.sp.jandira.touccanuser.model.Candidatos
 import br.senai.sp.jandira.touccanuser.model.ResultBicos
+import br.senai.sp.jandira.touccanuser.model.ResultBicosPremium
 import br.senai.sp.jandira.touccanuser.model.ResultCandidatos
 import br.senai.sp.jandira.touccanuser.model.UserId
 import br.senai.sp.jandira.touccanuser.service.RetrofitFactory
 import br.senai.sp.jandira.touccanuser.ui.theme.Inter
+import br.senai.sp.jandira.touccanuser.ui.theme.MainOrange
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -68,7 +73,6 @@ fun Home(
 
     Log.i("User:", idUser.toString())
     val id = idUser.id.toString()
-    Log.i("ID USUARIO HOME", id)
 
     var bicosList = remember {
         mutableStateOf(listOf<Bico>())
@@ -76,21 +80,32 @@ fun Home(
     var isLoadingPertoDeVoce = remember{
         mutableStateOf(true)
     }
-    var isLoadingUrgente = remember{
-        mutableStateOf(true)
-    }
     var errorPertoDeVoce = remember {
         mutableStateOf(false)
     }
+    var errorPertoDeVoceMessage = remember {
+        mutableStateOf("Não há bicos perto de você!")
+    }
 
+
+    var isLoadingUrgente = remember{
+        mutableStateOf(true)
+    }
+    var urgenteList = remember {
+        mutableStateOf(listOf<Bico>())
+    }
+    var errorUrgente = remember {
+        mutableStateOf(false)
+    }
 
     val callBicoList = RetrofitFactory()
         .getBicoService()
-        .getAllBicos()
+        .getBicoByCep(user.cep)
 
     callBicoList.enqueue(object: Callback<ResultBicos>{
         override fun onResponse(call: Call<ResultBicos>, res: Response<ResultBicos>) {
             val bicos = res.body()?.bicos
+            Log.i("Cep bicos: ", bicos.toString())
             if(bicos != null){
                 bicosList.value = bicos
             }else{
@@ -102,6 +117,27 @@ fun Home(
         override fun onFailure(call: Call<ResultBicos>, t: Throwable) {
             Log.i("Falhou:", t.toString())
             errorPertoDeVoce.value = true
+        }
+    })
+    val callUrgenteList = RetrofitFactory()
+        .getBicoService()
+        .getBicosPremium()
+
+    callUrgenteList.enqueue(object: Callback<ResultBicosPremium>{
+        override fun onResponse(call: Call<ResultBicosPremium>, res: Response<ResultBicosPremium>) {
+            val bicos = res.body()?.bico
+            Log.i("resposta urgente: ", res.body().toString())
+            if(bicos != null){
+                urgenteList.value = bicos
+            }else{
+                Log.i("Error: ", "A lista de bicos retornou nula")
+            }
+            isLoadingUrgente.value = false
+        }
+
+        override fun onFailure(call: Call<ResultBicosPremium>, t: Throwable) {
+            Log.i("Falhou:", t.toString())
+            errorUrgente.value = true
         }
     })
 
@@ -200,23 +236,36 @@ fun Home(
                 }
             }
             LazyColumn (contentPadding = PaddingValues(0.dp)){
+
+                var isPremium = false
                 if(pertoDeVoceState.value){
                     if (isLoadingPertoDeVoce.value) {
                         item(){
                             Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center){ CircularProgressIndicator(color = Color(laranja)) }
                         }
                     }else{
-                        items(bicosList.value){bico ->
-                            AnuncioCard(bico, navController, idUser.id, mainActivity)
+                        if(bicosList.value.isNotEmpty()){
+                            items(bicosList.value){bico ->
+
+                                AnuncioCard(bico, navController, idUser.id, mainActivity, isPremium)
+                            }
+                        }else{
+                            item(){ Text(text = errorPertoDeVoceMessage.value, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)}
                         }
+
                     }
 
                 }else{
-                    item(){
-                        Row (
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.Center
-                        ){ Text("Não há nenhum trabalho urgente", modifier = Modifier.padding(10.dp)) }
+                    if (isLoadingUrgente.value) {
+                        item(){
+                            Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center){ CircularProgressIndicator(color = Color(laranja)) }
+                        }
+                    }else{
+                        items(urgenteList.value){bico ->
+                            isPremium = true
+                            AnuncioCard(bico, navController, idUser.id, mainActivity, isPremium)
+                        }
+                    }
 
                     }
                 }
@@ -226,10 +275,15 @@ fun Home(
 
     }
 
-}
 
 @Composable
-fun AnuncioCard(bico: Bico, navController: NavHostController, user: Int, mainActivity: MainActivity) {
+fun AnuncioCard(
+    bico: Bico,
+    navController: NavHostController,
+    user: Int,
+    mainActivity: MainActivity,
+    isPremium: Boolean,
+) {
 
     val candidatou = remember{
         mutableStateOf(false)
@@ -309,7 +363,7 @@ fun AnuncioCard(bico: Bico, navController: NavHostController, user: Int, mainAct
                     navController.navigate("perfilCliente/${bico.cliente[0].id}")
                 }
             )
-            Card (modifier = Modifier.clickable { navController.navigate("bico/${bico.id}") }){
+            Card (modifier = Modifier.clickable { navController.navigate("bico/${bico.id}/${candidatado.value}") }){
                 Row (modifier = Modifier
                     .height(180.dp)
                     .fillMaxWidth()
@@ -329,13 +383,22 @@ fun AnuncioCard(bico: Bico, navController: NavHostController, user: Int, mainAct
                             .fillMaxHeight(),
                         verticalArrangement = Arrangement.SpaceAround
                     ){
-                        Text(
-                            text = bico.titulo,
-                            fontFamily = Inter,
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = Color(grayColor)
-                        )
+                        Row {
+                            Text(
+                                text = bico.titulo,
+                                fontFamily = Inter,
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color(grayColor)
+                            )
+                            if(isPremium){
+                                Icon(
+                                    painter = painterResource(R.drawable.fogo), "Fogo", tint = MainOrange
+                                )
+                            }
+
+                        }
+
                         Text(
                             text = bico.descricao,
                             fontFamily = Inter,
@@ -437,12 +500,3 @@ fun AnuncioCard(bico: Bico, navController: NavHostController, user: Int, mainAct
 
 }
 
-
-//@Preview (showSystemUi = true, showBackground = true)
-//@Composable
-//private fun HomePreview() {
-//    Surface (modifier = Modifier.fillMaxSize(), color = Color(0xFFEBEBEB)) {
-//        Home()
-//    }
-//
-//}

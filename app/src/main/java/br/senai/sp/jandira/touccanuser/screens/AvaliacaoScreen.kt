@@ -3,6 +3,7 @@ package br.senai.sp.jandira.touccanuser.screens
 
 import android.annotation.SuppressLint
 import android.util.Log
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,6 +31,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -43,12 +46,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import br.senai.sp.jandira.touccanuser.MainActivity
 import br.senai.sp.jandira.touccanuser.R
+import br.senai.sp.jandira.touccanuser.UserPreferences
+import br.senai.sp.jandira.touccanuser.model.AvaliacaoUser
 import br.senai.sp.jandira.touccanuser.model.Bico
 import br.senai.sp.jandira.touccanuser.model.ResultBico
 import br.senai.sp.jandira.touccanuser.service.RetrofitFactory
 import br.senai.sp.jandira.touccanuser.ui.theme.Inter
 import br.senai.sp.jandira.touccanuser.ui.theme.MainOrange
+import br.senai.sp.jandira.touccanuser.viewmodel.FeedbackViewModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -57,50 +66,73 @@ import retrofit2.Response
 @SuppressLint("SuspiciousIndentation")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Avaliacao() {
+fun Avaliacao(navController: NavHostController, idBico: String, mainActivity: MainActivity) {
+
+    val userPreferences = UserPreferences(mainActivity)
+    val userIdFlow = userPreferences.userId.collectAsState(initial = null)
+
+    val feedbackViewModel: FeedbackViewModel = viewModel()
+
+    val stars by feedbackViewModel.stars.collectAsState()
+    val review by feedbackViewModel.review.collectAsState()
+
+    val bicoId =  idBico.toInt()
 
     var commentState = remember{
         mutableStateOf("")
     }
 
-    var bico = remember{ mutableStateOf( Bico())}
-
-    var isLoadingState = remember{
-        mutableStateOf(true)
-    }
-    var errorState = remember {
-        mutableStateOf(false)
+    var starsState = remember{
+        mutableStateOf(0)
     }
 
-    val callBico = RetrofitFactory()
-        .getBicoService()
-        .getBicoById(4)
 
-
-    callBico.enqueue(object: Callback<ResultBico> {
-        override fun onResponse(call: Call<ResultBico>, res: Response<ResultBico>) {
-            Log.i("Response: ", res.toString())
-            bico.value = res.body()!!.bico
-
-            isLoadingState.value = false
-        }
-
-        override fun onFailure(call: Call<ResultBico>, t: Throwable) {
-            Log.i("Falhou:", t.toString())
-            errorState.value = true
-        }
-    })
 
 
     Scaffold (
         containerColor = Color(0xFFEBEBEB),
         topBar = {
-            //br.senai.sp.jandira.touccanuser.utility.TopAppBar(navController, mainActivity)
+            br.senai.sp.jandira.touccanuser.utility.TopAppBar(navController, mainActivity)
         },
         bottomBar = {
-            //br.senai.sp.jandira.touccanuser.utility.BottomAppBar(navController, mainActivity)
+            br.senai.sp.jandira.touccanuser.utility.BottomAppBar(navController, mainActivity)
         }
     ) { innerpadding ->
+        var bico = remember{ mutableStateOf(Bico())}
+
+        var isLoadingState = remember{
+            mutableStateOf(true)
+        }
+        var errorState = remember {
+            mutableStateOf(false)
+        }
+
+        val callBico = RetrofitFactory()
+            .getBicoService()
+            .getBicoById(bicoId)
+
+
+        callBico.enqueue(object: Callback<ResultBico> {
+            override fun onResponse(call: Call<ResultBico>, res: Response<ResultBico>) {
+                Log.i("BICO DA AVALIAÇÃO: ", res.body().toString())
+
+                val body = res.body()
+                if (body != null && body.bico != null) {
+                    bico.value = body.bico
+                } else {
+                    // voltou nulo vishhh
+                }
+                Log.i("CLIENTE DO BICO: ", bico.value.cliente[0].toString())
+
+                isLoadingState.value = false
+            }
+
+            override fun onFailure(call: Call<ResultBico>, t: Throwable) {
+                Log.i("Falhou:", t.toString())
+                errorState.value = true
+                isLoadingState.value = false
+            }
+        })
 
         Column (
             modifier = Modifier
@@ -115,8 +147,7 @@ fun Avaliacao() {
 
 
             }
-            if(!isLoadingState.value){
-                CircularProgressIndicator(color = MainOrange)
+            if(!isLoadingState.value){ CircularProgressIndicator(color = MainOrange)
             }else{
                 Spacer(modifier = Modifier.height(50.dp))
                 Card (
@@ -137,9 +168,9 @@ fun Avaliacao() {
                         ) {
                             Row (verticalAlignment = Alignment.CenterVertically){
 
-
+                                Log.i("CLIENTE FORAAAAA: ", "AHAHAHHAH"+ bico.value.toString()) //não aparece no logcat
                                 Icon(painter = painterResource(R.drawable.person), contentDescription = "", tint = Color(0xff7E7E7E))
-                                Text("Empresa 1",
+                                Text(bico.value.cliente[0].nome_fantasia, //da erro de empty list
                                     color = Color(0xff504D4D),
                                     fontFamily = Inter,
                                     fontWeight = FontWeight.Normal,
@@ -151,10 +182,12 @@ fun Avaliacao() {
                                     fontFamily = Inter,
                                     fontWeight = FontWeight.SemiBold)
                                 Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 2.dp), horizontalArrangement = Arrangement.End){
-                                    val stars = 3
+
                                     for (i in 1..5) {
-                                        if(i <= stars) Icon(Icons.Filled.Star,contentDescription = "", tint = Color(0xFFFFBC06))
-                                        else
+                                        if(i <= stars) {Icon(Icons.Filled.Star,contentDescription = "",
+                                            tint = Color(0xFFFFBC06),
+                                            modifier = Modifier.clickable { feedbackViewModel.setStars(i) }
+                                        )}
                                         Icon(Icons.Filled.Star,contentDescription = "", tint = Color(0xFF504D4D))
                                     }
 
@@ -167,11 +200,18 @@ fun Avaliacao() {
                         ){
 
                             Column (){
-                                Text("Início: ",
+                                Text("Início: ${
+                                    bico.value.horario_inicio.split("T")[1].split(".")[0].split(
+                                        ":").slice(0..1).joinToString(":", postfix = "h")
+                                }",
                                     color = Color(0xff464646),
                                     fontFamily = Inter,
                                     fontWeight = FontWeight.Black)
-                                Text("Término: ",
+                                Text("Término: ${
+                                    bico.value.horario_limite.split("T")[1].split(".")[0].split(
+                                        ":"
+                                    ).slice(0..1).joinToString(":", postfix = "h")
+                                }",
                                     color = Color(0xff464646),
                                     fontFamily = Inter,
                                     fontWeight = FontWeight.Black)
@@ -180,7 +220,7 @@ fun Avaliacao() {
                                         color = Color(0xff464646),
                                         fontFamily = Inter,
                                         fontWeight = FontWeight.Black)
-                                    Text("R$",
+                                    Text("R$${bico.value.salario}",
                                         color = Color(0xff378420),
                                         fontFamily = Inter,
                                         fontWeight = FontWeight.Black)
@@ -205,7 +245,10 @@ fun Avaliacao() {
                                     "Deixe seu comentário:",
                                     fontFamily = Inter,
                                     fontSize = 16.sp)
-                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                Row(verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.clickable {
+                                        navController.navigate("denuncia/${userIdFlow.value}")
+                                    }) {
                                     Text(
                                         "Denunciar",
                                         modifier = Modifier.padding(end = 6.dp),
@@ -226,9 +269,9 @@ fun Avaliacao() {
                                     unfocusedContainerColor = Color.White,
                                     focusedContainerColor = Color.White
                                 ),
-                                value = commentState.value,
+                                value = review,
                                 onValueChange = {
-                                    commentState.value = it
+                                    feedbackViewModel.setReview(it)
                                 }
                             )
                         }
@@ -240,6 +283,36 @@ fun Avaliacao() {
 
                 Button(
                     onClick = {
+
+                        val avaliacao = userIdFlow.value?.let {
+                            AvaliacaoUser(
+                                id_cliente = bico.value.cliente[0].id,
+                                id_usuario = it,
+                                id_bico = bico.value.id,
+                                avaliacao = review,
+                                nota = stars
+                                )
+                        }
+
+                        val sendAvaliacao = avaliacao?.let {
+                            RetrofitFactory()
+                                .getFeedbackService()
+                                .saveUser(it)
+                        }
+
+
+                        if (sendAvaliacao != null) {
+                            sendAvaliacao.enqueue(object: Callback<AvaliacaoUser> {
+                                override fun onResponse(call: Call<AvaliacaoUser>, res: Response<AvaliacaoUser>) {
+                                    Log.i("Response: ", res.toString())
+                                }
+
+                                override fun onFailure(call: Call<AvaliacaoUser>, t: Throwable) {
+                                    Log.i("Falhou:", t.toString())
+                                }
+                            })
+                        }
+
 
                     },
                     colors = ButtonDefaults.buttonColors(
@@ -263,12 +336,5 @@ fun Avaliacao() {
     }
 
 
-}
-
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-private fun AvaliacaoPreview() {
-    Avaliacao()
 }
 

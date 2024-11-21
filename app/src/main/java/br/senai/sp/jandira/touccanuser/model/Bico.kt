@@ -12,12 +12,11 @@ data class Bico(
     val data_limite: String = "",
     val salario: Number = 0,
     val finalizado: Int = 0,
+    val final_c: Int = 0,
+    val final_u: Int = 0,
     val categoria: List<Categoria> = listOf(),
     val dificuldade: List<Dificuldade> = listOf(),
     val cliente: List<Cliente> = listOf()
 )
 
-//"id_dificuldade": 1,
-//"id_categoria": 1,
-//"id_cliente": 1
 

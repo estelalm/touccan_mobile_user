@@ -1,6 +1,7 @@
 package br.senai.sp.jandira.touccanuser.model
 
 data class BicoHistorico(
+    val id_bico: Int = 0,
     val bico: String = "",
     val descricao: String = "",
     val horario_inicio: String = "",

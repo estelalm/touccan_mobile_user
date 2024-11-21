@@ -5,7 +5,7 @@ data class ClientePerfil(
     var nome_responsavel: String = "",
     var cpf_responsavel: String = "",
     var email: String = "",
-    var nome_fanstasia: String = "",
+    var nome_fantasia: String = "",
     var razao_social: String = "",
     var telefone: String = "",
     var cnpj: String = "",

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -40,10 +41,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import br.senai.sp.jandira.touccanuser.MainActivity
-import br.senai.sp.jandira.touccanuser.model.Bico
+import br.senai.sp.jandira.touccanuser.model.AceitosResult
 import br.senai.sp.jandira.touccanuser.model.BicoHistorico
+import br.senai.sp.jandira.touccanuser.model.Candidatos
+import br.senai.sp.jandira.touccanuser.model.Contratado
 import br.senai.sp.jandira.touccanuser.model.HistoryResult
-import br.senai.sp.jandira.touccanuser.model.ResultBicos
+import br.senai.sp.jandira.touccanuser.model.ResultCandidatos
 import br.senai.sp.jandira.touccanuser.service.RetrofitFactory
 import br.senai.sp.jandira.touccanuser.ui.theme.Inter
 import br.senai.sp.jandira.touccanuser.ui.theme.MainOrange
@@ -58,6 +61,8 @@ import kotlinx.coroutines.delay
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun History(navController: NavHostController, idUser: Int, mainActivity: MainActivity) {
+
+
 
     var historyList = remember {
         mutableStateOf(listOf<BicoHistorico>())
@@ -140,7 +145,7 @@ fun History(navController: NavHostController, idUser: Int, mainActivity: MainAct
                     }
                 }else{
                     items(historyList.value){ bico ->
-                        HistoryCard(bico)
+                        HistoryCard(bico, idUser, navController)
 
                     }
                 }
@@ -155,8 +160,68 @@ fun History(navController: NavHostController, idUser: Int, mainActivity: MainAct
 
 
 @Composable
-fun HistoryCard(bico: BicoHistorico) {
+fun HistoryCard(bico: BicoHistorico, idUser: Int, navController: NavHostController) {
 
+    var aceitoState = remember{
+        mutableStateOf(Contratado())
+    }
+
+    val callStatusAceito = RetrofitFactory()
+        .getBicoService()
+        .getContratadosByBico(bico.id_bico)
+
+
+    callStatusAceito.enqueue(object: Callback<AceitosResult>{
+        override fun onResponse(call: Call<AceitosResult>, res: Response<AceitosResult>) {
+            Log.i("STATUS DE ACEITAÇÃO PARE DE SE ODIAR",res.body().toString())
+            if(res.code() == 200){
+                aceitoState.value = res.body()!!.candidatos
+            }
+        }
+
+        override fun onFailure(call: Call<AceitosResult>, t: Throwable) {
+            Log.i("Falhou:", t.toString())
+            t.printStackTrace()
+        }
+    })
+
+
+    var candidateList = remember {
+        mutableStateOf(listOf<Candidatos>())
+    }
+
+    val callCandidateList = RetrofitFactory()
+        .getBicoService()
+        .getCandidatosByBico(bico.id_bico)
+
+    callCandidateList.enqueue(object: Callback<ResultCandidatos>{
+        override fun onResponse(call: Call<ResultCandidatos>, res: Response<ResultCandidatos>) {
+            if(res.code() == 200){
+                candidateList.value = res.body()!!.candidatos
+            }
+        }
+
+        override fun onFailure(call: Call<ResultCandidatos>, t: Throwable) {
+            Log.i("Falhou:", t.toString())
+            t.printStackTrace()
+        }
+    })
+
+    var candidatado = remember{
+        mutableStateOf(false)
+    }
+
+    if(candidateList.value.isNotEmpty()){
+        for (item in candidateList.value){
+            if (item.id_candidato == idUser){
+                candidatado.value = true
+            }
+        }
+    }else{
+
+    }
+
+    //checar a data de término para finalizar o trabalho
     val dataInicio = LocalDate.parse(bico.data_inicio.split("T")[0].split("-").joinToString("-"))
     val horarioInicio = LocalTime.parse(bico.horario_inicio.split("T")[1].split(".")[0].split(
         ":"
@@ -170,13 +235,23 @@ fun HistoryCard(bico: BicoHistorico) {
     val dataHoraInicio = LocalDateTime.of(dataInicio, horarioInicio)
     val dataHoraFinal = LocalDateTime.of(dataFinal, horarioFinal)
 
-    var mensagem = remember{ mutableStateOf("") }
+    var mensagemCandidato = remember{ mutableStateOf("") }
+
+        mensagemCandidato.value = when{
+            aceitoState.value.escolhido == 1 && aceitoState.value.id_canditado == idUser -> "Aceito"
+            aceitoState.value.escolhido == 1 && aceitoState.value.id_canditado != idUser -> "Você não foi contratado para esse trabalho!"
+            aceitoState.value.escolhido != 1 -> "Aguardando contratação!"
+            else -> {"Aguardando contratação"}
+        }
+
+    var mensagemAceito = remember{ mutableStateOf("") }
     LaunchedEffect(Unit) {
         while (true) { // Atualiza a cada segundo
             val agora = LocalDateTime.now()
-            mensagem.value = when {
+            mensagemAceito.value = when {
                 dataHoraInicio.isBefore(agora) -> "Em andamento"
                 dataHoraInicio.isAfter(agora) -> "Pendente"
+                dataHoraFinal.isBefore(agora) -> "Aguardando finalização"
                 else -> "Em andamento"
             }
             delay(2000) // Espera 1 segundo
@@ -184,7 +259,19 @@ fun HistoryCard(bico: BicoHistorico) {
     }
 
 
-    ElevatedCard (modifier = Modifier.clickable { }.padding(horizontal = 18.dp, vertical = 8.dp),
+    ElevatedCard (
+        modifier = Modifier.clickable {
+            if(aceitoState.value.id_canditado == idUser){
+                navController.navigate("meuBico/${bico.id_bico}/${candidatado.value}")
+            }else{
+                if(aceitoState.value.escolhido == 0){
+                    navController.navigate("bico/${bico.id_bico}/${candidatado.value}")
+                }else{
+
+                }
+            }
+
+        }.padding(horizontal = 18.dp, vertical = 8.dp),
         elevation = CardDefaults.elevatedCardElevation(
             defaultElevation = 3.dp
         )){
@@ -201,7 +288,7 @@ fun HistoryCard(bico: BicoHistorico) {
                 ),
                 shape = RectangleShape
             ){}
-            Row (verticalAlignment = Alignment.CenterVertically){
+            Row (verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()){
 
                 Column (
                     modifier = Modifier
@@ -214,39 +301,66 @@ fun HistoryCard(bico: BicoHistorico) {
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ){
-                        Text( "${bico.nome_cliente} - ${bico.bico}",
+                        Text( bico.nome_cliente,
                             fontFamily = Inter,
                             fontWeight = FontWeight.Bold,
-                            modifier = Modifier.width(200.dp),
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.width(100.dp),
+                            maxLines = 1,
+                            color = Color.Black
+                        )
+                        Text( bico.bico,
+                            fontFamily = Inter,
+                            fontWeight = FontWeight.Bold,
                             overflow = TextOverflow.Ellipsis,
                             color = Color.Black
                         )
-                        if(bico.finalizado == 1){
-                            Button(onClick = {}, modifier = Modifier.height(28.dp).width(70.dp).padding(0.dp),
-                                shape = RoundedCornerShape(16.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = MainOrange)
-                            ) {
-                                Text("Avalie",
-                                    fontFamily = Inter,
-                                    fontSize = 8.sp,
-                                    modifier = Modifier.fillMaxWidth())
-                            }
-                        }
                     }
-
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ){
-                        if(bico.finalizado == 0){
-                            Text(bico.data_inicio.split("T")[0].split("-").slice(0..1).reversed().joinToString("/"), color = Color.Black)
-                            Text(mensagem.value,
+                        Text(bico.data_inicio.split("T")[0].split("-").reversed().subList(0, 2).joinToString("/"), color = Color.Black)
+                        Spacer(modifier = Modifier.width(20.dp))
+                        if(aceitoState.value.escolhido == 0){
+                            Text(mensagemCandidato.value,
                                 fontFamily = Inter,
                                 fontSize = 10.sp,
-                                color = if(mensagem.value == "Em andamento"){Color(0xFFFFCC01)}else{Color(0xFF8F0B0B)},
+                                color = Color.Black,
                                 modifier = Modifier.fillMaxWidth())
+                        }else{
+                            if(aceitoState.value.id_canditado == idUser){
+                                if(bico.finalizado == 0){
+
+                                    Text(mensagemAceito.value,
+                                        fontFamily = Inter,
+                                        fontSize = 10.sp,
+                                        color = if(mensagemAceito.value == "Em andamento"){Color(0xFFFFCC01)}else{Color(0xFF8F0B0B)},
+                                        modifier = Modifier.fillMaxWidth())
+                                }else{
+                                    Button(onClick = {
+                                        navController.navigate("avaliacao/${idUser}")
+
+                                    }, modifier = Modifier.height(28.dp).width(70.dp).padding(0.dp),
+                                        shape = RoundedCornerShape(16.dp),
+                                        colors = ButtonDefaults.buttonColors(containerColor = MainOrange)
+                                    ) {
+                                        Text("Avalie",
+                                            fontFamily = Inter,
+                                            fontSize = 8.sp,
+                                            modifier = Modifier.fillMaxWidth())
+                                    }
+                                }
+                            }else{
+                                Text(mensagemCandidato.value,
+                                    fontFamily = Inter,
+                                    fontSize = 10.sp,
+                                    color = Color.Black,
+                                    modifier = Modifier.fillMaxWidth())
+                            }
                         }
+
                     }
                 }
 

@@ -7,17 +7,21 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.Surface
 import androidx.compose.ui.graphics.Color
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import br.senai.sp.jandira.touccanuser.model.User
 import br.senai.sp.jandira.touccanuser.model.UserId
+import br.senai.sp.jandira.touccanuser.screens.Avaliacao
 import br.senai.sp.jandira.touccanuser.screens.BicoDetails
 import br.senai.sp.jandira.touccanuser.screens.ClientProfile
+import br.senai.sp.jandira.touccanuser.screens.Denuncia
 import br.senai.sp.jandira.touccanuser.screens.History
 import br.senai.sp.jandira.touccanuser.screens.Home
 import br.senai.sp.jandira.touccanuser.screens.Login
+import br.senai.sp.jandira.touccanuser.screens.MeuBicoDetails
 import br.senai.sp.jandira.touccanuser.screens.SetPassword
 import br.senai.sp.jandira.touccanuser.screens.SignUpScreen
 import br.senai.sp.jandira.touccanuser.screens.UserProfile
@@ -80,22 +84,37 @@ class MainActivity : ComponentActivity() {
                             }
                         }
 
-                        composable(route = "bico/{id}",
-                            arguments = listOf(navArgument("id") {
-//                                type = NavType.StringType
-                            })
+                        composable(route = "bico/{id}/{candidatou}",
+                            arguments = listOf( navArgument("id") { type = NavType.StringType },
+                                                navArgument("candidatou") { type = NavType.BoolType }
+                            )
                         ){ backStackEntry ->
 
                             val bicoId = backStackEntry.arguments?.getString("id")
+                            val candidatado = backStackEntry.arguments?.getBoolean("candidatou") ?: false
+
                             if (bicoId != null) {
-                                BicoDetails(navController, bicoId, this@MainActivity)
+                                BicoDetails(navController, bicoId, this@MainActivity,candidatado)
+                            }
+
+                        }
+
+                        composable(route = "meuBico/{id}/{candidatou}",
+                            arguments = listOf( navArgument("id") { type = NavType.StringType },
+                                navArgument("candidatou") { type = NavType.BoolType }
+                            )
+                        ){ backStackEntry ->
+
+                            val bicoId = backStackEntry.arguments?.getString("id")
+                            val candidatado = backStackEntry.arguments?.getBoolean("candidatou") ?: false
+
+                            if (bicoId != null) {
+                                MeuBicoDetails(navController, bicoId, this@MainActivity,candidatado)
                             }
 
                         }
 
                         composable(route = "perfilUsuario/{id}", arguments = listOf(navArgument("id"){
-
-
                         })
                         ){backStackEntry->
                             val userId = backStackEntry.arguments?.getString("id")
@@ -113,6 +132,30 @@ class MainActivity : ComponentActivity() {
                             val userId = backStackEntry.arguments?.getString("id")?.toInt()
                             if (userId != null) {
                                 History(navController, userId, this@MainActivity)
+                            }
+                        }
+
+                        composable(route = "avaliacao/{id}",
+                            arguments = listOf(navArgument("id") {
+//                                type = NavType.StringType
+                            })
+                        ){ backStackEntry ->
+
+                            val bicoId = backStackEntry.arguments?.getString("id")
+                            if (bicoId != null) {
+                                Avaliacao(navController, bicoId, this@MainActivity)
+                            }
+                        }
+
+                        composable(route = "avaliar/{id}",
+                            arguments = listOf(navArgument("id") {
+//                                type = NavType.StringType
+                            })
+                        ){ backStackEntry ->
+
+                            val bicoId = backStackEntry.arguments?.getString("id")
+                            if (bicoId != null) {
+                                Denuncia(navController, bicoId, this@MainActivity)
                             }
                         }
 
