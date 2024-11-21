@@ -54,7 +54,9 @@ import br.senai.sp.jandira.touccanuser.model.Candidatos
 import br.senai.sp.jandira.touccanuser.model.ResultBicos
 import br.senai.sp.jandira.touccanuser.model.ResultBicosPremium
 import br.senai.sp.jandira.touccanuser.model.ResultCandidatos
+import br.senai.sp.jandira.touccanuser.model.ResultUserProfile
 import br.senai.sp.jandira.touccanuser.model.UserId
+import br.senai.sp.jandira.touccanuser.model.UserPerfil
 import br.senai.sp.jandira.touccanuser.service.RetrofitFactory
 import br.senai.sp.jandira.touccanuser.ui.theme.Inter
 import br.senai.sp.jandira.touccanuser.ui.theme.MainOrange
@@ -70,6 +72,26 @@ fun Home(
     idUser: UserId,
     mainActivity: MainActivity,
 ) {
+
+    var perfilUsuario = remember {
+        mutableStateOf(UserPerfil())
+    }
+
+    val callUserPerfil = RetrofitFactory()
+        .getUserService()
+        .getUserById(idUser.id)
+
+    callUserPerfil.enqueue(object : Callback<ResultUserProfile> {
+        override fun onResponse(p0: Call<ResultUserProfile>, p1: Response<ResultUserProfile>) {
+            Log.i("response TelaC", p1.body()!!.toString())
+            perfilUsuario.value = p1.body()!!.usuario
+        }
+
+        override fun onFailure(p0: Call<ResultUserProfile>, p1: Throwable) {
+            Log.i("Falhou!!!", p1.toString())
+        }
+    })
+
 
     Log.i("User:", idUser.toString())
     val id = idUser.id.toString()
@@ -98,14 +120,17 @@ fun Home(
         mutableStateOf(false)
     }
 
+
+    val cep = if(perfilUsuario.value.cep.length != 8){"0"+perfilUsuario.value.cep}else{perfilUsuario.value.cep}
     val callBicoList = RetrofitFactory()
         .getBicoService()
-        .getBicoByCep(user.cep)
+        .getBicoByCep(cep)
 
     callBicoList.enqueue(object: Callback<ResultBicos>{
         override fun onResponse(call: Call<ResultBicos>, res: Response<ResultBicos>) {
             val bicos = res.body()?.bicos
             Log.i("Cep bicos: ", bicos.toString())
+
             if(bicos != null){
                 bicosList.value = bicos
             }else{

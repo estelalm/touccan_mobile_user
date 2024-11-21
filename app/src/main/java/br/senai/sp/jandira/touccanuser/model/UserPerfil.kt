@@ -12,6 +12,6 @@ data class UserPerfil(
     var foto: String = "",
     var biografia: String = "",
     var habilidade: String = "",
-    var id_formacao: Int = 0,
+    var formacao: String = "",
     var id_disponibilidade: Int = 0
 )

@@ -2,7 +2,12 @@ package br.senai.sp.jandira.touccanuser.screens
 
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
 import android.util.Log
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,7 +27,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -40,13 +44,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import br.senai.sp.jandira.touccanuser.MainActivity
@@ -54,7 +59,6 @@ import br.senai.sp.jandira.touccanuser.R
 import br.senai.sp.jandira.touccanuser.UserPreferences
 import br.senai.sp.jandira.touccanuser.model.AvaliacaoUser
 import br.senai.sp.jandira.touccanuser.model.Bico
-import br.senai.sp.jandira.touccanuser.model.ResultBico
 import br.senai.sp.jandira.touccanuser.service.RetrofitFactory
 import br.senai.sp.jandira.touccanuser.ui.theme.Inter
 import br.senai.sp.jandira.touccanuser.ui.theme.MainOrange
@@ -183,7 +187,9 @@ fun Avaliacao(navController: NavHostController, idBico: String, mainActivity: Ma
                         Row (
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween,
-                            modifier = Modifier.fillMaxWidth().padding(12.dp)
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(12.dp)
                         ) {
                             Row (verticalAlignment = Alignment.CenterVertically){
 
@@ -194,7 +200,9 @@ fun Avaliacao(navController: NavHostController, idBico: String, mainActivity: Ma
                                         color = Color(0xff504D4D),
                                         fontFamily = Inter,
                                         fontWeight = FontWeight.Normal,
-                                        modifier = Modifier.padding(start = 6.dp).width(100.dp))
+                                        modifier = Modifier
+                                            .padding(start = 6.dp)
+                                            .width(100.dp))
                                 }
                             }
                             Column (horizontalAlignment = Alignment.End){
@@ -202,7 +210,9 @@ fun Avaliacao(navController: NavHostController, idBico: String, mainActivity: Ma
                                     color = Color.Black,
                                     fontFamily = Inter,
                                     fontWeight = FontWeight.SemiBold)
-                                Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 2.dp), horizontalArrangement = Arrangement.End){
+                                Row(modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 2.dp), horizontalArrangement = Arrangement.End){
 
                                     for (i in 1..5) {
                                         if(i <= stars) {Icon(Icons.Filled.Star,contentDescription = "",
@@ -286,7 +296,10 @@ fun Avaliacao(navController: NavHostController, idBico: String, mainActivity: Ma
                                 }
                             }
                             OutlinedTextField(
-                                modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp).height(120.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 12.dp)
+                                    .height(120.dp),
                                 shape = RectangleShape,
                                 textStyle = TextStyle(
                                     fontSize = 12.sp,
@@ -352,18 +365,16 @@ fun Avaliacao(navController: NavHostController, idBico: String, mainActivity: Ma
                 ) {
                     Text("Salvar", fontFamily = Inter, fontWeight = FontWeight.Black)
                 }
-
-
-
-
-
-
-
         }
-
-
     }
-
-
 }
+
+
+private fun openImageChooser(){
+    Intent(Intent.ACTION_PICK).also {
+        it.type = "image/*"
+        val mimeTypes = arrayOf("images/jpeg", "image/png")
+    }
+}
+
 

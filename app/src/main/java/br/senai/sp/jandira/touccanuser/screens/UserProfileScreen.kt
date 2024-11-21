@@ -68,8 +68,6 @@ import retrofit2.Response
 import java.time.LocalDate
 import java.time.Period
 
-
-
 @Composable
 fun UserProfile(navController: NavHostController, usuarioId: String, mainActivity: MainActivity) {
     var perfilUsuario = remember {
@@ -285,8 +283,8 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
                     ) {
 
                         var formacaoState = remember {
-                            mutableStateOf(if(perfilUsuario.value.id_formacao == 0){"Escolha a formação"
-                            }else{perfilUsuario.value.id_formacao.toString()})
+                            mutableStateOf(if(perfilUsuario.value.formacao == ""){"Escolha a formação"
+                            }else{perfilUsuario.value.formacao})
                         }
                         var bioState = remember {
                             mutableStateOf("Nenhuma biografia descrita ainda!")
@@ -299,7 +297,7 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
                         habilidadeState.value = perfilUsuario.value.habilidade
 
                         var disponibilidadeState = remember {
-                            mutableStateOf(if(perfilUsuario.value.id_disponibilidade == 0){"Escolha a disponibilidade"}else{perfilUsuario.value.id_disponibilidade.toString()})
+                            mutableStateOf(if(perfilUsuario.value.id_disponibilidade == 0){"Manhã"}else{perfilUsuario.value.id_disponibilidade.toString()})
                         }
 
                         if (sobreNosState.value) {
@@ -310,7 +308,6 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
                                     containerColor = MainOrange
                                 ),
                                 modifier = Modifier
-                                    .padding(12.dp)
                                     .width(200.dp),
                                 onClick = {
                                     if (editState.value) {
@@ -320,8 +317,8 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
                                         perfilUsuario.value.biografia = bioState.value
                                         perfilUsuario.value.habilidade = habilidadeState.value
                                         perfilUsuario.value.id_disponibilidade = 1
-                                        perfilUsuario.value.id_formacao = 1
-                                        perfilUsuario.value.foto = "https://i.pinimg.com/236x/a8/da/22/a8da222be70a71e7858bf752065d5cc3.jpg"
+                                        perfilUsuario.value.formacao = formacaoState.value
+                                        perfilUsuario.value.foto = "https://static.todamateria.com.br/upload/ar/is/aristoteles-cke.jpg"
 
                                         Log.i("User:", perfilUsuario.value.toString() )
 
@@ -457,7 +454,10 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
                             errorContainerColor = Color.Transparent,
                             disabledIndicatorColor = Color.Transparent,
                             focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent
+                            unfocusedIndicatorColor = Color.Transparent,
+                            disabledPlaceholderColor = Color.Black,
+                            focusedPlaceholderColor = Color.Black,
+                            unfocusedPlaceholderColor = Color.Black
                         )
                     )
                 }

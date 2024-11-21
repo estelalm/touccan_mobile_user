@@ -142,20 +142,18 @@ fun ClientProfile(navController: NavHostController,  idCliente: String, mainActi
                     border = BorderStroke(5.dp, Color(0xffF07B07)),
                     elevation = CardDefaults.cardElevation(defaultElevation = 9.dp)
                 ) {
-                    AsyncImage(
-                        model = "",
-                        if (perfilCliente.value.foto == "" || perfilCliente.value.foto == null) "https://pin.it/36EuigXZ6"
-                        else perfilCliente.value.foto,
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.FillBounds
-                    )
-
-//                    Image(
-//                        painter = painterResource(R.drawable.cliente_pfp),
-//                        contentDescription = "",
-//                        modifier = Modifier.fillMaxSize(),
-//                        contentScale = ContentScale.FillBounds
-//                    )
+                    var asyncModel = remember {
+                        mutableStateOf("")
+                    }
+                    if (perfilCliente.value.foto == "" || perfilCliente.value.foto == null) {
+                        asyncModel.value =
+                            "https://i.pinimg.com/236x/21/9e/ae/219eaea67aafa864db091919ce3f5d82.jpg"
+                    } else {
+                        asyncModel.value = perfilCliente.value.foto
+                    }
+                    AsyncImage(asyncModel.value, "",
+                        contentScale = ContentScale.FillWidth, alignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize())
                 }
                 Spacer(Modifier.height(10.dp))
                 Text(
@@ -357,16 +355,6 @@ fun SobreNos(clientePerfil: MutableState<ClientePerfil>, navController: NavHostC
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(50.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = Color.White
-            )
-        ) {
-        }
-        Spacer(modifier = Modifier.height(24.dp))
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
                 .height(65.dp),
             colors = CardDefaults.cardColors(
                 containerColor = Color.White
@@ -378,7 +366,6 @@ fun SobreNos(clientePerfil: MutableState<ClientePerfil>, navController: NavHostC
                     .fillMaxSize()
             ) {
                 Column {
-
                     Text(
                         "Telefone: +55 ${clientePerfil.value.telefone}",
                         fontFamily = Inter,
@@ -394,7 +381,7 @@ fun SobreNos(clientePerfil: MutableState<ClientePerfil>, navController: NavHostC
                 }
             }
         }
-        Spacer(Modifier.height(10.dp))
+        Spacer(Modifier.height(16.dp))
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
                 text = "Anúncios",
