@@ -12,5 +12,6 @@ data class ClientePerfil(
     var cep: String = "",
     var senha: String = "",
     var premium: Int = 0,
-    var foto: String = ""
+    var foto: String = "",
+    var endereco: List<Endereco> = listOf()
 )

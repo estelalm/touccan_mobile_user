@@ -343,12 +343,23 @@ fun SobreNos(clientePerfil: MutableState<ClientePerfil>, navController: NavHostC
                     color = Color.Gray,
                     fontWeight = FontWeight.SemiBold
                 )
-                Text(
-                    "Rua numero cep endereco ",
-                    fontFamily = Inter,
-                    color = Color.Gray,
-                    fontWeight = FontWeight.SemiBold
-                )
+                if(clientePerfil.value.endereco.isNotEmpty()){
+
+                    val enderecoPerfil = clientePerfil.value.endereco[0]
+                    Text(
+                        "${enderecoPerfil.logradouro}",
+                        fontFamily = Inter,
+                        color = Color.Gray,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }else{
+                    Text(
+                        "Nenhum endereço encontrado",
+                        fontFamily = Inter,
+                        color = Color.Gray,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
             }
         }
         Spacer(modifier = Modifier.height(24.dp))
