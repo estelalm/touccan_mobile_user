@@ -59,7 +59,7 @@ fun Fail() {
                     .size(100.dp)
             )
             Text(
-                "O pagamento foi realizado com sucesso.",
+                "Não foi possível realizar o pagamento.",
                 textAlign = TextAlign.Center,
                 fontFamily = Inter,
                 fontSize = 20.sp,
