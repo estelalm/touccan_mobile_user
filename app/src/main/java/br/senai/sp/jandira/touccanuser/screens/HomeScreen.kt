@@ -51,9 +51,11 @@ import br.senai.sp.jandira.touccanuser.model.Bico
 import br.senai.sp.jandira.touccanuser.model.BicoPremium
 import br.senai.sp.jandira.touccanuser.model.Candidato
 import br.senai.sp.jandira.touccanuser.model.Candidatos
+import br.senai.sp.jandira.touccanuser.model.ClientePerfil
 import br.senai.sp.jandira.touccanuser.model.ResultBicos
 import br.senai.sp.jandira.touccanuser.model.ResultBicosPremium
 import br.senai.sp.jandira.touccanuser.model.ResultCandidatos
+import br.senai.sp.jandira.touccanuser.model.ResultClientProfile
 import br.senai.sp.jandira.touccanuser.model.ResultUserProfile
 import br.senai.sp.jandira.touccanuser.model.UserId
 import br.senai.sp.jandira.touccanuser.model.UserPerfil
@@ -305,6 +307,26 @@ fun AnuncioCard(
     mainActivity: MainActivity,
     isPremium: Boolean,
 ) {
+
+    var perfilCliente = remember {
+        mutableStateOf(ClientePerfil())
+    }
+
+    val callClientPerfil = RetrofitFactory()
+        .getClientService()
+        .getClientById(bico.cliente[0].id)
+
+    callClientPerfil.enqueue(object: Callback<ResultClientProfile> {
+        override fun onResponse(p0: Call<ResultClientProfile>, p1: Response<ResultClientProfile>) {
+            Log.i("response TelaC", p1.body()!!.toString())
+            perfilCliente.value = p1.body()!!.cliente
+        }
+
+        override fun onFailure(p0: Call<ResultClientProfile>, p1: Throwable) {
+            Log.i("Falhou!!!", p1.toString())
+        }
+
+    })
 
     val candidatou = remember{
         mutableStateOf(false)

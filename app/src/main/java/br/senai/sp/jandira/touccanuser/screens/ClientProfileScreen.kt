@@ -566,7 +566,7 @@ fun Feedback(clientId: Int){
             if(avaliacoesState.value.isEmpty()){
                 item {
                     Text(
-                        "Você ainda não foi avaliado!: ",
+                        "Esse usuário ainda não foi avaliado!: ",
                         fontFamily = Inter,
                         color = Color.Black,
                         textAlign = TextAlign.Center,

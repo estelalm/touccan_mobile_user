@@ -88,6 +88,8 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.7.0")
     implementation(kotlin("script-runtime"))
 
+    //WEBVIEW
+    implementation ("androidx.webkit:webkit:1.7.0")
 
     //JSON SERIALIZER
     implementation ("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")

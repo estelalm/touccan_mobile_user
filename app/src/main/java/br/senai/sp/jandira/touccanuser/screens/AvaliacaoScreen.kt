@@ -92,7 +92,7 @@ fun Avaliacao(navController: NavHostController, idBico: String, mainActivity: Ma
         mutableStateOf(0)
     }
 
-
+    val id_cliente = idBico
 
 
     Scaffold (
@@ -213,12 +213,13 @@ fun Avaliacao(navController: NavHostController, idBico: String, mainActivity: Ma
                                     .fillMaxWidth()
                                     .padding(horizontal = 2.dp), horizontalArrangement = Arrangement.End){
 
-                                    for (i in 1..5) {
-                                        if(i <= stars) {Icon(Icons.Filled.Star,contentDescription = "",
-                                            tint = Color(0xFFFFBC06),
-                                            modifier = Modifier.clickable { feedbackViewModel.setStars(i) }
-                                        )}
-                                        Icon(Icons.Filled.Star,contentDescription = "", tint = Color(0xFF504D4D))
+                                        for (i in 1..5) {
+                                            Icon(
+                                                imageVector = Icons.Filled.Star,
+                                                contentDescription = null,
+                                                tint = if (i <= stars) Color(0xFFFFBC06) else Color(0xFF504D4D),
+                                                modifier = Modifier.clickable { feedbackViewModel.setStars(i) }
+                                            )
                                     }
 
                                 }
@@ -328,7 +329,7 @@ fun Avaliacao(navController: NavHostController, idBico: String, mainActivity: Ma
                             bico?.let { it1 ->
                                 AvaliacaoUser(
 //                                    id_cliente = bico.cliente[0].id,
-                                    id_cliente = 1,
+                                    id_cliente = id_cliente.toInt(),
                                     id_usuario = it,
                                     id_bico = it1.id,
                                     avaliacao = review,
@@ -347,6 +348,7 @@ fun Avaliacao(navController: NavHostController, idBico: String, mainActivity: Ma
                         if (sendAvaliacao != null) {
                             sendAvaliacao.enqueue(object: Callback<AvaliacaoUser> {
                                 override fun onResponse(call: Call<AvaliacaoUser>, res: Response<AvaliacaoUser>) {
+                                    Log.i("Dados a serem enviados", avaliacao.toString())
                                     Log.i("Response: ", res.toString())
                                 }
 
