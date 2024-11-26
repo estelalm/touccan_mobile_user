@@ -59,6 +59,7 @@ import br.senai.sp.jandira.touccanuser.R
 import br.senai.sp.jandira.touccanuser.UserPreferences
 import br.senai.sp.jandira.touccanuser.model.AvaliacaoUser
 import br.senai.sp.jandira.touccanuser.model.Bico
+import br.senai.sp.jandira.touccanuser.model.ResultBico
 import br.senai.sp.jandira.touccanuser.service.RetrofitFactory
 import br.senai.sp.jandira.touccanuser.ui.theme.Inter
 import br.senai.sp.jandira.touccanuser.ui.theme.MainOrange
@@ -83,6 +84,7 @@ fun Avaliacao(navController: NavHostController, idBico: String, mainActivity: Ma
     val review by feedbackViewModel.review.collectAsState()
 
     val bicoId =  idBico.toInt()
+    Log.i("Bico id", bicoId.toString())
 
     var commentState = remember{
         mutableStateOf("")
@@ -119,43 +121,43 @@ fun Avaliacao(navController: NavHostController, idBico: String, mainActivity: Ma
 
         var bico = Bico()
 
-//        var isLoadingState = remember{
-//            mutableStateOf(true)
-//        }
-//        var errorState = remember {
-//            mutableStateOf(false)
-//        }
+        var isLoadingState = remember{
+            mutableStateOf(true)
+        }
+        var errorState = remember {
+            mutableStateOf(false)
+        }
         var clienteIdState = remember{
             mutableStateOf(0)
         }
 
-//        val callBico = RetrofitFactory()
-//            .getBicoService()
-//            .getBicoById(bicoId)
-//
-//
-//        callBico.enqueue(object: Callback<ResultBico> {
-//            override fun onResponse(call: Call<ResultBico>, res: Response<ResultBico>) {
-//                Log.i("BICO DA AVALIAÇÃO: ", res.body().toString())
-//
-//                val body = res.body()
-//                if (body != null && body.bico.id != 0) {
-//                    bico = body.bico
-//                    clienteIdState.value = bico.cliente[0].id
-//                } else {
-//                    // voltou nulo vishhh
-//                }
-//                Log.i("CLIENTE DO BICO: ", bico.cliente[0].toString())
-//
-//                isLoadingState.value = false
-//            }
-//
-//            override fun onFailure(call: Call<ResultBico>, t: Throwable) {
-//                Log.i("Falhou:", t.toString())
-//                errorState.value = true
-//                isLoadingState.value = false
-//            }
-//        })
+        val callBico = RetrofitFactory()
+            .getBicoService()
+            .getBicoById(bicoId)
+
+
+        callBico.enqueue(object: Callback<ResultBico> {
+            override fun onResponse(call: Call<ResultBico>, res: Response<ResultBico>) {
+                Log.i("BICO DA AVALIAÇÃO: ", res.body().toString())
+
+                val body = res.body()
+                if (body != null && body.bico.id != 0) {
+                    bico = body.bico
+                    clienteIdState.value = bico.cliente[0].id
+                } else {
+                    // voltou nulo vishhh
+                }
+                Log.i("CLIENTE DO BICO: ", bico.cliente[0].toString())
+
+                isLoadingState.value = false
+            }
+
+            override fun onFailure(call: Call<ResultBico>, t: Throwable) {
+                Log.i("Falhou:", t.toString())
+                errorState.value = true
+                isLoadingState.value = false
+            }
+        })
 
         Column (
             modifier = Modifier
@@ -328,10 +330,10 @@ fun Avaliacao(navController: NavHostController, idBico: String, mainActivity: Ma
                         val avaliacao = userIdFlow.value?.let {
                             bico?.let { it1 ->
                                 AvaliacaoUser(
-//                                    id_cliente = bico.cliente[0].id,
-                                    id_cliente = id_cliente.toInt(),
+                                    id_cliente = bico.cliente[0].id,
+//                                    id_cliente = id_cliente.toInt(),
                                     id_usuario = it,
-                                    id_bico = it1.id,
+                                    id_bico = idBico.toInt(),
                                     avaliacao = review,
                                     nota = stars
                                 )

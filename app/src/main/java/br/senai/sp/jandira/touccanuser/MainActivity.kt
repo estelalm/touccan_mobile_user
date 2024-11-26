@@ -17,6 +17,7 @@ import br.senai.sp.jandira.touccanuser.model.UserId
 import br.senai.sp.jandira.touccanuser.screens.Avaliacao
 import br.senai.sp.jandira.touccanuser.screens.BicoDetails
 import br.senai.sp.jandira.touccanuser.screens.ClientProfile
+import br.senai.sp.jandira.touccanuser.screens.Cofre
 import br.senai.sp.jandira.touccanuser.screens.Denuncia
 import br.senai.sp.jandira.touccanuser.screens.History
 import br.senai.sp.jandira.touccanuser.screens.Home
@@ -168,6 +169,18 @@ class MainActivity : ComponentActivity() {
                             val userId = backStackEntry.arguments?.getString("id")
 
                             MeuCartao(navController, userId, this@MainActivity) }
+
+                        composable(route = "cofrinho",
+                            arguments = listOf(navArgument("id") {
+//                                type = NavType.StringType
+                            })
+                        ){ backStackEntry ->
+
+                            val bicoId = backStackEntry.arguments?.getString("id")
+                            if (bicoId != null) {
+                                Cofre(navController, this@MainActivity)
+                            }
+                        }
 
                         }
                     }

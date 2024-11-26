@@ -1,6 +1,10 @@
 package br.senai.sp.jandira.touccanuser.screens
 
+import android.net.Uri
+import android.provider.MediaStore
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -75,6 +79,9 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.time.LocalDate
 import java.time.Period
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.LocalContext
+
 
 @Composable
 fun UserProfile(navController: NavHostController, usuarioId: String, mainActivity: MainActivity) {
@@ -119,6 +126,19 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
     var feedbackState = remember {
         mutableStateOf(false)
     }
+
+    var imageUrl = remember { mutableStateOf<String?>(null) }
+    var imageUri = remember { mutableStateOf<Uri?>(null) }
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = { uri: Uri? ->
+            imageUri.value = uri
+        }
+    )
+    val coroutineScope = rememberCoroutineScope()
+
+    val context = LocalContext.current
+
     Surface(modifier = Modifier.fillMaxSize(), color = Color(0xFFEBEBEB)) {
         Column(
             modifier = Modifier.fillMaxWidth()
@@ -157,13 +177,13 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
                     elevation = CardDefaults.cardElevation(defaultElevation = 9.dp)
                 ) {
 
-                    if (editState.value) Button(
+                    if (editState.value) { Button(
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color.LightGray
                         ),
                         modifier = Modifier.fillMaxSize(),
                         onClick = {
-
+                            imagePickerLauncher.launch("image/*")
                         }
                     ) {
                         Image(
@@ -172,6 +192,7 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
                             contentScale = ContentScale.Fit,
                             modifier = Modifier.padding(24.dp)
                         )
+                    }
                     }else{
                         var asyncModel = remember {
                             mutableStateOf("")
@@ -320,8 +341,21 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
                                 onClick = {
                                     if (editState.value) {
                                         val user = UserPerfil()
-                                        Log.i("disponibilidade", disponibilidadeState.value.id.toString())
-     
+
+
+//                                        imageUri?.let { uri ->
+//                                            coroutineScope.launch {
+//                                                val uploadedUrl = uri.value?.let {
+//                                                    uploadImageToCloudinary(
+//                                                        it, context)
+//                                                }
+//                                                imageUrl.value = uploadedUrl
+//
+//
+//
+//                                            }
+//                                        }
+
                                         perfilUsuario.value.nome = perfilUsuario.value.nome
                                         perfilUsuario.value.data_nascimento = perfilUsuario.value.data_nascimento.split("T")[0]
                                         perfilUsuario.value.biografia = bioState.value
@@ -329,7 +363,10 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
                                         perfilUsuario.value.id_disponibilidade = disponibilidadeState.value.id
                                         perfilUsuario.value.formacao = formacaoState.value
                                         perfilUsuario.value.foto = "https://static.todamateria.com.br/upload/ar/is/aristoteles-cke.jpg"
+//                                        uploadedUrl?.let { perfilUsuario.value.foto = it }
+
                                         Log.i("dados a serem enviados", perfilUsuario.value.toString())
+
 
                                         Log.i("User:", perfilUsuario.value.toString() )
 
@@ -346,6 +383,7 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
                                                 Log.i("Falhou!!!", t.toString())
                                             }
                                         })
+
 
                                     }
                                     editState.value = !editState.value
@@ -726,3 +764,40 @@ fun HistoryUser(userId: Int){
     }
 
 }
+
+
+//
+//suspend fun uploadImageToCloudinary(imageUri: Uri, context: Context): String? {
+//    return withContext(Dispatchers.IO) {
+//        try {
+//            val cloudinary = Cloudinary(ObjectUtils.asMap(
+//                "cloud_name", " dneuh2x7n",
+//                "api_key", "482649795316662",
+//                "api_secret", "LVUcSSkHp79gYWqB4zvbxUODh_g"
+//            ))
+//
+//            // Converter a URI em caminho real
+//            val file = File(getRealPathFromURI(imageUri, context))
+//
+//            // Fazer o upload da imagem
+//            val uploadResult = cloudinary.uploader().upload(file, ObjectUtils.emptyMap())
+//
+//            // Obter o URL público da imagem
+//            uploadResult["secure_url"] as? String
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//            null
+//        }
+//    }
+//}
+//
+//// Função para obter o caminho real do arquivo a partir da URI
+//fun getRealPathFromURI(contentUri: Uri, context: Context): String {
+//    val proj = arrayOf(MediaStore.Images.Media.DATA)
+//    val cursor = context.contentResolver.query(contentUri, proj, null, null, null)
+//    cursor?.moveToFirst()
+//    val columnIndex = cursor?.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+//    val filePath = columnIndex?.let { cursor.getString(it) }
+//    cursor?.close()
+//    return filePath ?: ""
+//}

@@ -73,7 +73,9 @@ fun TopAppBar(navController: NavHostController, context: Context) {
                         tint= Color.Black
                     )
                 }
-                IconButton(onClick = {}) {
+                IconButton(onClick = {
+                    navController.navigate("cofrinho")
+                }) {
                     Icon(
                         painter = painterResource(R.drawable.carteira),
                         contentDescription = "Carteira: Ícone de carteira",

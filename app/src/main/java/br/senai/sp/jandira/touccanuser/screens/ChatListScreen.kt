@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -150,43 +151,67 @@ fun ChatList() {
                 )
             }
         ) { innerpadding ->
+
+        var searchState = remember {
+            mutableStateOf("")
+        }
+            var activeState = remember {
+                mutableStateOf(false)
+            }
+
             Column(
                 modifier = Modifier
                     .padding(innerpadding)
                     .fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                
-                Card(
-                    modifier = Modifier
-                    .width(300.dp)
-                    .height(70.dp)
-                    .padding(bottom = 24.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color.White
-                    )
-
-                ) {
-                    SearchBar(
-                        colors = SearchBarDefaults.colors(containerColor = Color.Transparent),
-                        query = "",
-                        onQueryChange = {},
-                        active = true,
-                        onActiveChange = {},
-                        onSearch = {},
-                        placeholder = {
-                            Text("Pesquisar conversas")
-                        }
+                Column (modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+                    Card(
+                        modifier = Modifier
+                            .width(300.dp)
+                            .height(70.dp)
+                            .padding(bottom = 24.dp),
+                        shape = RoundedCornerShape(50.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color.White
+                        )
                     ) {
-                        
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(horizontal = 8.dp) // Ajuste fino para centralizar o conteúdo
+                        ) {
+                            SearchBar(
+                                modifier = Modifier
+                                    .offset(y= -18.dp)
+                                    .fillMaxHeight() // Garante que ocupe toda a altura disponível
+                                    .fillMaxWidth(),
+                                query = searchState.value,
+                                onQueryChange = { searchState.value = it },
+                                active = activeState.value,
+                                onActiveChange = { activeState.value = it },
+                                onSearch = { /* Ação ao realizar a pesquisa */ },
+                                placeholder = {
+                                    Text(
+                                        text = "Pesquisar conversas",
+                                        color = Color.Gray,
+                                    )
+                                },
+                                colors = SearchBarDefaults.colors(
+                                    containerColor = Color.Transparent
+                                )
+                            ){}
+                        }
                     }
+
                     Box(
                         modifier = Modifier
                             .background(Color(MainOrange.value))
                             .height(1.dp)
-                            .width(200.dp)
+                            .width(160.dp)
                     )
                 }
+
 
                 if (!chatListState.value) {
                     Column (
