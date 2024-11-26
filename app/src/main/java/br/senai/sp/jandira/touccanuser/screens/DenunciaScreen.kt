@@ -1,6 +1,7 @@
 package br.senai.sp.jandira.touccanuser.screens
 
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,6 +28,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -36,20 +38,36 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import br.senai.sp.jandira.touccanuser.MainActivity
 import br.senai.sp.jandira.touccanuser.R
+import br.senai.sp.jandira.touccanuser.UserPreferences
+import br.senai.sp.jandira.touccanuser.model.AvaliacaoRes
+import br.senai.sp.jandira.touccanuser.model.AvaliacaoUser
+import br.senai.sp.jandira.touccanuser.model.DenunciaRes
+import br.senai.sp.jandira.touccanuser.model.DenunciaUser
+import br.senai.sp.jandira.touccanuser.service.RetrofitFactory
 import br.senai.sp.jandira.touccanuser.ui.theme.Inter
 import br.senai.sp.jandira.touccanuser.ui.theme.MainOrange
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Denuncia(navController: NavHostController, bicoId: String, mainActivity: MainActivity) {
+fun Denuncia(
+    navController: NavHostController,
+    bicoId: String,
+    mainActivity: MainActivity,
+    clienteId: String?
+) {
 
+
+    val userPreferences = UserPreferences(mainActivity)
+    val userIdFlow = userPreferences.userId.collectAsState(initial = null)
 
     var isLoadingState = remember{
         mutableStateOf(true)
@@ -81,7 +99,7 @@ fun Denuncia(navController: NavHostController, bicoId: String, mainActivity: Mai
 
             Row(modifier = Modifier.fillMaxWidth()) {
                 IconButton(onClick = {
-
+                    navController.popBackStack()
                 }) {
                     Icon(
                         imageVector = Icons.Filled.ArrowBack,
@@ -188,6 +206,38 @@ fun Denuncia(navController: NavHostController, bicoId: String, mainActivity: Mai
                 Button(
                     onClick = {
 
+                        val denuncia = userIdFlow.value?.let {
+                            clienteId?.let { it1 ->
+                                DenunciaUser(
+                                    id_cliente = it1.toInt(),
+                                    id_usuario = it,
+                                    id_bico = bicoId.toInt(),
+                                    denuncia = commentState.value
+                                )
+                            }
+                        }
+
+                        val sendDenuncia = denuncia?.let {
+                            RetrofitFactory()
+                                .getFeedbackService()
+                                .saveUserDenuncia(it)
+                        }
+
+
+                        if (sendDenuncia != null) {
+                            sendDenuncia.enqueue(object: Callback<DenunciaRes> {
+                                override fun onResponse(call: Call<DenunciaRes>, res: Response<DenunciaRes>) {
+                                    Log.i("Dados a serem enviados", denuncia.toString())
+                                    Log.i("Response: ", res.toString())
+                                }
+
+                                override fun onFailure(call: Call<DenunciaRes>, t: Throwable) {
+                                    Log.i("Falhou:", t.toString())
+                                }
+                            })
+                        }
+
+                        navController.popBackStack()
                     },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MainOrange

@@ -31,6 +31,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
@@ -57,6 +58,7 @@ import androidx.navigation.NavHostController
 import br.senai.sp.jandira.touccanuser.MainActivity
 import br.senai.sp.jandira.touccanuser.R
 import br.senai.sp.jandira.touccanuser.UserPreferences
+import br.senai.sp.jandira.touccanuser.model.AvaliacaoRes
 import br.senai.sp.jandira.touccanuser.model.AvaliacaoUser
 import br.senai.sp.jandira.touccanuser.model.Bico
 import br.senai.sp.jandira.touccanuser.model.ResultBico
@@ -145,7 +147,7 @@ fun Avaliacao(navController: NavHostController, idBico: String, mainActivity: Ma
                     bico = body.bico
                     clienteIdState.value = bico.cliente[0].id
                 } else {
-                    // voltou nulo vishhh
+
                 }
                 Log.i("CLIENTE DO BICO: ", bico.cliente[0].toString())
 
@@ -195,7 +197,6 @@ fun Avaliacao(navController: NavHostController, idBico: String, mainActivity: Ma
                         ) {
                             Row (verticalAlignment = Alignment.CenterVertically){
 
-                                Log.i("CLIENTE FORAAAAA: ", "AHAHAHHAH"+ bico.toString()) //não aparece no logcat
                                 Icon(painter = painterResource(R.drawable.person), contentDescription = "", tint = Color(0xff7E7E7E))
                                 if (bico.id != 0) {
                                     Text(if(bico.cliente.isNotEmpty()){bico.cliente[0].nome_fantasia}else{"Nome não encontrado"}, //da erro de empty list
@@ -234,15 +235,15 @@ fun Avaliacao(navController: NavHostController, idBico: String, mainActivity: Ma
                         ){
 
                             Column (){
-//                                if (bico.id != 0) {
-//                                    Text("Início: ${
-//                                        bico.horario_inicio.split("T")[1].split(".")[0].split(
-//                                            ":").slice(0..1).joinToString(":", postfix = "h")
-//                                    }",
-//                                        color = Color(0xff464646),
-//                                        fontFamily = Inter,
-//                                        fontWeight = FontWeight.Black)
-//                                }
+                                if (bico.id != 0) {
+                                    Text("Início: ${
+                                        bico.horario_inicio.split("T")[1].split(".")[0].split(
+                                            ":").slice(0..1).joinToString(":", postfix = "h")
+                                    }",
+                                        color = Color(0xff464646),
+                                        fontFamily = Inter,
+                                        fontWeight = FontWeight.Black)
+                                }
                                 if (bico.id != 0) {
                                     Log.i("log.i bico blablabl", bico.toString())
                                     Text("Término: ${
@@ -288,7 +289,7 @@ fun Avaliacao(navController: NavHostController, idBico: String, mainActivity: Ma
                                     fontSize = 16.sp)
                                 Row(verticalAlignment = Alignment.CenterVertically,
                                     modifier = Modifier.clickable {
-                                        navController.navigate("denuncia/${userIdFlow.value}")
+                                        navController.navigate("denuncia/${bico.id}/${bico.cliente[0].id}")
                                     }) {
                                     Text(
                                         "Denunciar",
@@ -309,9 +310,11 @@ fun Avaliacao(navController: NavHostController, idBico: String, mainActivity: Ma
                                     fontSize = 12.sp,
                                     fontFamily = Inter
                                 ),
-                                colors = TextFieldDefaults.colors(
+                                colors = OutlinedTextFieldDefaults.colors(
                                     unfocusedContainerColor = Color.White,
-                                    focusedContainerColor = Color.White
+                                    focusedContainerColor = Color.White,
+                                    focusedTextColor = Color.Black,
+                                    focusedBorderColor = Color.Black
                                 ),
                                 value = review,
                                 onValueChange = {
@@ -332,7 +335,6 @@ fun Avaliacao(navController: NavHostController, idBico: String, mainActivity: Ma
                             bico?.let { it1 ->
                                 AvaliacaoUser(
                                     id_cliente = bico.cliente[0].id,
-//                                    id_cliente = id_cliente.toInt(),
                                     id_usuario = it,
                                     id_bico = idBico.toInt(),
                                     avaliacao = review,
@@ -344,24 +346,25 @@ fun Avaliacao(navController: NavHostController, idBico: String, mainActivity: Ma
                         val sendAvaliacao = avaliacao?.let {
                             RetrofitFactory()
                                 .getFeedbackService()
-                                .saveUser(it)
+                                .saveUserRate(it)
                         }
 
 
                         if (sendAvaliacao != null) {
-                            sendAvaliacao.enqueue(object: Callback<AvaliacaoUser> {
-                                override fun onResponse(call: Call<AvaliacaoUser>, res: Response<AvaliacaoUser>) {
+                            sendAvaliacao.enqueue(object: Callback<AvaliacaoRes> {
+                                override fun onResponse(call: Call<AvaliacaoRes>, res: Response<AvaliacaoRes>) {
                                     Log.i("Dados a serem enviados", avaliacao.toString())
                                     Log.i("Response: ", res.toString())
                                 }
 
-                                override fun onFailure(call: Call<AvaliacaoUser>, t: Throwable) {
-                                    Log.i("Dados a serem enviados", avaliacao.avaliacao)
+                                override fun onFailure(call: Call<AvaliacaoRes>, t: Throwable) {
+                                    Log.i("Dados a serem enviados", avaliacao.toString())
                                     Log.i("Falhou:", t.toString())
                                 }
                             })
                         }
 
+                        navController.popBackStack()
 
                     },
                     colors = ButtonDefaults.buttonColors(

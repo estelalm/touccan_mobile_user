@@ -1,7 +1,7 @@
 package br.senai.sp.jandira.touccanuser.model
 
-data class FeedbackUser(
+ data class FeedbackUser(
     val avaliacoes: List<AvaliacaoUser>,
-    val denuncias: List<Denuncia>,
+    val denuncias: List<DenunciaUser>,
     val quantidade_denuncias: Int = 0
 )

@@ -258,7 +258,7 @@ fun ClientProfile(navController: NavHostController,  idCliente: String, mainActi
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     if (sobreNosState.value) SobreNos(perfilCliente,navController, mainActivity)
-                    else Feedback(perfilCliente.value.id)
+                    else Feedback(clienteId)
                 }
             }
         }
@@ -541,11 +541,11 @@ fun Feedback(clientId: Int){
 
     val callFeedback = RetrofitFactory()
         .getFeedbackService()
-        .getFeedbackUser(clientId)
+        .getFeedbackClient(clientId)
 
     callFeedback.enqueue(object : Callback<FeedbackUser> {
         override fun onResponse(p0: Call<FeedbackUser>, res: Response<FeedbackUser>) {
-            Log.i("response feedback", res.body()!!.toString())
+            Log.i("response feedback", res.body().toString())
             avaliacoesState.value = res.body()!!.avaliacoes
             avaliacaoLoadState.value = false
         }
@@ -566,7 +566,7 @@ fun Feedback(clientId: Int){
             if(avaliacoesState.value.isEmpty()){
                 item {
                     Text(
-                        "Esse usuário ainda não foi avaliado!: ",
+                        "Esse usuário ainda não foi avaliado! ",
                         fontFamily = Inter,
                         color = Color.Black,
                         textAlign = TextAlign.Center,
@@ -587,7 +587,9 @@ fun Feedback(clientId: Int){
 
                     callUserPerfil.enqueue(object : Callback<ResultUserProfile> {
                         override fun onResponse(p0: Call<ResultUserProfile>, p1: Response<ResultUserProfile>) {
-                            usuario.value = p1.body()!!.usuario
+                            val res = p1.body()!!.usuario
+                            if(res != null)
+                            usuario.value = res
                         }
 
                         override fun onFailure(p0: Call<ResultUserProfile>, p1: Throwable) {

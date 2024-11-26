@@ -149,15 +149,18 @@ class MainActivity : ComponentActivity() {
                             }
                         }
 
-                        composable(route = "avaliar/{id}",
+                        composable(route = "denuncia/{id}/{cliente}",
                             arguments = listOf(navArgument("id") {
+//                                type = NavType.StringType
+                            }, navArgument("cliente") {
 //                                type = NavType.StringType
                             })
                         ){ backStackEntry ->
 
                             val bicoId = backStackEntry.arguments?.getString("id")
+                            val clienteId = backStackEntry.arguments?.getString("cliente")
                             if (bicoId != null) {
-                                Denuncia(navController, bicoId, this@MainActivity)
+                                Denuncia(navController, bicoId, this@MainActivity, clienteId)
                             }
                         }
 
