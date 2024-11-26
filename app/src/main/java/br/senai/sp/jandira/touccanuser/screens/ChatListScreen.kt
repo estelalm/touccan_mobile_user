@@ -1,6 +1,5 @@
 package br.senai.sp.jandira.touccanuser.screens
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -21,7 +20,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -47,13 +45,15 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import br.senai.sp.jandira.touccanuser.MainActivity
 import br.senai.sp.jandira.touccanuser.R
 import br.senai.sp.jandira.touccanuser.ui.theme.Inter
 import br.senai.sp.jandira.touccanuser.ui.theme.MainOrange
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChatList() {
+fun ChatList(navController: NavHostController, mainActivity: MainActivity) {
 
     var chatListState = remember {
         mutableStateOf(true)
@@ -310,5 +310,5 @@ fun ChatCard() {
 @Preview (showSystemUi = true, showBackground = true)
 @Composable
 private fun ChatListPrev() {
-    ChatList()
+    ChatList(navController, this@MainActivity)
 }

@@ -100,7 +100,7 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
 
     callUserPerfil.enqueue(object : Callback<ResultUserProfile> {
         override fun onResponse(p0: Call<ResultUserProfile>, p1: Response<ResultUserProfile>) {
-            Log.i("response TelaC", p1.body()!!.toString())
+            Log.i("response perfil usuario", p1.body()!!.toString())
             perfilUsuario.value = p1.body()!!.usuario
         }
 
@@ -311,18 +311,22 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
                     ) {
 
                         var formacaoState = remember {
-                            mutableStateOf(if(perfilUsuario.value.formacao == ""){"Escolha a formação"
+                            mutableStateOf(if(perfilUsuario.value.formacao == null ){"Escolha a formação"
                             }else{perfilUsuario.value.formacao})
                         }
                         var bioState = remember {
                             mutableStateOf("Nenhuma biografia descrita ainda!")
                         }
-                        bioState.value = perfilUsuario.value.biografia
+                        if(perfilUsuario.value.biografia != null){
+                            bioState.value = perfilUsuario.value.biografia
+                        }
 
                         var habilidadeState = remember {
                             mutableStateOf("Nenhuma habilidade descrita ainda!")
                         }
-                        habilidadeState.value = perfilUsuario.value.habilidade
+                        if(perfilUsuario.value.habilidade != null){
+                            habilidadeState.value = perfilUsuario.value.habilidade
+                        }
 
                         var disponibilidadeState = remember {
                             mutableStateOf(Disponibilidade(id = perfilUsuario.value.id_disponibilidade, disponibilidade = "Escolher"))
@@ -417,6 +421,8 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
         habilidadeState: MutableState<String>,
         disponibilidadeState: MutableState<Disponibilidade>
     ) {
+
+        Log.i("BIOSTATE DENTRO", bioState.value)
 
         Column(
             modifier = Modifier.padding(vertical = 24.dp, horizontal = 36.dp),
@@ -534,7 +540,7 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
                     )
                     TextField(
                         modifier = Modifier.verticalScroll(rememberScrollState()),
-                        value = habilidadeState.value,
+                        value = if(habilidadeState.value != null) habilidadeState.value else "",
                         onValueChange = {
                             habilidadeState.value = it
                         },

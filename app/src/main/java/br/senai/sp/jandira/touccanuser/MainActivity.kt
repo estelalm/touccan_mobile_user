@@ -16,6 +16,7 @@ import br.senai.sp.jandira.touccanuser.model.User
 import br.senai.sp.jandira.touccanuser.model.UserId
 import br.senai.sp.jandira.touccanuser.screens.Avaliacao
 import br.senai.sp.jandira.touccanuser.screens.BicoDetails
+import br.senai.sp.jandira.touccanuser.screens.ChatList
 import br.senai.sp.jandira.touccanuser.screens.ClientProfile
 import br.senai.sp.jandira.touccanuser.screens.Cofre
 import br.senai.sp.jandira.touccanuser.screens.Denuncia
@@ -182,6 +183,11 @@ class MainActivity : ComponentActivity() {
                         composable(route = "configuracoes",
                         ){ backStackEntry ->
                             Settings(navController, this@MainActivity)
+                        }
+
+                        composable(route = "chatList",
+                        ){ backStackEntry ->
+                            ChatList(navController, this@MainActivity)
                         }
 
                         }
