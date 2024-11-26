@@ -306,9 +306,3 @@ fun ChatCard() {
 
     }
 }
-
-@Preview (showSystemUi = true, showBackground = true)
-@Composable
-private fun ChatListPrev() {
-    ChatList(navController, this@MainActivity)
-}

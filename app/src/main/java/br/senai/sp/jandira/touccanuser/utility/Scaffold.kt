@@ -133,7 +133,7 @@ fun BottomAppBar(navController: NavHostController, context: Context) {
             ) {
                 Icon(
                     painter = painterResource(R.drawable.historico),
-                    contentDescription = "Home: Ícone de relógio",
+                    contentDescription = "Histórico: Ícone de relógio",
                 )
             }
             IconButton(
@@ -142,16 +142,18 @@ fun BottomAppBar(navController: NavHostController, context: Context) {
                 Icon(
                     modifier = Modifier.size(35.dp),
                     painter = painterResource(R.drawable.notificacao),
-                    contentDescription = "Home: Ícone de casa",
+                    contentDescription = "Notificação: Ícone de sino",
                 )
             }
 
             IconButton(
-                onClick = {}
+                onClick = {
+                    navController.navigate("chatList")
+                }
             ) {
                 Icon(
                     painter = painterResource(R.drawable.chat),
-                    contentDescription = "Home: Ícone de casa",
+                    contentDescription = "Mensagens: Ícone de carta",
                 )
             }
 
@@ -160,7 +162,7 @@ fun BottomAppBar(navController: NavHostController, context: Context) {
             ) {
                 Icon(
                     painter = painterResource(R.drawable.pesquisa),
-                    contentDescription = "Home: Ícone de casa",
+                    contentDescription = "Pesquisa: Ícone de lupa",
                 )
             }
         }
