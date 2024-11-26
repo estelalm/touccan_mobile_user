@@ -203,7 +203,6 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
                         } else {
                             asyncModel.value = perfilUsuario.value.foto
                         }
-                        Log.i("smtttt", asyncModel.value)
 
                         AsyncImage(asyncModel.value, "", contentScale = ContentScale.FillWidth, alignment = Alignment.Center, modifier = Modifier.fillMaxSize())
                     }
@@ -445,7 +444,7 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
                         fontWeight = FontWeight.SemiBold
                     )
                     TextField(
-                        value = formacaoState.value,
+                        value = if (formacaoState.value != null) formacaoState.value else "",
                         onValueChange = {
                             formacaoState.value = it
                         },
@@ -489,7 +488,7 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
 
                     TextField(
                         modifier = Modifier.verticalScroll(rememberScrollState()),
-                        value = bioState.value,
+                        value = if(bioState.value != null) bioState.value else "",
                         onValueChange = {
                             bioState.value = it
                         },

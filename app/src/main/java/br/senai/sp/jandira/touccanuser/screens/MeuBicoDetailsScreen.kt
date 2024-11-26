@@ -10,12 +10,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -113,6 +116,16 @@ fun MeuBicoDetails(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ){
+
+                Row (modifier = Modifier.fillMaxWidth()){
+                    IconButton(onClick = {
+                        navController.popBackStack()
+                    }) {Icon(imageVector = Icons.Filled.ArrowBack, "Seta voltar",
+                        modifier = Modifier.height(24.dp)) }
+
+
+                }
+
                 Card (
                     modifier = Modifier.width(300.dp),
                     colors = CardDefaults.cardColors(
@@ -228,9 +241,14 @@ fun MeuBicoDetails(
                     Button(onClick = {
                         navController.navigate("avaliacao/${userId}")
 
-                    }, modifier = Modifier.height(28.dp).width(70.dp).padding(0.dp),
-                        shape = RoundedCornerShape(16.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = MainOrange)
+                    }, modifier = Modifier.height(50.dp).width(100.dp).padding(top = 12.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(mainOrange),
+                            disabledContainerColor = Color.LightGray,
+                            contentColor = Color.Black,
+                            disabledContentColor = Color.Black
+                        ),
+                        shape = RoundedCornerShape(10.dp)
                     ) {
                         Text("Avalie",
                             fontFamily = Inter,

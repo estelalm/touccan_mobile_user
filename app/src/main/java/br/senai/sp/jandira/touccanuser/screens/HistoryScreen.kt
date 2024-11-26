@@ -340,16 +340,15 @@ fun HistoryCard(bico: BicoHistorico, idUser: Int, navController: NavHostControll
                                         modifier = Modifier.fillMaxWidth())
                                 }else{
                                     Button(onClick = {
-//                                        navController.navigate("avaliacao/${bico.id_bico}")
-                                        navController.navigate("avaliacao/${bico.id_cliente}")
+                                        navController.navigate("avaliacao/${bico.id_bico}")
 
-                                    }, modifier = Modifier.height(28.dp).width(70.dp).padding(0.dp),
-                                        shape = RoundedCornerShape(16.dp),
+                                    }, modifier = Modifier.height(30.dp).width(140.dp).padding(0.dp),
+                                        shape = RoundedCornerShape(10.dp),
                                         colors = ButtonDefaults.buttonColors(containerColor = MainOrange)
                                     ) {
                                         Text("Avalie",
                                             fontFamily = Inter,
-                                            fontSize = 12.sp,
+                                            fontSize = 14.sp,
                                             modifier = Modifier.fillMaxHeight().width(40.dp))
                                     }
                                 }

@@ -167,8 +167,9 @@ fun Avaliacao(navController: NavHostController, idBico: String, mainActivity: Ma
         ){
             Row (modifier = Modifier.fillMaxWidth()){
                 IconButton(onClick = {
-
-                }) {Icon(imageVector = Icons.Filled.ArrowBack, "Seta voltar", modifier = Modifier.height(24.dp)) }
+                        navController.popBackStack()
+                }) {Icon(imageVector = Icons.Filled.ArrowBack, "Seta voltar",
+                    modifier = Modifier.height(24.dp)) }
 
 
             }
@@ -355,6 +356,7 @@ fun Avaliacao(navController: NavHostController, idBico: String, mainActivity: Ma
                                 }
 
                                 override fun onFailure(call: Call<AvaliacaoUser>, t: Throwable) {
+                                    Log.i("Dados a serem enviados", avaliacao.avaliacao)
                                     Log.i("Falhou:", t.toString())
                                 }
                             })

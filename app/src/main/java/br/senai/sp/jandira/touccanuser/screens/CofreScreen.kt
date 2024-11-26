@@ -56,6 +56,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.time.LocalDate
 import java.time.LocalTime
+import kotlin.math.max
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -215,8 +216,7 @@ fun HistoryCard(bico: BicoHistorico) {
 
             val dataInicio = LocalDate.parse(bico.data_inicio.split("T")[0].split("-").joinToString("-"))
             val horarioInicio = LocalTime.parse(bico.horario_inicio.split("T")[1].split(".")[0].split(
-                ":"
-            ).slice(0..1).joinToString(":"))
+                ":").slice(0..1).joinToString(":"))
 
             Column (modifier = Modifier.padding(start= 12.dp)){
                 Text("${bico.nome_cliente} · ${bico.bico}",
@@ -225,6 +225,7 @@ fun HistoryCard(bico: BicoHistorico) {
                     fontWeight = FontWeight.SemiBold,
                     color = Color.Black,
                     modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp),
+                    maxLines = 1,
                     overflow = TextOverflow.Ellipsis)
                 Row (modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween){
@@ -236,7 +237,7 @@ fun HistoryCard(bico: BicoHistorico) {
                     )
                     Column (modifier = Modifier.fillMaxHeight(),
                         verticalArrangement = Arrangement.Bottom) {
-                        Text("${dataInicio} - ${horarioInicio}",
+                        Text("${dataInicio.dayOfMonth}/${dataInicio.month} - ${horarioInicio}",
                             fontFamily = Inter,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.SemiBold,

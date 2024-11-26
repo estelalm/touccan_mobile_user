@@ -2,6 +2,7 @@ package br.senai.sp.jandira.touccanuser.screens
 
 import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -48,9 +49,11 @@ import br.senai.sp.jandira.touccanuser.ui.theme.Inter
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import org.checkerframework.checker.units.qual.t
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.net.SocketTimeoutException
 
 
 @Composable
@@ -257,6 +260,10 @@ fun Login (navController: NavHostController, context: Context, userPreferences: 
                                     }
                                 }
                                 override fun onFailure(p0: Call<LoginResult>, res: Throwable) {
+                                    if (res is SocketTimeoutException) {
+                                        // Tratar erro de timeout
+                                        Toast.makeText(context, "A requisição demorou muito, por favor tente novamente.", Toast.LENGTH_SHORT).show()
+                                    }
                                     Log.i("Falhou:", res.toString())
                                 }
                             })
