@@ -102,61 +102,7 @@ fun ChatList(navController: NavHostController, mainActivity: MainActivity) {
                 )
             },
             bottomBar = {
-                BottomAppBar(
-                    containerColor = Color(0xFFEBEBEB),
-                    content = {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceAround
-                        ) {
-
-
-                            IconButton(
-                                onClick = {}
-                            ) {
-                                Icon(
-                                    painter = painterResource(R.drawable.home),
-                                    contentDescription = "Home: Ícone de casa",
-                                )
-                            }
-                            IconButton(
-                                onClick = {}
-                            ) {
-                                Icon(
-                                    painter = painterResource(R.drawable.historico),
-                                    contentDescription = "Home: Ícone de casa",
-                                )
-                            }
-                            IconButton(
-                                onClick = {}
-                            ) {
-                                Icon(
-                                    modifier = Modifier.size(35.dp),
-                                    painter = painterResource(R.drawable.notificacao),
-                                    contentDescription = "Home: Ícone de casa",
-                                )
-                            }
-
-                            IconButton(
-                                onClick = {}
-                            ) {
-                                Icon(
-                                    painter = painterResource(R.drawable.chat),
-                                    contentDescription = "Home: Ícone de casa",
-                                )
-                            }
-
-                            IconButton(
-                                onClick = {}
-                            ) {
-                                Icon(
-                                    painter = painterResource(R.drawable.pesquisa),
-                                    contentDescription = "Home: Ícone de casa",
-                                )
-                            }
-                        }
-                    }
-                )
+                br.senai.sp.jandira.touccanuser.utility.BottomAppBar(navController, mainActivity)
             }
         ) { innerpadding ->
 
@@ -176,8 +122,8 @@ fun ChatList(navController: NavHostController, mainActivity: MainActivity) {
                 Column (modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
                     Card(
                         modifier = Modifier
-                            .width(300.dp)
-                            .height(70.dp)
+                            .width(340.dp)
+                            .height(90.dp)
                             .padding(bottom = 24.dp),
                         shape = RoundedCornerShape(50.dp),
                         colors = CardDefaults.cardColors(

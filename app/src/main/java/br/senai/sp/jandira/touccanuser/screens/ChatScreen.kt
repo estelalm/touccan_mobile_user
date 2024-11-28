@@ -176,7 +176,7 @@ fun MessageUser() {
             ),
             modifier = Modifier.padding(horizontal = 10.dp).widthIn(max = 240.dp)
         ) {
-            Text("BlablablablaBlablablablaBlablablablablabla",modifier = Modifier.padding(10.dp))
+            Text("BlablablablaBblabla",modifier = Modifier.padding(10.dp))
         }
         Card(modifier = Modifier.size(40.dp), shape = RoundedCornerShape(50.dp)){
 

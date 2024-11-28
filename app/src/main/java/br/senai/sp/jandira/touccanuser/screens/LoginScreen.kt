@@ -22,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,6 +45,7 @@ import br.senai.sp.jandira.touccanuser.R
 import br.senai.sp.jandira.touccanuser.UserPreferences
 import br.senai.sp.jandira.touccanuser.model.Login
 import br.senai.sp.jandira.touccanuser.model.LoginResult
+import br.senai.sp.jandira.touccanuser.model.UserId
 import br.senai.sp.jandira.touccanuser.service.RetrofitFactory
 import br.senai.sp.jandira.touccanuser.ui.theme.Inter
 import kotlinx.coroutines.launch
@@ -59,7 +61,24 @@ import java.net.SocketTimeoutException
 @Composable
 fun Login (navController: NavHostController, context: Context, userPreferences: UserPreferences) {
 
-    var userId by remember { mutableStateOf("") }
+    val userPreferences = UserPreferences(context)
+    val userIdFlow = userPreferences.userId.collectAsState(initial = 0)
+
+    if(userIdFlow.value != 0){
+        val userId = userIdFlow.value?.let {
+            UserId(
+                id = it
+            )
+        }
+
+        val userIdJson = Json.encodeToString(userId)
+
+        Log.i("json pra mandar", userIdJson)
+
+        navController.navigate("home/${userIdFlow.value}")
+    }
+
+
     val scope = rememberCoroutineScope()
 
     val linearOrange = Brush.linearGradient(listOf(Color(0xffF07B07), Color(0xffE25401)))

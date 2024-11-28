@@ -117,8 +117,7 @@ fun BottomAppBar(navController: NavHostController, context: Context) {
         ) {
             IconButton(
                 onClick = {
-                    val userId = Json.encodeToString(userIdFlow.value?.let { UserId(id = it) })
-                    navController.navigate("home/${userId}")
+                    navController.navigate("home/${userIdFlow.value}")
                 }
             ) {
                 Icon(

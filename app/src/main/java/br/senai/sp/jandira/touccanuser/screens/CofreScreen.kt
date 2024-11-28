@@ -81,6 +81,10 @@ fun Cofre(navController: NavHostController, context: Context) {
         .getBicoByUsuario(it.toInt())
     }
 
+    val total = remember(historyList.value) {
+        historyList.value.filter { it.finalizado == 1 }
+            .sumOf { it.salario }
+    }
 
     if (callBico != null) {
         callBico.enqueue(object: Callback<HistoryResult> {
@@ -145,16 +149,16 @@ fun Cofre(navController: NavHostController, context: Context) {
 
                 }
 
-                Text("Faturamento mensal",
+                Text("Faturamento total",
                     fontSize = 24.sp,
                     fontFamily = Inter,
                     fontWeight = FontWeight.ExtraBold)
-                Text("Período 1 mês",
-                    fontSize = 12.sp,
-                    fontFamily = Inter,
-                    fontWeight = FontWeight.SemiBold,
-                    color = Color.Gray,modifier = Modifier.padding(vertical = 12.dp))
-                Text("R$ 00,00",
+//                Text("Período 1 mês",
+//                    fontSize = 12.sp,
+//                    fontFamily = Inter,
+//                    fontWeight = FontWeight.SemiBold,
+//                    color = Color.Gray,modifier = Modifier.padding(vertical = 12.dp))
+                Text("R$ ${total}",
                     fontSize = 24.sp,
                     fontFamily = Inter,
                     fontWeight = FontWeight.ExtraBold)
@@ -163,7 +167,9 @@ fun Cofre(navController: NavHostController, context: Context) {
                     modifier = Modifier.padding(top = 24.dp).fillMaxHeight(0.7F)
                 ) {
                     items(historyList.value){
-                        HistoryCard(it)
+                        if(it.finalizado == 1){
+                            HistoryCard(it)
+                        }
                     }
 
                 }

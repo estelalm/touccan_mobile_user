@@ -49,7 +49,6 @@ import androidx.navigation.NavHostController
 import br.senai.sp.jandira.touccanuser.MainActivity
 import br.senai.sp.jandira.touccanuser.R
 import br.senai.sp.jandira.touccanuser.model.Bico
-import br.senai.sp.jandira.touccanuser.model.BicoPremium
 import br.senai.sp.jandira.touccanuser.model.Candidato
 import br.senai.sp.jandira.touccanuser.model.Candidatos
 import br.senai.sp.jandira.touccanuser.model.ClientePerfil
@@ -58,7 +57,6 @@ import br.senai.sp.jandira.touccanuser.model.ResultBicosPremium
 import br.senai.sp.jandira.touccanuser.model.ResultCandidatos
 import br.senai.sp.jandira.touccanuser.model.ResultClientProfile
 import br.senai.sp.jandira.touccanuser.model.ResultUserProfile
-import br.senai.sp.jandira.touccanuser.model.UserId
 import br.senai.sp.jandira.touccanuser.model.UserPerfil
 import br.senai.sp.jandira.touccanuser.service.RetrofitFactory
 import br.senai.sp.jandira.touccanuser.ui.theme.Inter
@@ -72,7 +70,7 @@ import retrofit2.Response
 @Composable
 fun Home(
     navController: NavHostController,
-    idUser: UserId,
+    idUser: Int?,
     mainActivity: MainActivity,
 ) {
 
@@ -80,22 +78,26 @@ fun Home(
         mutableStateOf(UserPerfil())
     }
 
-    val callUserPerfil = RetrofitFactory()
+    val callUserPerfil = idUser?.let {
+        RetrofitFactory()
         .getUserService()
-        .getUserById(idUser.id)
+        .getUserById(it)
+    }
 
-    callUserPerfil.enqueue(object : Callback<ResultUserProfile> {
-        override fun onResponse(p0: Call<ResultUserProfile>, p1: Response<ResultUserProfile>) {
-            perfilUsuario.value = p1.body()!!.usuario
-        }
+    if (callUserPerfil != null) {
+        callUserPerfil.enqueue(object : Callback<ResultUserProfile> {
+            override fun onResponse(p0: Call<ResultUserProfile>, p1: Response<ResultUserProfile>) {
+                perfilUsuario.value = p1.body()!!.usuario
+            }
 
-        override fun onFailure(p0: Call<ResultUserProfile>, p1: Throwable) {
-            Log.i("Falhou!!!", p1.toString())
-        }
-    })
+            override fun onFailure(p0: Call<ResultUserProfile>, p1: Throwable) {
+                Log.i("Falhou!!!", p1.toString())
+            }
+        })
+    }
 
 
-    val id = idUser.id.toString()
+    val id = idUser.toString()
 
     var bicosList = remember {
         mutableStateOf(listOf<Bico>())
@@ -271,7 +273,9 @@ fun Home(
                         if(bicosList.value.isNotEmpty()){
                             items(bicosList.value){bico ->
 
-                                AnuncioCard(bico, navController, idUser.id, mainActivity, isPremium)
+                                if (idUser != null) {
+                                    AnuncioCard(bico, navController, idUser, mainActivity, isPremium)
+                                }
                             }
                         }else{
                             item(){ Text(text = errorPertoDeVoceMessage.value, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)}
@@ -287,7 +291,9 @@ fun Home(
                     }else{
                         items(urgenteList.value){bico ->
                             isPremium = true
-                            AnuncioCard(bico, navController, idUser.id, mainActivity, isPremium)
+                            if (idUser != null) {
+                                AnuncioCard(bico, navController, idUser, mainActivity, isPremium)
+                            }
                         }
                     }
 
