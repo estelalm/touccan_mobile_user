@@ -311,8 +311,10 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
                     ) {
 
                         var formacaoState = remember {
-                            mutableStateOf(if(perfilUsuario.value.formacao == null ){"Escolha a formação"
-                            }else{perfilUsuario.value.formacao})
+                           mutableStateOf("Escolha a formação")
+                        }
+                        if(perfilUsuario.value.formacao != null){
+                            formacaoState.value = perfilUsuario.value.formacao
                         }
                         var bioState = remember {
                             mutableStateOf("Nenhuma biografia descrita ainda!")
@@ -330,6 +332,16 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
 
                         var disponibilidadeState = remember {
                             mutableStateOf(Disponibilidade(id = perfilUsuario.value.id_disponibilidade, disponibilidade = "Escolher"))
+                        }
+                        if(perfilUsuario.value.id_disponibilidade != 0){
+                            if(perfilUsuario.value.id_disponibilidade == 1){
+                                disponibilidadeState.value.disponibilidade = "Manhã"
+                            }else if(perfilUsuario.value.id_disponibilidade == 2){
+                                disponibilidadeState.value.disponibilidade = "Tarde"
+                            }else{
+                                disponibilidadeState.value.disponibilidade = "Noite"
+                            }
+
                         }
 
                         if (sobreNosState.value) {

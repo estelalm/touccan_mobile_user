@@ -2,6 +2,7 @@ package br.senai.sp.jandira.touccanuser.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,6 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -42,18 +44,21 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import br.senai.sp.jandira.touccanuser.MainActivity
 import br.senai.sp.jandira.touccanuser.R
+import br.senai.sp.jandira.touccanuser.UserPreferences
 import br.senai.sp.jandira.touccanuser.ui.theme.Inter
 import br.senai.sp.jandira.touccanuser.ui.theme.MainOrange
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatList(navController: NavHostController, mainActivity: MainActivity) {
+
+    val userPreferences = UserPreferences(mainActivity)
+    val userIdFlow = userPreferences.userId.collectAsState(initial = null)
 
     var chatListState = remember {
         mutableStateOf(true)
@@ -74,7 +79,9 @@ fun ChatList(navController: NavHostController, mainActivity: MainActivity) {
                                 .fillMaxWidth()
                                 .padding(horizontal = 12.dp)
                         ) {
-                            IconButton(onClick = {}) {
+                            IconButton(onClick = {
+
+                            }) {
                                 Icon(
                                     tint = Color.Black,
                                     painter = painterResource(R.drawable.configuracoes),
@@ -82,6 +89,7 @@ fun ChatList(navController: NavHostController, mainActivity: MainActivity) {
                                 )
                             }
                             IconButton(onClick = {
+                                navController.navigate("perfilUsuario/${userIdFlow.value}")
                             }) {
                                 Icon(
                                     tint = Color.Black,
@@ -248,7 +256,7 @@ fun ChatList(navController: NavHostController, mainActivity: MainActivity) {
 
                     ){
                         items(3){
-                            ChatCard()
+                            ChatCard(navController)
                         }
                     }
                 }
@@ -260,7 +268,7 @@ fun ChatList(navController: NavHostController, mainActivity: MainActivity) {
 }
 
 @Composable
-fun ChatCard() {
+fun ChatCard(navController: NavHostController) {
     ElevatedCard(
         colors = CardDefaults.cardColors(
             containerColor = Color.White
@@ -269,6 +277,9 @@ fun ChatCard() {
             .fillMaxWidth()
             .padding(bottom = 12.dp)
             .height(68.dp)
+            .clickable{
+                navController.navigate("chat")
+            }
     ) {
         Row(
             modifier = Modifier.fillMaxSize().padding(horizontal = 12.dp),

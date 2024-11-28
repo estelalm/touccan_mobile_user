@@ -154,7 +154,7 @@ fun Cofre(navController: NavHostController, context: Context) {
                     fontFamily = Inter,
                     fontWeight = FontWeight.SemiBold,
                     color = Color.Gray,modifier = Modifier.padding(vertical = 12.dp))
-                Text("R$ 520,00",
+                Text("R$ 00,00",
                     fontSize = 24.sp,
                     fontFamily = Inter,
                     fontWeight = FontWeight.ExtraBold)
@@ -168,14 +168,15 @@ fun Cofre(navController: NavHostController, context: Context) {
 
                 }
 
-
                     Button(
                         shape = RoundedCornerShape(10.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MainOrange
                         ),
                         modifier = Modifier.padding(6.dp),
-                        onClick = {}
+                        onClick = {
+                            navController.navigate("cartao/${userIdFlow.value}")
+                        }
                     ) {
                         Text(
                             "Meu cartão",
@@ -237,7 +238,7 @@ fun HistoryCard(bico: BicoHistorico) {
                     )
                     Column (modifier = Modifier.fillMaxHeight(),
                         verticalArrangement = Arrangement.Bottom) {
-                        Text("${dataInicio.dayOfMonth}/${dataInicio.month} - ${horarioInicio}",
+                        Text("${dataInicio.dayOfMonth}/${dataInicio.monthValue} - ${horarioInicio}",
                             fontFamily = Inter,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.SemiBold,

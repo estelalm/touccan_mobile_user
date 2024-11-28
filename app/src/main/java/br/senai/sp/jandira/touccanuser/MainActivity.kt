@@ -1,12 +1,16 @@
 package br.senai.sp.jandira.touccanuser
 
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material3.Surface
 import androidx.compose.ui.graphics.Color
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -16,6 +20,7 @@ import br.senai.sp.jandira.touccanuser.model.User
 import br.senai.sp.jandira.touccanuser.model.UserId
 import br.senai.sp.jandira.touccanuser.screens.Avaliacao
 import br.senai.sp.jandira.touccanuser.screens.BicoDetails
+import br.senai.sp.jandira.touccanuser.screens.Chat
 import br.senai.sp.jandira.touccanuser.screens.ChatList
 import br.senai.sp.jandira.touccanuser.screens.ClientProfile
 import br.senai.sp.jandira.touccanuser.screens.Cofre
@@ -30,8 +35,11 @@ import br.senai.sp.jandira.touccanuser.screens.Settings
 import br.senai.sp.jandira.touccanuser.screens.SignUpScreen
 import br.senai.sp.jandira.touccanuser.screens.UserProfile
 import br.senai.sp.jandira.touccanuser.ui.theme.TouccanUserTheme
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import android.Manifest
+import com.google.firebase.Firebase
+import com.google.firebase.messaging.messaging
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -189,13 +197,51 @@ class MainActivity : ComponentActivity() {
                         ){ backStackEntry ->
                             ChatList(navController, this@MainActivity)
                         }
+                        composable(route = "chat",
+                        ){ backStackEntry ->
+                            Chat(navController, this@MainActivity)
+                        }
+
 
                         }
                     }
 
                 }
             }
+        Firebase.messaging.isAutoInitEnabled = true
+        }
+
+
+    // Declare the launcher at the top of your Activity/Fragment:
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission(),
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            // FCM SDK (and your app) can post notifications.
+        } else {
+            // TODO: Inform user that that your app will not show notifications.
         }
     }
+
+    private fun askNotificationPermission() {
+        // This is only necessary for API level >= 33 (TIRAMISU)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this@MainActivity, Manifest.permission.POST_NOTIFICATIONS) ==
+                PackageManager.PERMISSION_GRANTED
+            ) {
+                // FCM SDK (and your app) can post notifications.
+            } else if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
+                // TODO: display an educational UI explaining to the user the features that will be enabled
+                //       by them granting the POST_NOTIFICATION permission. This UI should provide the user
+                //       "OK" and "No thanks" buttons. If the user selects "OK," directly request the permission.
+                //       If the user selects "No thanks," allow the user to continue without notifications.
+            } else {
+                // Directly ask for the permission
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+    }
+    }
+
 
 
