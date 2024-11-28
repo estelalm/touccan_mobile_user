@@ -35,13 +35,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import br.senai.sp.jandira.touccanuser.MainActivity
 import br.senai.sp.jandira.touccanuser.model.Bico
 import br.senai.sp.jandira.touccanuser.ui.theme.Inter
 import br.senai.sp.jandira.touccanuser.ui.theme.MainOrange
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Notifications() {
+fun Notifications(navController: NavHostController, mainActivity: MainActivity) {
 
     var notificationList = remember {
         mutableStateOf(listOf<Bico>())
@@ -144,14 +146,5 @@ fun NotificationCard() {
             }
 
 
-
-}
-
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-private fun NotPreview() {
-
-    Notifications()
 
 }

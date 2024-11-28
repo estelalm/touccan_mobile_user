@@ -36,6 +36,7 @@ import br.senai.sp.jandira.touccanuser.screens.UserProfile
 import br.senai.sp.jandira.touccanuser.ui.theme.TouccanUserTheme
 import kotlinx.serialization.json.Json
 import android.Manifest
+import br.senai.sp.jandira.touccanuser.screens.Notifications
 import com.google.firebase.Firebase
 import com.google.firebase.FirebaseApp
 import com.google.firebase.messaging.messaging
@@ -233,7 +234,10 @@ class MainActivity : ComponentActivity() {
                         ){ backStackEntry ->
                             Chat(navController, this@MainActivity)
                         }
-
+                        composable(route = "notificacoes",
+                        ){ backStackEntry ->
+                            Notifications(navController, this@MainActivity)
+                        }
 
                         }
                     }

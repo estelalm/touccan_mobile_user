@@ -136,7 +136,9 @@ fun BottomAppBar(navController: NavHostController, context: Context) {
                 )
             }
             IconButton(
-                onClick = {}
+                onClick = {
+                    navController.navigate("notificacoes")
+                }
             ) {
                 Icon(
                     modifier = Modifier.size(35.dp),
