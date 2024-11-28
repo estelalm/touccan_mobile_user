@@ -1,0 +1,12 @@
+specVersion: "v1beta"
+serviceId: "touccan-mobile-user"
+location: "asia-east1"
+schema:
+  source: "./schema"
+  datasource:
+    postgresql:
+      database: "fdcdb"
+      cloudSql:
+        instanceId: "touccan-mobile-user-fdc"
+      # schemaValidation: "COMPATIBLE"
+connectorDirs: ["./connector"]

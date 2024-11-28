@@ -97,12 +97,18 @@ dependencies {
     //NAVIGATION
     implementation("androidx.navigation:navigation-compose:2.7.7")
 
-    // Import the Firebase BoM
+    // Firebase
     implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
-
-
-    // When using the BoM, don't specify versions in Firebase dependencies
     implementation("com.google.firebase:firebase-analytics")
+
+    implementation(platform("com.google.firebase:firebase-bom:32.0.0"))
+    implementation("com.google.firebase:firebase-database-ktx")
+    implementation("com.google.firebase:firebase-storage-ktx")
+    implementation("com.google.firebase:firebase-auth-ktx")
+
+    // Firebase UI Library
+    implementation("com.firebaseui:firebase-ui-auth:8.0.2")
+    implementation("com.firebaseui:firebase-ui-database:8.0.2")
 
     //datastore
     implementation("androidx.datastore:datastore-preferences:1.1.1")
