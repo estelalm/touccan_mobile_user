@@ -1,5 +1,6 @@
 package br.senai.sp.jandira.touccanuser.screens
 
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -35,6 +36,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import br.senai.sp.jandira.touccanuser.R
 import br.senai.sp.jandira.touccanuser.ui.theme.Inter
 import br.senai.sp.jandira.touccanuser.ui.theme.MainOrange
@@ -42,117 +44,16 @@ import br.senai.sp.jandira.touccanuser.ui.theme.MainOrange
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SobreNos() {
+fun SobreNos(navController: NavHostController, context: Context) {
 
     Surface(modifier = Modifier.background(Color(0xffEBEBEB))) {
         Scaffold(
             containerColor = Color(0xFFEBEBEB),
             topBar = {
-                TopAppBar(
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = Color(0xFFEBEBEB)
-                    ),
-                    navigationIcon = {
-                        IconButton(
-                            onClick = {},
-                            modifier = Modifier
-                                .height(100.dp)
-                                .width(170.dp)
-                        ) {
-                            Icon(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(horizontal = 10.dp),
-                                painter = painterResource(R.drawable.logo_touccan),
-                                contentDescription = "Desenho de um, com o texto Touccan ao lado, a logo do aplicativo",
-                            )
-                        }
-
-                    },
-                    title = {
-                    },
-                    actions = {
-                        Row(horizontalArrangement = Arrangement.End) {
-                            IconButton(onClick = {}) {
-                                Icon(
-                                    painter = painterResource(R.drawable.configuracoes),
-                                    contentDescription = "Configurações: Ícone de engrenagem",
-                                )
-                            }
-                            IconButton(onClick = {}) {
-                                Icon(
-                                    painter = painterResource(R.drawable.carteira),
-                                    contentDescription = "Carteira: Ícone de carteira",
-                                )
-                            }
-                            IconButton(onClick = {
-
-                            }) {
-                                Icon(
-                                    painter = painterResource(R.drawable.person),
-                                    contentDescription = "Perfil: Ícone de pessoa",
-                                )
-                            }
-                        }
-                    }
-                )
+                br.senai.sp.jandira.touccanuser.utility.TopAppBar(navController, context)
             },
             bottomBar = {
-                BottomAppBar(
-                    containerColor = Color(0xFFEBEBEB),
-                    content = {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceAround
-                        ) {
-
-
-                            IconButton(
-                                onClick = {}
-                            ) {
-                                Icon(
-                                    painter = painterResource(R.drawable.home),
-                                    contentDescription = "Home: Ícone de casa",
-                                )
-                            }
-                            IconButton(
-                                onClick = {}
-                            ) {
-                                Icon(
-                                    painter = painterResource(R.drawable.historico),
-                                    contentDescription = "Home: Ícone de casa",
-                                )
-                            }
-                            IconButton(
-                                onClick = {}
-                            ) {
-                                Icon(
-                                    modifier = Modifier.size(35.dp),
-                                    painter = painterResource(R.drawable.notificacao),
-                                    contentDescription = "Home: Ícone de casa",
-                                )
-                            }
-
-                            IconButton(
-                                onClick = {}
-                            ) {
-                                Icon(
-                                    painter = painterResource(R.drawable.chat),
-                                    contentDescription = "Home: Ícone de casa",
-                                )
-                            }
-
-                            IconButton(
-                                onClick = {}
-                            ) {
-                                Icon(
-                                    painter = painterResource(R.drawable.pesquisa),
-                                    contentDescription = "Home: Ícone de casa",
-                                )
-                            }
-                        }
-                    }
-                )
+                br.senai.sp.jandira.touccanuser.utility.BottomAppBar(navController, context)
             }
         ) { innerpadding ->
 
@@ -217,8 +118,3 @@ fun SobreNos() {
     }
 }
 
-@Preview
-@Composable
-private fun SobreNosPrev() {
-    SobreNos()
-}

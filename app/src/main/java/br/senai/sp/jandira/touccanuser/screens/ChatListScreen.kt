@@ -80,7 +80,7 @@ fun ChatList(navController: NavHostController, mainActivity: MainActivity) {
                                 .padding(horizontal = 12.dp)
                         ) {
                             IconButton(onClick = {
-
+                                navController.navigate("configuracoes")
                             }) {
                                 Icon(
                                     tint = Color.Black,

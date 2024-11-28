@@ -36,7 +36,11 @@ import br.senai.sp.jandira.touccanuser.screens.UserProfile
 import br.senai.sp.jandira.touccanuser.ui.theme.TouccanUserTheme
 import kotlinx.serialization.json.Json
 import android.Manifest
+import br.senai.sp.jandira.touccanuser.screens.Conta
 import br.senai.sp.jandira.touccanuser.screens.Notifications
+import br.senai.sp.jandira.touccanuser.screens.Seguranca
+import br.senai.sp.jandira.touccanuser.screens.SobreNos
+import br.senai.sp.jandira.touccanuser.screens.Suporte
 import com.google.firebase.Firebase
 import com.google.firebase.FirebaseApp
 import com.google.firebase.messaging.messaging
@@ -224,6 +228,22 @@ class MainActivity : ComponentActivity() {
                         composable(route = "configuracoes",
                         ){ backStackEntry ->
                             Settings(navController, this@MainActivity)
+                        }
+                        composable(route = "sobrenos",
+                        ){ backStackEntry ->
+                            SobreNos(navController, this@MainActivity)
+                        }
+                        composable(route = "seguranca",
+                        ){ backStackEntry ->
+                            Seguranca(navController, this@MainActivity)
+                        }
+                        composable(route = "conta",
+                        ){ backStackEntry ->
+                            Conta(navController, this@MainActivity)
+                        }
+                        composable(route = "suporte",
+                        ){ backStackEntry ->
+                            Suporte(navController, this@MainActivity)
                         }
 
                         composable(route = "chatList",

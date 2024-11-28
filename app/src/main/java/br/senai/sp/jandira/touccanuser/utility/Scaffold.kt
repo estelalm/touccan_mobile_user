@@ -66,7 +66,9 @@ fun TopAppBar(navController: NavHostController, context: Context) {
         },
         actions = {
             Row(horizontalArrangement = Arrangement.End) {
-                IconButton(onClick = {}) {
+                IconButton(onClick = {
+                    navController.navigate("configuracoes")
+                }) {
                     Icon(
                         painter = painterResource(R.drawable.configuracoes),
                         contentDescription = "Configurações: Ícone de engrenagem",
