@@ -1,8 +1,9 @@
 {
   "project_info": {
     "project_number": "906368056826",
+    "firebase_url": "https://touccan-firebase-default-rtdb.firebaseio.com",
     "project_id": "touccan-firebase",
-    "storage_bucket": "touccan-firebase.appspot.com"
+    "storage_bucket": "touccan-firebase.firebasestorage.app"
   },
   "client": [
     {

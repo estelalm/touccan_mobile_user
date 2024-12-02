@@ -103,26 +103,23 @@ dependencies {
     //NAVIGATION
     implementation("androidx.navigation:navigation-compose:2.7.7")
 
-    // Firebase
+// Firebase
     implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
     implementation("com.google.firebase:firebase-analytics")
-
-    implementation(platform("com.google.firebase:firebase-bom:32.0.0"))
     implementation("com.google.firebase:firebase-database-ktx")
     implementation("com.google.firebase:firebase-storage-ktx")
     implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.firebase:firebase-messaging-ktx")
+    implementation("com.google.firebase:firebase-inappmessaging-ktx")
 
-    // Firebase
+// Firebase UI
     implementation("com.firebaseui:firebase-ui-auth:8.0.2")
     implementation("com.firebaseui:firebase-ui-database:8.0.2")
-    implementation("com.google.firebase:firebase-messaging:24.1.0")
-    implementation("com.google.firebase:firebase-inappmessaging:21.0.1")
-    implementation("com.google.firebase:firebase-database:21.0.0")
 
-    //datastore
+// DataStore
     implementation("androidx.datastore:datastore-preferences:1.1.1")
-    implementation ("androidx.datastore:datastore-preferences:1.0.0")
     implementation("androidx.datastore:datastore:1.1.1")
+
 
     //coroutines
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")

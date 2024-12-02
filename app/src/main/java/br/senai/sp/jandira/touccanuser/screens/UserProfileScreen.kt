@@ -82,6 +82,7 @@ import java.time.Period
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import coil.compose.rememberAsyncImagePainter
+import com.google.firebase.storage.FirebaseStorage
 
 
 @Composable
@@ -137,6 +138,15 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
             imageUri.value = uri
             insertedImage.value = true
             Log.i("Imagem inserida", imageUri.value.toString())
+
+            uploadImageToFirebase(uri) { downloadUrl ->
+                if (downloadUrl != null) {
+                    imageUrl.value = downloadUrl
+                    Log.i("Firebase", "URL da imagem: $downloadUrl")
+                } else {
+                    Log.e("Firebase", "Falha ao fazer upload da imagem")
+                }
+            }
         }
     )
 
@@ -192,7 +202,9 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
                             imagePickerLauncher.launch("image/*")
                         }
                     ) {
+
                         if(insertedImage.value){
+                            //preciso que só essa imagem preencha o espaço do botão, do crculo do card, porque ela não ta preenchendo
                             Image(
                                 painter = rememberAsyncImagePainter(imageUri.value),
                                 contentDescription = "Imagem escolhida",
@@ -394,10 +406,11 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
                                         perfilUsuario.value.data_nascimento = perfilUsuario.value.data_nascimento.split("T")[0]
                                         perfilUsuario.value.biografia = bioState.value
                                         perfilUsuario.value.habilidade = habilidadeState.value
-                                        perfilUsuario.value.id_disponibilidade = disponibilidadeState.value.id
+                                        perfilUsuario.value.id_disponibilidade = if(disponibilidadeState.value.id == 0){perfilUsuario.value.id_disponibilidade} else {disponibilidadeState.value.id}
                                         perfilUsuario.value.formacao = formacaoState.value
-                                        perfilUsuario.value.foto = "https://static.todamateria.com.br/upload/ar/is/aristoteles-cke.jpg"
+                                        perfilUsuario.value.foto = if(imageUrl.value == null){perfilUsuario.value.foto}else{imageUrl.value.toString()}
 //                                        uploadedUrl?.let { perfilUsuario.value.foto = it }
+                                        Log.i("imagem a ser enviada:", imageUrl.value.toString())
 
                                         Log.i("dados a serem enviados", perfilUsuario.value.toString())
 
@@ -799,6 +812,30 @@ fun HistoryUser(userId: Int){
 
     }
 
+}
+
+fun uploadImageToFirebase(uri: Uri?, onComplete: (String?) -> Unit) {
+    if (uri == null) {
+        onComplete(null)
+        return
+    }
+
+    val storage = FirebaseStorage.getInstance()
+    val storageRef = storage.reference
+    val imageRef = storageRef.child("userImages/${uri.lastPathSegment}")
+
+    val uploadTask = imageRef.putFile(uri)
+    uploadTask.addOnSuccessListener {
+        imageRef.downloadUrl.addOnSuccessListener { downloadUrl ->
+            onComplete(downloadUrl.toString()) // Retorna o link da imagem
+        }.addOnFailureListener {
+            Log.e("Firebase", "Erro ao obter o link da imagem", it)
+            onComplete(null)
+        }
+    }.addOnFailureListener {
+        Log.e("Firebase", "Erro ao fazer upload da imagem", it)
+        onComplete(null)
+    }
 }
 
 
