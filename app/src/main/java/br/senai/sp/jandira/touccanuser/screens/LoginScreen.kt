@@ -262,6 +262,8 @@ fun Login (navController: NavHostController, context: Context, userPreferences: 
                                     val userJson = res.body()
                                         ?.let { Json.encodeToString(it.usuario) }
 
+                                    val idUser = res.body()!!.usuario.id
+
                                     if(res.body() != null){
                                         val userId = res.body()!!.usuario.id
                                         if(userId != null)
@@ -272,7 +274,7 @@ fun Login (navController: NavHostController, context: Context, userPreferences: 
 
 
                                     if(res.isSuccessful){
-                                        navController.navigate("home/${userJson}")
+                                        navController.navigate("home/${idUser}")
                                     }else{
                                         isErrorState.value = true
                                         messageErrorState.value = "Email ou senha incorretos"

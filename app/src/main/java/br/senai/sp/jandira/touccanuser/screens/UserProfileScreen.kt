@@ -81,6 +81,7 @@ import java.time.LocalDate
 import java.time.Period
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
+import coil.compose.rememberAsyncImagePainter
 
 
 @Composable
@@ -127,14 +128,19 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
         mutableStateOf(false)
     }
 
+    var insertedImage = remember{mutableStateOf(false)}
     var imageUrl = remember { mutableStateOf<String?>(null) }
     var imageUri = remember { mutableStateOf<Uri?>(null) }
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
         onResult = { uri: Uri? ->
             imageUri.value = uri
+            insertedImage.value = true
+            Log.i("Imagem inserida", imageUri.value.toString())
         }
     )
+
+
     val coroutineScope = rememberCoroutineScope()
 
     val context = LocalContext.current
@@ -179,19 +185,32 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
 
                     if (editState.value) { Button(
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.LightGray
+                            containerColor = Color.Black
                         ),
                         modifier = Modifier.fillMaxSize(),
                         onClick = {
                             imagePickerLauncher.launch("image/*")
                         }
                     ) {
-                        Image(
-                            painter = painterResource(R.drawable.inserir_imagem),
-                            "",
-                            contentScale = ContentScale.Fit,
-                            modifier = Modifier.padding(24.dp)
-                        )
+                        if(insertedImage.value){
+                            Image(
+                                painter = rememberAsyncImagePainter(imageUri.value),
+                                contentDescription = "Imagem escolhida",
+                                contentScale = ContentScale.FillWidth,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(24.dp)
+                            )
+                        }else{
+                            Image(
+                                painter = painterResource(R.drawable.inserir_imagem),
+                                "",
+                                contentScale = ContentScale.Fit,
+                                modifier = Modifier.padding(24.dp)
+                            )
+                        }
+
+
                     }
                     }else{
                         var asyncModel = remember {
@@ -306,7 +325,7 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
 
                     }
                     Column(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
 

@@ -10,14 +10,54 @@ import android.os.Build
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationManagerCompat
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.runBlocking
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
+
+    override fun onNewToken(token: String) {
+        super.onNewToken(token)
+        Log.d("FCM", "Novo token gerado: $token")
+
+        // Salvar o token no banco de dados
+        saveTokenToDatabase(token)
+    }
+
+    private fun saveTokenToDatabase(token: String) {
+        // Inicialize o UserPreferences usando o applicationContext
+        val userPreferences = UserPreferences(applicationContext)
+
+        // Usar runBlocking para obter o ID do usuário de forma síncrona
+        val userId = runBlocking {
+            userPreferences.userId.firstOrNull()
+        }
+
+        if (userId != null && userId != 0) {
+            // Acessar o Firestore
+            val db = FirebaseFirestore.getInstance()
+
+            // Buscar o documento baseado no ID do usuário
+            val userRef = db.collection("users").document(userId.toString())
+
+            // Atualizar o campo `token` com o novo valor
+            userRef.update("token", token)
+                .addOnSuccessListener {
+                    Log.d("FCM", "Token atualizado com sucesso para o usuário $userId")
+                }
+                .addOnFailureListener { e ->
+                    Log.e("FCM", "Erro ao atualizar token no Firestore", e)
+                }
+        } else {
+            Log.w("FCM", "Usuário não encontrado no UserPreferences. Token não foi salvo.")
+        }
+    }
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
 
-        // Obtém o título e corpo da notificação
+
         val title = remoteMessage.notification?.title
         val body = remoteMessage.notification?.body
         val channelId = "HEADS_UP_NOTIFICATIONS"
@@ -61,13 +101,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         NotificationManagerCompat.from(this).notify(1, notification.build())
     }
 
-//    override fun onNewToken(token: String) {
-//        Log.d(TAG, "Refreshed token: $token")
-//
-//        // If you want to send messages to this application instance or
-//        // manage this apps subscriptions on the server side, send the
-//        // FCM registration token to your app server.
-//        sendRegistrationToServer(token)
-//    }
+    
+
 }
 

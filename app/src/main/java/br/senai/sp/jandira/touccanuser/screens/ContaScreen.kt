@@ -30,6 +30,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,12 +44,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import br.senai.sp.jandira.touccanuser.R
+import br.senai.sp.jandira.touccanuser.UserPreferences
 import br.senai.sp.jandira.touccanuser.ui.theme.Inter
 import br.senai.sp.jandira.touccanuser.ui.theme.MainOrange
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Conta(navController: NavHostController, context: Context) {
+    val userPreferences = UserPreferences(context)
+    val userIdFlow = userPreferences.userId.collectAsState(initial = 0)
+
 
     Surface(modifier = Modifier.background(Color(0xffEBEBEB))) {
         Scaffold(
@@ -112,7 +117,12 @@ fun Conta(navController: NavHostController, context: Context) {
                         Text("00000-000", fontFamily = Inter, fontSize = 16.sp)
                         Spacer(modifier = Modifier.height(70.dp))
 
-                        Text("Sair", fontFamily = Inter, fontWeight = FontWeight.Bold, color = Color.Red, fontSize = 16.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+                        Text("Sair", fontFamily = Inter, fontWeight = FontWeight.Bold, color = Color.Red, fontSize = 16.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth()
+                            .clickable{
+                                navController.navigate("logIn")
+
+                            })
+
                     }
 
                 }

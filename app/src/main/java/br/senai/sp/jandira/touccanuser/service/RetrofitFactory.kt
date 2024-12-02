@@ -11,6 +11,7 @@ class RetrofitFactory {
     private val BASE_URL = "https://touccan-backend-8a78.onrender.com/2.0/touccan/"
 
 //    private val BASE_URL = "http://10.0.2.2:8080/2.0/tocuccan/"
+//        private val BASE_URL = "http://192.168.15.8:8080/2.0/tocuccan/"
 
     val okHttpClient = OkHttpClient.Builder()
         .connectTimeout(30, TimeUnit.SECONDS)
