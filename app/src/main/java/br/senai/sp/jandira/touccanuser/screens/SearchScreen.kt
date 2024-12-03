@@ -152,6 +152,7 @@ fun SearchScreen(navController: NavHostController, mainActivity: MainActivity) {
                     )
                 },
                 modifier = Modifier
+                    .fillMaxWidth()
                     .padding(12.dp)
                     .height(70.dp)
 
