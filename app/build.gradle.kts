@@ -52,6 +52,15 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    packaging {
+        resources {
+            excludes += "META-INF/NOTICE.md"
+            excludes += "META-INF/LICENSE.md"  // Caso precise excluir outro arquivo
+            excludes += "META-INF/LICENSE.txt"
+            excludes += "META-INF/arquivo.conf"
+
+        }
+    }
 }
 
 dependencies {
