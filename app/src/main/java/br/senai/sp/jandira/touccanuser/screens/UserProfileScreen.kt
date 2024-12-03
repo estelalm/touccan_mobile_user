@@ -671,7 +671,8 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
                                 onClick = {
                                     isDropDownExpanded.value = false
                                     itemPosition.value = index
-                                    disponibilidadeState.value = disp
+                                    disponibilidadeState.value.disponibilidade = disp.disponibilidade
+                                    disponibilidadeState.value.id = disp.id
                                 })
                         }
                     }
