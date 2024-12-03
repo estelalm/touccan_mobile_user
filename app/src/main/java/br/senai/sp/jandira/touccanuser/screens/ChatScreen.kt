@@ -1,6 +1,7 @@
 package br.senai.sp.jandira.touccanuser.screens
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -32,24 +33,52 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import br.senai.sp.jandira.touccanuser.MainActivity
 import br.senai.sp.jandira.touccanuser.R
 import br.senai.sp.jandira.touccanuser.UserPreferences
+import br.senai.sp.jandira.touccanuser.model.Cliente
+import br.senai.sp.jandira.touccanuser.model.ClientePerfil
+import br.senai.sp.jandira.touccanuser.model.ResultClientProfile
+import br.senai.sp.jandira.touccanuser.service.RetrofitFactory
 import br.senai.sp.jandira.touccanuser.ui.theme.Inter
 import br.senai.sp.jandira.touccanuser.ui.theme.MainOrange
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Chat(navController: NavHostController, MainActivity: Context) {
+fun Chat(navController: NavHostController, clientId: String?, MainActivity: Context) {
+
+    val id = clientId?.toInt()
+    Log.i("ID CLIENTE CHAT", id.toString())
+
+    val chatClientState = remember{
+        mutableStateOf(ClientePerfil())
+    }
+
+    val callClienteChat = RetrofitFactory()
+        .getClientService()
+        .getClientById(id!!)
+    callClienteChat.enqueue(object : Callback<ResultClientProfile> {
+        override fun onResponse(p0: Call<ResultClientProfile>, p1: Response<ResultClientProfile>) {
+            Log.i("response TelaC", p1.body()!!.toString())
+            chatClientState.value = p1.body()!!.cliente
+        }
+
+        override fun onFailure(p0: Call<ResultClientProfile>, p1: Throwable) {
+            Log.i("Falhou!!!", p1.toString())
+        }
+    })
 
     val userPreferences = UserPreferences(MainActivity)
     val userIdFlow = userPreferences.userId.collectAsState(initial = null)
@@ -103,7 +132,7 @@ fun Chat(navController: NavHostController, MainActivity: Context) {
                         .padding(top = 20.dp, bottom = 20.dp)
                 ) {
                     Text(
-                        "Mercado Bom Lugar",
+                        chatClientState.value.nome_fantasia,
                         fontFamily = Inter,
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 18.sp,
@@ -117,12 +146,16 @@ fun Chat(navController: NavHostController, MainActivity: Context) {
                     )
                 }
                 Column (modifier = Modifier.padding(horizontal = 24.dp)){
-                    ElevatedCard(modifier = Modifier.fillMaxHeight(0.85F)
-                        .fillMaxWidth().padding(bottom = 20.dp),
+                    ElevatedCard(modifier = Modifier
+                        .fillMaxHeight(0.85F)
+                        .fillMaxWidth()
+                        .padding(bottom = 20.dp),
                         shape = RoundedCornerShape(20.dp),
                         colors = CardDefaults.cardColors(containerColor = Color.White)
                     ) {
-                        LazyColumn (modifier = Modifier.fillMaxSize().padding(vertical =24.dp, horizontal = 12.dp)) {
+                        LazyColumn (modifier = Modifier
+                            .fillMaxSize()
+                            .padding(vertical = 24.dp, horizontal = 12.dp)) {
 
                             item {
                                 MessageUser()
@@ -135,7 +168,9 @@ fun Chat(navController: NavHostController, MainActivity: Context) {
 
                     ElevatedCard(modifier = Modifier.fillMaxWidth(),
                         colors = CardDefaults.cardColors(containerColor = Color.White)) {
-                        Row (modifier = Modifier.fillMaxWidth().padding(horizontal = 6.dp),
+                        Row (modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 6.dp),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween){
                             TextField(
@@ -167,14 +202,18 @@ fun Chat(navController: NavHostController, MainActivity: Context) {
 
 @Composable
 fun MessageUser() {
-    Row (modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp), horizontalArrangement = Arrangement.End
+    Row (modifier = Modifier
+        .fillMaxWidth()
+        .padding(bottom = 6.dp), horizontalArrangement = Arrangement.End
     ){
 
         Card (
             colors = CardDefaults.cardColors(
                 containerColor = Color(0xffFFD2A5)
             ),
-            modifier = Modifier.padding(horizontal = 10.dp).widthIn(max = 240.dp)
+            modifier = Modifier
+                .padding(horizontal = 10.dp)
+                .widthIn(max = 240.dp)
         ) {
             Text("BlablablablaBblabla",modifier = Modifier.padding(10.dp))
         }
@@ -185,7 +224,9 @@ fun MessageUser() {
 }
 @Composable
 fun MessageClient() {
-    Row (modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp), horizontalArrangement = Arrangement.Start
+    Row (modifier = Modifier
+        .fillMaxWidth()
+        .padding(bottom = 6.dp), horizontalArrangement = Arrangement.Start
     ){
         Card(modifier = Modifier.size(40.dp), shape = RoundedCornerShape(50.dp)){
 
@@ -194,7 +235,9 @@ fun MessageClient() {
             colors = CardDefaults.cardColors(
                 containerColor = Color(0xff9BA9B0)
             ),
-            modifier = Modifier.padding(horizontal = 10.dp).widthIn(max = 240.dp)
+            modifier = Modifier
+                .padding(horizontal = 10.dp)
+                .widthIn(max = 240.dp)
         ) {
             Text("Blablablabla",modifier = Modifier.padding(10.dp))
         }
