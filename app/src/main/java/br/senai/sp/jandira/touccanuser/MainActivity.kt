@@ -38,7 +38,6 @@ import kotlinx.serialization.json.Json
 import android.Manifest
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.runtime.collectAsState
-import br.senai.sp.jandira.touccanuser.model.UserId
 import br.senai.sp.jandira.touccanuser.screens.Conta
 import br.senai.sp.jandira.touccanuser.screens.Notifications
 import br.senai.sp.jandira.touccanuser.screens.SearchScreen
@@ -48,7 +47,6 @@ import br.senai.sp.jandira.touccanuser.screens.Suporte
 import com.google.firebase.Firebase
 import com.google.firebase.FirebaseApp
 import com.google.firebase.messaging.messaging
-import kotlinx.serialization.encodeToString
 
 
 class MainActivity : ComponentActivity() {
@@ -263,9 +261,13 @@ class MainActivity : ComponentActivity() {
                         ){ backStackEntry ->
                             ChatList(navController, this@MainActivity)
                         }
-                        composable(route = "chat",
+                        composable(route = "chat/{id}",
+                            arguments = listOf(navArgument("id") {
+//                                type = NavType.StringType
+                            })
                         ){ backStackEntry ->
-                            Chat(navController, this@MainActivity)
+                            val clientId = backStackEntry.arguments?.getString("id")
+                            Chat(navController, clientId, this@MainActivity)
                         }
                         composable(route = "notificacoes",
                         ){ backStackEntry ->

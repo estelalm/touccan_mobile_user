@@ -85,10 +85,11 @@ fun ChatList(navController: NavHostController, mainActivity: MainActivity) {
                 val chats = res.body()?.clientes
 
                 if(chats != null){
-                    chatListState.value = chats.distinctBy {it.id}
+                    chatListState.value = chats.distinctBy {it.id_cliente}
                 }else{
-                    Log.i("Error: ", "A lista de bicos retornou nula")
+                    Log.i("Error: ", "A lista de clientes retornou nula")
                 }
+                Log.i("ATENCAO", chats.toString())
             }
 
             override fun onFailure(call: Call<RelationRes>, t: Throwable) {
@@ -257,7 +258,8 @@ fun ChatCard(navController: NavHostController, chat: Relation) {
             .padding(bottom = 12.dp)
             .height(68.dp)
             .clickable{
-                navController.navigate("chat")
+                Log.i("etstes", chat.toString())
+                navController.navigate("chat/${chat.id_cliente}")
             }
     ) {
         Row(
