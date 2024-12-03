@@ -1,6 +1,5 @@
 package br.senai.sp.jandira.touccanuser.screens
 
-import android.widget.Space
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -36,12 +35,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import br.senai.sp.jandira.touccanuser.MainActivity
 import br.senai.sp.jandira.touccanuser.R
 import br.senai.sp.jandira.touccanuser.ui.theme.Inter
 import br.senai.sp.jandira.touccanuser.ui.theme.MainOrange
 
 @Composable
-fun ResetPassword() {
+fun ResetPassword(navController: NavHostController, mainActivity: MainActivity) {
     var passwordState = remember{
         mutableStateOf("")
     }
@@ -218,11 +219,4 @@ fun ResetPassword() {
 
     }
 
-}
-
-
-@Preview (showSystemUi = true, showBackground = true)
-@Composable
-private fun ResetPasswordPrev() {
-    ResetPassword()
 }

@@ -44,13 +44,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import br.senai.sp.jandira.touccanuser.R
-import br.senai.sp.jandira.touccanuser.model.AvaliacaoUser
+import br.senai.sp.jandira.touccanuser.model.EmailTouccan
 import br.senai.sp.jandira.touccanuser.service.RetrofitFactory
 import br.senai.sp.jandira.touccanuser.ui.theme.Inter
 import br.senai.sp.jandira.touccanuser.ui.theme.MainOrange
@@ -77,7 +75,6 @@ fun Suporte(navController: NavHostController, context: Context) {
                 br.senai.sp.jandira.touccanuser.utility.BottomAppBar(navController, context)
             }
         ) { innerpadding ->
-
 
             Column(
                 modifier = Modifier
@@ -145,6 +142,32 @@ fun Suporte(navController: NavHostController, context: Context) {
 
                         Button(
                             onClick = {
+
+                                val report = EmailTouccan(
+                                    assunto = "Reporte da aplicação Mobile Touccan - Usuário",
+                                    corpo = reporteState.value
+                                )
+
+
+                                val sendReport = RetrofitFactory()
+                                    .getFeedbackService()
+                                    .postEmailReport(report)
+
+
+
+                                if (sendReport != null) {
+                                    sendReport.enqueue(object: Callback<EmailTouccan> {
+                                        override fun onResponse(call: Call<EmailTouccan>, res: Response<EmailTouccan>) {
+                                            Log.i("Dados a serem enviados", report.toString())
+                                            Log.i("Response: ", res.toString())
+                                        }
+
+                                        override fun onFailure(call: Call<EmailTouccan>, t: Throwable) {
+                                            Log.i("Falhou:", t.toString())
+                                        }
+                                    })
+                                }
+
                             },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MainOrange

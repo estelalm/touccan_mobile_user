@@ -38,9 +38,10 @@ import kotlinx.serialization.json.Json
 import android.Manifest
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.runtime.collectAsState
-import br.senai.sp.jandira.touccanuser.model.UserId
 import br.senai.sp.jandira.touccanuser.screens.Conta
+import br.senai.sp.jandira.touccanuser.screens.InsertCode
 import br.senai.sp.jandira.touccanuser.screens.Notifications
+import br.senai.sp.jandira.touccanuser.screens.ResetPassword
 import br.senai.sp.jandira.touccanuser.screens.SearchScreen
 import br.senai.sp.jandira.touccanuser.screens.Seguranca
 import br.senai.sp.jandira.touccanuser.screens.SobreNos
@@ -48,7 +49,6 @@ import br.senai.sp.jandira.touccanuser.screens.Suporte
 import com.google.firebase.Firebase
 import com.google.firebase.FirebaseApp
 import com.google.firebase.messaging.messaging
-import kotlinx.serialization.encodeToString
 
 
 class MainActivity : ComponentActivity() {
@@ -270,6 +270,16 @@ class MainActivity : ComponentActivity() {
                         composable(route = "notificacoes",
                         ){ backStackEntry ->
                             Notifications(navController, this@MainActivity)
+                        }
+
+                        composable(route = "resetPassword",
+                        ){ backStackEntry ->
+                            ResetPassword(navController, this@MainActivity)
+                        }
+
+                        composable(route = "insertCode",
+                        ){ backStackEntry ->
+                            InsertCode(navController, this@MainActivity)
                         }
 
                         }

@@ -317,6 +317,14 @@ fun Login (navController: NavHostController, context: Context, userPreferences: 
                     )
                 }
 
+                Text("Esqueceu a senha? Clique aqui para redefinir",
+                    fontSize = 14.sp,
+                    color = Color(mainOrange),
+                    fontFamily = Inter,
+                    textDecoration = TextDecoration.Underline,
+                    modifier = Modifier.fillMaxWidth().clickable { navController.navigate("") }
+                )
+
             }
 
             //parte branca curvada no fundo

@@ -1,9 +1,11 @@
 package br.senai.sp.jandira.touccanuser.service
 
+import br.senai.sp.jandira.touccanuser.model.EmailReset
 import br.senai.sp.jandira.touccanuser.model.Login
 import br.senai.sp.jandira.touccanuser.model.LoginResult
 import br.senai.sp.jandira.touccanuser.model.RelationRes
 import br.senai.sp.jandira.touccanuser.model.ResultUserProfile
+import br.senai.sp.jandira.touccanuser.model.TokenRes
 import br.senai.sp.jandira.touccanuser.model.User
 import br.senai.sp.jandira.touccanuser.model.UserPerfil
 import retrofit2.Call
@@ -28,7 +30,6 @@ interface UserService {
     @PUT("senha/usuario/{id}")
     fun updateUserSenha(@Body user: UserPerfil, @Path("id") id: Int): Call<UserPerfil>
 
-
     @Headers("Content-Type: application/json")
     @POST("login/usuario")
     fun loginUser(@Body user: Login): Call<LoginResult>
@@ -38,6 +39,10 @@ interface UserService {
 
     @GET("usuario/relacoes/{id}")
     fun getUserRelation(@Path("id") id: Int): Call<RelationRes>
+
+    @Headers("Content-Type: application/json")
+    @POST("enviar-token")
+    fun sendToken(@Body email: EmailReset): Call<TokenRes>
 
 }
 
