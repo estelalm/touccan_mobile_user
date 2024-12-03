@@ -98,7 +98,7 @@ class MainActivity : ComponentActivity() {
 
                     NavHost(
                         navController = navController,
-                        startDestination = if(userIdFlow.value!= 0){"home/${userIdFlow.value}"} else{"logIn"}) {
+                        startDestination = if(userIdFlow.value== 0 || userIdFlow.value == null){"logIn"} else{"home/${userIdFlow.value}"}) {
 
                         composable(route = "signUp"){ SignUpScreen(navController)}
 
