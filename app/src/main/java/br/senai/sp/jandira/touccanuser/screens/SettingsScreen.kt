@@ -143,7 +143,7 @@ fun Settings(navController: NavHostController, context: MainActivity) {
                         Row (verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.fillMaxWidth().padding(start = 12.dp, end = 4.dp)){
                             Image(painterResource(R.drawable.senha), "Descricao",
-                                modifier = Modifier.size(46.dp))
+                                modifier = Modifier.size(35.dp))
                             Column (
                                 modifier = Modifier
                                     .padding(horizontal = 6.dp, vertical = 2.dp)
@@ -189,7 +189,7 @@ fun Settings(navController: NavHostController, context: MainActivity) {
                                 Text("Suporte", fontFamily = Inter,
                                     color = Color.Black, fontWeight = FontWeight.Bold, fontSize = 18.sp)
                                 Text("Entre em contato conosco de qualquer lugar", fontFamily = Inter,
-                                    color = Color.Gray, fontWeight = FontWeight.SemiBold, fontSize = 12.sp)
+                                    color = Color.Gray, fontWeight = FontWeight.SemiBold, fontSize = 12.sp, lineHeight = 8.sp)
                             }
                         }
 

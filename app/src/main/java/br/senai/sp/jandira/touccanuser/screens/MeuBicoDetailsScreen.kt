@@ -175,12 +175,14 @@ fun MeuBicoDetails(
                                 fontFamily = Inter,
                                 fontWeight = FontWeight.Light)
 
-                            Text("Av. Diniz, 57  Jandira-SP",
-                                modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
-                                textAlign = TextAlign.End,
-                                color = Color(0xff7E7E7E),
-                                fontFamily = Inter,
-                                fontWeight = FontWeight.SemiBold)
+                            if(bico.value.id_endereco.isNotEmpty()){
+                                Text("${bico.value.id_endereco[0].rua}, ${bico.value.id_endereco[0].cidade}-${bico.value.id_endereco[0].estado}",
+                                    modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
+                                    textAlign = TextAlign.End,
+                                    color = Color(0xff7E7E7E),
+                                    fontFamily = Inter,
+                                    fontWeight = FontWeight.SemiBold)
+                                }
 
                             Column (){
                                 Text("Início: ${

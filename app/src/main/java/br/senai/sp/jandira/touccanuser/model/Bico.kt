@@ -16,7 +16,8 @@ data class Bico(
     val final_u: Int = 0,
     val categoria: List<Categoria> = listOf(),
     val dificuldade: List<Dificuldade> = listOf(),
-    val cliente: List<Cliente> = listOf()
+    val cliente: List<Cliente> = listOf(),
+    val id_endereco:List<Endereco> = listOf()
 )
 
 

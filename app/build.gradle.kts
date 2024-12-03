@@ -80,6 +80,8 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    //swipe
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
 
    //IMAGE PICKER
     implementation("androidx.activity:activity-ktx:1.9.3")

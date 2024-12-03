@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -105,9 +106,11 @@ fun Notifications(navController: NavHostController, mainActivity: MainActivity) 
                             "Você não recebeu nenhuma notificação!",
                             color = Color.Black,
                             fontFamily = Inter,
+                            textAlign = TextAlign.Center,
                             fontWeight = FontWeight.Normal,
                             fontStyle = FontStyle.Italic,
-                            fontSize = 16.sp
+                            fontSize = 16.sp,
+                            modifier = Modifier.fillMaxWidth()
                         )
                     }
                 }

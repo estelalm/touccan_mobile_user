@@ -46,7 +46,9 @@ fun TopAppBar(navController: NavHostController, context: Context) {
         ),
         navigationIcon = {
             IconButton(
-                onClick = {},
+                onClick = {
+                    navController.navigate("home/${userIdFlow.value}")
+                },
                 modifier = Modifier
                     .height(100.dp)
                     .width(170.dp)

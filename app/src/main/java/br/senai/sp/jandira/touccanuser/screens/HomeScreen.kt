@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -36,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
@@ -61,6 +63,7 @@ import br.senai.sp.jandira.touccanuser.model.UserPerfil
 import br.senai.sp.jandira.touccanuser.service.RetrofitFactory
 import br.senai.sp.jandira.touccanuser.ui.theme.Inter
 import br.senai.sp.jandira.touccanuser.ui.theme.MainOrange
+import coil.compose.AsyncImage
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -264,7 +267,6 @@ fun Home(
                 }
             }
             LazyColumn (contentPadding = PaddingValues(0.dp)){
-
                 var isPremium = false
                 if(pertoDeVoceState.value){
                     if (isLoadingPertoDeVoce.value) {
@@ -404,7 +406,17 @@ fun AnuncioCard(
                 defaultElevation = 40.dp
             )
         ){
+            var asyncModel = remember {
+                mutableStateOf("")
+            }
+            if (perfilCliente.value.foto == "" || perfilCliente.value.foto == null) {
+                asyncModel.value =
+                    "https://i.pinimg.com/236x/21/9e/ae/219eaea67aafa864db091919ce3f5d82.jpg"
+            } else {
+                asyncModel.value = perfilCliente.value.foto
+            }
 
+            AsyncImage(asyncModel.value, "", contentScale = ContentScale.FillWidth, alignment = Alignment.Center, modifier = Modifier.fillMaxSize())
         }
         Column (
             modifier = Modifier.padding(vertical = 4.dp, horizontal = 6.dp)

@@ -1,5 +1,6 @@
 package br.senai.sp.jandira.touccanuser.screens
 
+import android.annotation.SuppressLint
 import android.net.Uri
 import android.provider.MediaStore
 import android.util.Log
@@ -195,7 +196,7 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
 
                     if (editState.value) { Button(
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Black
+                            containerColor = Color.Gray
                         ),
                         modifier = Modifier.fillMaxSize(),
                         onClick = {
@@ -209,9 +210,9 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
                                 painter = rememberAsyncImagePainter(imageUri.value),
                                 contentDescription = "Imagem escolhida",
                                 contentScale = ContentScale.FillWidth,
+                                alignment = Alignment.Center,
                                 modifier = Modifier
                                     .fillMaxSize()
-                                    .padding(24.dp)
                             )
                         }else{
                             Image(
@@ -642,10 +643,13 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
                     ) {
 
                             Text(disponibilidadeState.value.disponibilidade, fontFamily = Inter)
+                        if(editState.value){
                             Image(
                                 painter = painterResource(id = R.drawable.arrow_drop_down),
                                 contentDescription = "DropDown Icon"
                             ) }
+                        }
+
 
                     }
                     DropdownMenu(
@@ -679,6 +683,7 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
         }
 
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun HistoryUser(userId: Int){
 
@@ -721,6 +726,16 @@ fun HistoryUser(userId: Int){
                             fontWeight = FontWeight.SemiBold
                         ) }
                 }else{
+                    item{
+//                        Row (modifier = Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.Center){
+//                            val total = remember(avaliacoesState.value) {
+//                                avaliacoesState.value.filter { it.id_usuario == userId }
+//                                    .sumOf { it.nota }
+//                            }
+//                            val media = total / avaliacoesState.value.size
+//                            Text("Avaliação média: ${String.format("%.2f", media)}" )
+//                        }
+                    }
 
                     items(avaliacoesState.value){ avaliacao ->
 
@@ -777,7 +792,7 @@ fun HistoryUser(userId: Int){
                                             fontFamily = Inter,
                                             fontWeight = FontWeight.Bold
                                         )
-                                        Text(avaliacao.avaliacao)
+                                        Text(avaliacao.avaliacao, fontFamily = Inter)
                                         Row(
                                             modifier = Modifier
                                                 .fillMaxWidth()

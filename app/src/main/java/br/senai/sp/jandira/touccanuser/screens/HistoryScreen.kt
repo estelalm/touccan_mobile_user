@@ -249,7 +249,7 @@ fun HistoryCard(bico: BicoHistorico, idUser: Int, navController: NavHostControll
         while (true) { // Atualiza a cada segundo
             val agora = LocalDateTime.now()
             mensagemAceito.value = when {
-                dataHoraInicio.isBefore(agora) -> "Em andamento"
+                dataHoraInicio.isBefore(agora) && dataHoraFinal.isAfter(agora) -> "Em andamento"
                 dataHoraInicio.isAfter(agora) -> "Pendente"
                 dataHoraFinal.isBefore(agora) -> "Aguardando finalização"
                 else -> "Em andamento"
@@ -342,7 +342,7 @@ fun HistoryCard(bico: BicoHistorico, idUser: Int, navController: NavHostControll
                                     Button(onClick = {
                                         navController.navigate("avaliacao/${bico.id_bico}")
 
-                                    }, modifier = Modifier.height(30.dp).width(140.dp).padding(0.dp),
+                                    }, modifier = Modifier.height(34.dp).width(140.dp).padding(0.dp),
                                         shape = RoundedCornerShape(10.dp),
                                         colors = ButtonDefaults.buttonColors(containerColor = MainOrange)
                                     ) {

@@ -61,10 +61,10 @@ fun SearchScreen(navController: NavHostController, mainActivity: MainActivity) {
     Scaffold(
         containerColor = Color(0xFFEBEBEB),
         topBar = {
-            //  br.senai.sp.jandira.touccanuser.utility.TopAppBar(navController)
+            br.senai.sp.jandira.touccanuser.utility.TopAppBar(navController, mainActivity)
         },
         bottomBar = {
-            // br.senai.sp.jandira.touccanuser.utility.BottomAppBar(navController)
+            br.senai.sp.jandira.touccanuser.utility.BottomAppBar(navController, mainActivity)
         }
     ) { innerpadding ->
         val userPreferences = UserPreferences(mainActivity)
@@ -139,7 +139,7 @@ fun SearchScreen(navController: NavHostController, mainActivity: MainActivity) {
                 colors = SearchBarDefaults.colors(
                     containerColor = Color.White
                 ),
-                shape = RoundedCornerShape(15.dp),
+                shape = RoundedCornerShape(24.dp),
                 trailingIcon = {
                     Icon(Icons.Outlined.Search, contentDescription = "", tint = Color.Gray)
                 },
@@ -153,7 +153,7 @@ fun SearchScreen(navController: NavHostController, mainActivity: MainActivity) {
                 },
                 modifier = Modifier
                     .padding(12.dp)
-                    .height(50.dp)
+                    .height(70.dp)
 
             ) {}
 
