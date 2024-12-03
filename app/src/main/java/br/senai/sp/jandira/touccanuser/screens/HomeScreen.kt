@@ -142,6 +142,7 @@ fun Home(
 
         override fun onFailure(call: Call<ResultBicos>, t: Throwable) {
             Log.i("Falhou:", t.toString())
+            isLoadingPertoDeVoce.value = false
             errorPertoDeVoce.value = true
         }
     })
@@ -163,6 +164,7 @@ fun Home(
 
         override fun onFailure(call: Call<ResultBicosPremium>, t: Throwable) {
             Log.i("Falhou:", t.toString())
+            isLoadingUrgente.value = false
             errorUrgente.value = true
         }
     })
@@ -289,12 +291,17 @@ fun Home(
                             Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center){ CircularProgressIndicator(color = Color(laranja)) }
                         }
                     }else{
-                        items(urgenteList.value){bico ->
-                            isPremium = true
-                            if (idUser != null) {
-                                AnuncioCard(bico, navController, idUser, mainActivity, isPremium)
+                        if(errorUrgente.value){
+                            item{Text(text = "Não foi possível encontrar resultados, tente novamente mais tarde.", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)}
+                        }else{
+                            items(urgenteList.value){bico ->
+                                isPremium = true
+                                if (idUser != null) {
+                                    AnuncioCard(bico, navController, idUser, mainActivity, isPremium)
+                                }
                             }
                         }
+
                     }
 
                     }

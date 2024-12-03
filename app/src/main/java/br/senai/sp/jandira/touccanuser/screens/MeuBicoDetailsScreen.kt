@@ -183,7 +183,7 @@ fun MeuBicoDetails(
                                 fontWeight = FontWeight.SemiBold)
 
                             Column (){
-                                Text("Início:                                 ${
+                                Text("Início: ${
                                     bico.value.horario_inicio.split("T")[1].split(".")[0].split(
                                         ":").slice(0..1).joinToString(":", postfix = "h")
                                 }",
@@ -192,7 +192,7 @@ fun MeuBicoDetails(
                                     color = Color(0xff464646),
                                     fontFamily = Inter,
                                     fontWeight = FontWeight.Black)
-                                Text("Término:                                 ${
+                                Text("Término: ${
                                     bico.value.horario_limite.split("T")[1].split(".")[0].split(
                                         ":"
                                     ).slice(0..1).joinToString(":", postfix = "h")
@@ -252,7 +252,9 @@ fun MeuBicoDetails(
                     ) {
                         Text("Avalie",
                             fontFamily = Inter,
-                            fontSize = 8.sp,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            textAlign = TextAlign.Center,
                             modifier = Modifier.fillMaxWidth())
                     }
 

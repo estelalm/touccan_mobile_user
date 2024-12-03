@@ -337,7 +337,7 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
 
                     }
                     Column(
-                        modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
+                        modifier = Modifier.fillMaxWidth(),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
 
@@ -376,75 +376,70 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
                         }
 
                         if (sobreNosState.value) {
-                            UserInfo(editState, perfilUsuario, formacaoState, bioState, habilidadeState, disponibilidadeState)
-                            Button(
-                                shape = RoundedCornerShape(10.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = MainOrange
-                                ),
-                                modifier = Modifier
-                                    .width(200.dp),
-                                onClick = {
-                                    if (editState.value) {
-                                        val user = UserPerfil()
+                            LazyColumn(){
+                                item{UserInfo(editState, perfilUsuario, formacaoState, bioState, habilidadeState, disponibilidadeState)}
+                                item{
+                                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center){
+                                        Button(
+                                            shape = RoundedCornerShape(10.dp),
+                                            colors = ButtonDefaults.buttonColors(
+                                                containerColor = MainOrange
+                                            ),
+                                            modifier = Modifier
+                                                .width(200.dp),
+                                            onClick = {
+                                                if (editState.value) {
+                                                    val user = UserPerfil()
 
-
-//                                        imageUri?.let { uri ->
-//                                            coroutineScope.launch {
-//                                                val uploadedUrl = uri.value?.let {
-//                                                    uploadImageToCloudinary(
-//                                                        it, context)
-//                                                }
-//                                                imageUrl.value = uploadedUrl
-//
-//
-//
-//                                            }
-//                                        }
-
-                                        perfilUsuario.value.nome = perfilUsuario.value.nome
-                                        perfilUsuario.value.data_nascimento = perfilUsuario.value.data_nascimento.split("T")[0]
-                                        perfilUsuario.value.biografia = bioState.value
-                                        perfilUsuario.value.habilidade = habilidadeState.value
-                                        perfilUsuario.value.id_disponibilidade = if(disponibilidadeState.value.id == 0){perfilUsuario.value.id_disponibilidade} else {disponibilidadeState.value.id}
-                                        perfilUsuario.value.formacao = formacaoState.value
-                                        perfilUsuario.value.foto = if(imageUrl.value == null){perfilUsuario.value.foto}else{imageUrl.value.toString()}
+                                                    perfilUsuario.value.nome = perfilUsuario.value.nome
+                                                    perfilUsuario.value.data_nascimento = perfilUsuario.value.data_nascimento.split("T")[0]
+                                                    perfilUsuario.value.biografia = bioState.value
+                                                    perfilUsuario.value.habilidade = habilidadeState.value
+                                                    perfilUsuario.value.id_disponibilidade = if(disponibilidadeState.value.id == 0){perfilUsuario.value.id_disponibilidade} else {disponibilidadeState.value.id}
+                                                    perfilUsuario.value.formacao = formacaoState.value
+                                                    perfilUsuario.value.foto = if(imageUrl.value == null){perfilUsuario.value.foto}else{imageUrl.value.toString()}
 //                                        uploadedUrl?.let { perfilUsuario.value.foto = it }
-                                        Log.i("imagem a ser enviada:", imageUrl.value.toString())
+                                                    Log.i("imagem a ser enviada:", imageUrl.value.toString())
 
-                                        Log.i("dados a serem enviados", perfilUsuario.value.toString())
+                                                    Log.i("dados a serem enviados", perfilUsuario.value.toString())
 
 
-                                        Log.i("User:", perfilUsuario.value.toString() )
+                                                    Log.i("User:", perfilUsuario.value.toString() )
 
-                                        val callUserPerfil = RetrofitFactory()
-                                            .getUserService()
-                                            .updateUser(perfilUsuario.value, idUsuario)
+                                                    val callUserPerfil = RetrofitFactory()
+                                                        .getUserService()
+                                                        .updateUser(perfilUsuario.value, idUsuario)
 
-                                        callUserPerfil.enqueue(object : Callback<UserPerfil> {
-                                            override fun onResponse(call: Call<UserPerfil>, res: Response<UserPerfil>) {
-                                                Log.i("response edit", res.toString())
+                                                    callUserPerfil.enqueue(object : Callback<UserPerfil> {
+                                                        override fun onResponse(call: Call<UserPerfil>, res: Response<UserPerfil>) {
+                                                            Log.i("response edit", res.toString())
+                                                        }
+
+                                                        override fun onFailure(p0: Call<UserPerfil>, t: Throwable) {
+                                                            Log.i("Falhou!!!", t.toString())
+                                                        }
+                                                    })
+
+
+                                                }
+                                                editState.value = !editState.value
                                             }
-
-                                            override fun onFailure(p0: Call<UserPerfil>, t: Throwable) {
-                                                Log.i("Falhou!!!", t.toString())
-                                            }
-                                        })
-
-
+                                        ) {
+                                            Text(
+                                                if (editState.value) "Salvar alterações" else "Editar currículo",
+                                                fontWeight = FontWeight.SemiBold,
+                                                textAlign = TextAlign.Center,
+                                                fontFamily = Inter,
+                                                fontSize = 16.sp
+                                            )
+                                        }
                                     }
-                                    editState.value = !editState.value
+
+
                                 }
-                            ) {
-                                Text(
-                                    if (editState.value) "Salvar alterações" else "Editar currículo",
-                                    fontWeight = FontWeight.SemiBold,
-                                    textAlign = TextAlign.Center,
-                                    fontFamily = Inter,
-                                    fontSize = 16.sp
-                                )
+                                item{Spacer(modifier = Modifier.height(100.dp))    }
                             }
-                            Spacer(modifier = Modifier.height(100.dp))
+
 
                         } else {
                             HistoryUser(perfilUsuario.value.id)
@@ -726,69 +721,90 @@ fun HistoryUser(userId: Int){
                             fontWeight = FontWeight.SemiBold
                         ) }
                 }else{
+
                     items(avaliacoesState.value){ avaliacao ->
 
-                        var bico = remember{ mutableStateOf( Bico())}
+                        var bico = remember{ mutableStateOf(Bico())}
 
                         val callBico = RetrofitFactory()
                             .getBicoService()
                             .getBicoById(avaliacao.id_bico)
 
-                        callBico.enqueue(object: Callback<ResultBico> {
-                            override fun onResponse(call: Call<ResultBico>, res: Response<ResultBico>) {
-                                Log.i("Response: ", res.toString())
+                        callBico.enqueue(object : Callback<ResultBico> {
+                            override fun onResponse(
+                                p0: Call<ResultBico>,
+                                res: Response<ResultBico>
+                            ) {
+                                Log.i("response feedback", res.body()!!.toString())
                                 bico.value = res.body()!!.bico
                             }
 
-                            override fun onFailure(call: Call<ResultBico>, t: Throwable) {
-                                Log.i("Falhou:", t.toString())
+                            override fun onFailure(p0: Call<ResultBico>, p1: Throwable) {
+                                Log.i("Falhou!!!", p1.toString())
                             }
                         })
 
-
-                        ElevatedCard (modifier = Modifier
-                            .clickable { }
-                            .padding(horizontal = 18.dp, vertical = 8.dp),
-                            elevation = CardDefaults.elevatedCardElevation(
-                                defaultElevation = 3.dp
-                            )){
-                            Row (modifier = Modifier
-                                .height(90.dp)
-                                .fillMaxWidth()
-                                .background(Color.White)){
-                                Card (
+                        if(bico.value.cliente.isNotEmpty()) {
+                            ElevatedCard(modifier = Modifier
+                                .clickable { }
+                                .padding(horizontal = 18.dp, vertical = 8.dp),
+                                elevation = CardDefaults.elevatedCardElevation(
+                                    defaultElevation = 3.dp
+                                )) {
+                                Row(
                                     modifier = Modifier
-                                        .fillMaxHeight()
-                                        .width(10.dp),
-                                    colors = CardDefaults.cardColors(
-                                        containerColor = MainOrange,
-                                    ),
-                                    shape = RectangleShape
-                                ){}
-                                Column (
-                                    modifier = Modifier
-                                        .padding(horizontal = 6.dp, vertical = 2.dp)
-                                        .fillMaxHeight(),
-                                    verticalArrangement = Arrangement.Center
-                                ){
-                                    Text("${bico.value.cliente[0].nome_fantasia} - ${bico.value.titulo}.",
-                                        fontFamily = Inter,
-                                        fontWeight = FontWeight.Bold)
-                                    Text(avaliacao.avaliacao)
-                                    Row(modifier = Modifier
+                                        .height(90.dp)
                                         .fillMaxWidth()
-                                        .padding(horizontal = 2.dp)){
-                                        val stars = avaliacao.nota
-                                        for (i in 1..5) {
-                                            if(i <= stars) Icon(Icons.Filled.Star,contentDescription = "", tint = Color(0xFFFFBC06))
-                                            else
-                                                Icon(Icons.Filled.Star,contentDescription = "", tint = Color(0xFF504D4D))
+                                        .background(Color.White)
+                                ) {
+                                    Card(
+                                        modifier = Modifier
+                                            .fillMaxHeight()
+                                            .width(10.dp),
+                                        colors = CardDefaults.cardColors(
+                                            containerColor = MainOrange,
+                                        ),
+                                        shape = RectangleShape
+                                    ) {}
+                                    Column(
+                                        modifier = Modifier
+                                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                                            .fillMaxHeight(),
+                                        verticalArrangement = Arrangement.Center
+                                    ) {
+                                        Text(
+                                            "${bico.value.cliente[0].nome_fantasia} - ${bico.value.titulo}.",
+                                            fontFamily = Inter,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                        Text(avaliacao.avaliacao)
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(horizontal = 2.dp)
+                                        ) {
+                                            val stars = avaliacao.nota
+                                            for (i in 1..5) {
+                                                if (i <= stars) Icon(
+                                                    Icons.Filled.Star,
+                                                    contentDescription = "",
+                                                    tint = Color(0xFFFFBC06)
+                                                )
+                                                else
+                                                    Icon(
+                                                        Icons.Filled.Star,
+                                                        contentDescription = "",
+                                                        tint = Color(0xFF504D4D)
+                                                    )
+                                            }
+
                                         }
-
                                     }
-                                }
 
+                                }
                             }
+                        }else{
+
                         }
                     }
                 }
