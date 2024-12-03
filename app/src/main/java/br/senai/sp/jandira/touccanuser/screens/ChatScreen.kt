@@ -45,12 +45,13 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import br.senai.sp.jandira.touccanuser.R
 import br.senai.sp.jandira.touccanuser.UserPreferences
-import br.senai.sp.jandira.touccanuser.model.Cliente
+import br.senai.sp.jandira.touccanuser.model.ChatMessage
 import br.senai.sp.jandira.touccanuser.model.ClientePerfil
 import br.senai.sp.jandira.touccanuser.model.ResultClientProfile
 import br.senai.sp.jandira.touccanuser.service.RetrofitFactory
 import br.senai.sp.jandira.touccanuser.ui.theme.Inter
 import br.senai.sp.jandira.touccanuser.ui.theme.MainOrange
+import com.google.firebase.database.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -59,9 +60,33 @@ import retrofit2.Response
 @Composable
 fun Chat(navController: NavHostController, clientId: String?, MainActivity: Context) {
 
-    val id = clientId?.toInt()
-    Log.i("ID CLIENTE CHAT", id.toString())
+    val userPreferences = UserPreferences(MainActivity)
+    val userIdFlow = userPreferences.userId.collectAsState(initial = 0)
 
+    val messagesState = remember { mutableStateOf(listOf<ChatMessage>()) }
+    val textState = remember { mutableStateOf("") }
+    val database = FirebaseDatabase.getInstance()
+    val chatId = "C${clientId}_U${userIdFlow.value}" // Defina o ID do chat
+    val messagesRef = database.getReference("chats").child(chatId).child("conversa")
+
+    // Listener para atualizar as mensagens
+    messagesRef.addValueEventListener(object : ValueEventListener {
+        override fun onDataChange(snapshot: DataSnapshot) {
+            val messages = mutableListOf<ChatMessage>()
+            snapshot.children.forEach { child ->
+                val message = child.getValue(ChatMessage::class.java)
+                if (message != null) {
+                    messages.add(message)
+                }
+            }
+            messagesState.value = messages
+        }
+
+        override fun onCancelled(error: DatabaseError) {
+            Log.e("FirebaseError", error.message)
+        }
+    })
+    val id = clientId?.toInt()
     val chatClientState = remember{
         mutableStateOf(ClientePerfil())
     }
@@ -80,23 +105,16 @@ fun Chat(navController: NavHostController, clientId: String?, MainActivity: Cont
         }
     })
 
-    val userPreferences = UserPreferences(MainActivity)
-    val userIdFlow = userPreferences.userId.collectAsState(initial = null)
-
     Surface(modifier = Modifier.background(Color(0xffEBEBEB))) {
 
         Scaffold(
             containerColor = Color(0xFFEBEBEB),
             topBar = {
                 TopAppBar(
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = Color(0xFFEBEBEB)
-                    ),
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFFEBEBEB)),
                     title = { Text("") },
                     navigationIcon = {
-                        IconButton(onClick = {
-                            navController.popBackStack()
-                        }) {
+                        IconButton(onClick = { navController.popBackStack() }) {
                             Icon(
                                 tint = Color.Black,
                                 painter = painterResource(R.drawable.seta_voltar),
@@ -105,27 +123,27 @@ fun Chat(navController: NavHostController, clientId: String?, MainActivity: Cont
                         }
                     },
                     actions = {
-                            IconButton(onClick = {
-                                navController.navigate("perfilUsuario/${userIdFlow.value}")
-                            }) {
-                                Icon(
-                                    tint = Color.Black,
-                                    painter = painterResource(R.drawable.person),
-                                    contentDescription = "Perfil: Ícone de pessoa",
-                                )
-                            }
+                        IconButton(onClick = {
+                            navController.navigate("perfilUsuario/${userIdFlow.value}")
+                        }) {
+                            Icon(
+                                tint = Color.Black,
+                                painter = painterResource(R.drawable.person),
+                                contentDescription = "Perfil: Ícone de pessoa",
+                            )
+                        }
                     }
                 )
             }
-        ){innerpadding ->
+        ) { innerPadding ->
 
             Column(
                 modifier = Modifier
-                    .padding(innerpadding)
+                    .padding(innerPadding)
                     .fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Column (
+                Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -145,34 +163,43 @@ fun Chat(navController: NavHostController, clientId: String?, MainActivity: Cont
                             .width(160.dp)
                     )
                 }
-                Column (modifier = Modifier.padding(horizontal = 24.dp)){
-                    ElevatedCard(modifier = Modifier
-                        .fillMaxHeight(0.85F)
-                        .fillMaxWidth()
-                        .padding(bottom = 20.dp),
+                Column(modifier = Modifier.padding(horizontal = 24.dp)) {
+                    ElevatedCard(
+                        modifier = Modifier
+                            .fillMaxHeight(0.85F)
+                            .fillMaxWidth()
+                            .padding(bottom = 20.dp),
                         shape = RoundedCornerShape(20.dp),
                         colors = CardDefaults.cardColors(containerColor = Color.White)
                     ) {
-                        LazyColumn (modifier = Modifier
-                            .fillMaxSize()
-                            .padding(vertical = 24.dp, horizontal = 12.dp)) {
-
-                            item {
-                                MessageUser()
-                            }
-                            item {
-                                MessageClient()
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(vertical = 24.dp, horizontal = 12.dp)
+                        ) {
+                            items(messagesState.value.size) { index ->
+                                val message = messagesState.value[index]
+                                val isUserMessage = message.id_usuario != null
+                                if (isUserMessage) {
+                                    MessageUser(message.texto)
+                                } else {
+                                    MessageClient(message.texto)
+                                }
                             }
                         }
                     }
 
-                    ElevatedCard(modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(containerColor = Color.White)) {
-                        Row (modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 6.dp),
+                    ElevatedCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(containerColor = Color.White)
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 6.dp),
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween){
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
                             TextField(
                                 colors = TextFieldDefaults.colors(
                                     focusedContainerColor = Color.Transparent,
@@ -180,34 +207,49 @@ fun Chat(navController: NavHostController, clientId: String?, MainActivity: Cont
                                     focusedIndicatorColor = Color.Transparent,
                                     unfocusedIndicatorColor = Color.Transparent
                                 ),
-                                value = "",
-                                onValueChange = {})
-                            Image(painterResource(R.drawable.send),"Enviar mensagem")
+                                value = textState.value,
+                                onValueChange = { textState.value = it },
+                                modifier = Modifier.weight(1f),
+                                placeholder = { Text("Digite uma mensagem...") }
+                            )
+                            IconButton(
+                                onClick = {
+                                    val messageText = textState.value
+                                    if (messageText.isNotEmpty()) {
+                                        val newMessage = ChatMessage(
+                                            texto = messageText,
+                                            id_usuario = userIdFlow.value.toString(),
+                                            timestamp = System.currentTimeMillis().toString()
+                                        )
+                                        messagesRef.push().setValue(newMessage)
+                                        textState.value = ""
+                                    }
+                                },
+                                enabled = textState.value.isNotEmpty() // Desativa o botão se o texto estiver vazio
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.send),
+                                    contentDescription = "Enviar mensagem"
+                                )
+                            }
+                            }
                         }
-
                     }
-
                 }
-
-
             }
-
-
         }
-
     }
 
-    
-}
 
 @Composable
-fun MessageUser() {
-    Row (modifier = Modifier
-        .fillMaxWidth()
-        .padding(bottom = 6.dp), horizontalArrangement = Arrangement.End
-    ){
-
-        Card (
+fun MessageUser(text: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 6.dp),
+        horizontalArrangement = Arrangement.End
+    ) {
+        Card(
             colors = CardDefaults.cardColors(
                 containerColor = Color(0xffFFD2A5)
             ),
@@ -215,23 +257,26 @@ fun MessageUser() {
                 .padding(horizontal = 10.dp)
                 .widthIn(max = 240.dp)
         ) {
-            Text("BlablablablaBblabla",modifier = Modifier.padding(10.dp))
+            Text(text, modifier = Modifier.padding(10.dp))
         }
-        Card(modifier = Modifier.size(40.dp), shape = RoundedCornerShape(50.dp)){
-
+        Card(modifier = Modifier.size(40.dp), shape = RoundedCornerShape(50.dp)) {
+            // Imagem de avatar do usuário (se necessário)
         }
     }
 }
-@Composable
-fun MessageClient() {
-    Row (modifier = Modifier
-        .fillMaxWidth()
-        .padding(bottom = 6.dp), horizontalArrangement = Arrangement.Start
-    ){
-        Card(modifier = Modifier.size(40.dp), shape = RoundedCornerShape(50.dp)){
 
+@Composable
+fun MessageClient(text: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 6.dp),
+        horizontalArrangement = Arrangement.Start
+    ) {
+        Card(modifier = Modifier.size(40.dp), shape = RoundedCornerShape(50.dp)) {
+            // Imagem de avatar do cliente (se necessário)
         }
-        Card (
+        Card(
             colors = CardDefaults.cardColors(
                 containerColor = Color(0xff9BA9B0)
             ),
@@ -239,8 +284,7 @@ fun MessageClient() {
                 .padding(horizontal = 10.dp)
                 .widthIn(max = 240.dp)
         ) {
-            Text("Blablablabla",modifier = Modifier.padding(10.dp))
+            Text(text, modifier = Modifier.padding(10.dp))
         }
-
     }
 }
