@@ -72,10 +72,11 @@ fun Settings(navController: NavHostController, context: MainActivity) {
                         .padding(top = 20.dp, bottom = 50.dp)
                 ) {
                     Text(
-                        "Cofrinho",
+                        "Configurações",
                         fontFamily = Inter,
                         fontWeight = FontWeight.Black,
                         fontStyle = FontStyle.Italic,
+                        color = Color.Black,
                         fontSize = 18.sp,
                         modifier = Modifier.padding(bottom = 4.dp)
                     )

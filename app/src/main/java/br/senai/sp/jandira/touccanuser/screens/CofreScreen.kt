@@ -21,6 +21,7 @@ import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -138,6 +139,7 @@ fun Cofre(navController: NavHostController, context: Context) {
                         fontWeight = FontWeight.Black,
                         fontStyle = FontStyle.Italic,
                         fontSize = 18.sp,
+                        color = Color.Black,
                         modifier = Modifier.padding(bottom = 4.dp)
                     )
                     Box(
@@ -152,13 +154,10 @@ fun Cofre(navController: NavHostController, context: Context) {
                 Text("Faturamento total",
                     fontSize = 24.sp,
                     fontFamily = Inter,
+                    color = Color.Black,
                     fontWeight = FontWeight.ExtraBold)
-//                Text("Período 1 mês",
-//                    fontSize = 12.sp,
-//                    fontFamily = Inter,
-//                    fontWeight = FontWeight.SemiBold,
-//                    color = Color.Gray,modifier = Modifier.padding(vertical = 12.dp))
                 Text("R$ ${total}",
+                    color = Color.Black,
                     fontSize = 24.sp,
                     fontFamily = Inter,
                     fontWeight = FontWeight.ExtraBold)
@@ -188,12 +187,13 @@ fun Cofre(navController: NavHostController, context: Context) {
                             "Meu cartão",
                             fontWeight = FontWeight.SemiBold,
                             textAlign = TextAlign.Center,
+                            color = Color.Black,
                             fontFamily = Inter,
                             fontSize = 18.sp
                         )
                     }
                 Text("Em qual conta gostaria de receber seu dinheiro?",
-                     fontFamily = Inter, textAlign = TextAlign.Center,
+                     fontFamily = Inter, textAlign = TextAlign.Center, color = Color.DarkGray,
                     fontSize = 12.sp, modifier = Modifier.width (180.dp))
 
 
@@ -212,7 +212,10 @@ fun HistoryCard(bico: BicoHistorico) {
         modifier = Modifier
             .height(80.dp)
             .width(300.dp)
-            .padding(bottom = 12.dp)
+            .padding(bottom = 12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.LightGray
+        )
     ) {
         Row (
             modifier = Modifier

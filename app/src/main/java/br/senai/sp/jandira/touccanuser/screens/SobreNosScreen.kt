@@ -3,6 +3,7 @@ package br.senai.sp.jandira.touccanuser.screens
 import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -67,7 +70,7 @@ fun SobreNos(navController: NavHostController, context: Context) {
 
                 Row(modifier = Modifier.fillMaxWidth().padding(24.dp)) { Image(
                     painterResource(R.drawable.seta_voltar), "",
-                    modifier = Modifier.height(50.dp).padding(bottom = 20.dp))
+                    modifier = Modifier.height(50.dp).padding(bottom = 20.dp).clickable { navController.popBackStack() })
 
                     Column (
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -77,6 +80,7 @@ fun SobreNos(navController: NavHostController, context: Context) {
                         Text(
                             "Sobre nós",
                             fontFamily = Inter,
+                            color = Color.Black,
                             fontWeight = FontWeight.Black,
                             fontStyle = FontStyle.Italic,
                             fontSize = 18.sp,
@@ -96,14 +100,15 @@ fun SobreNos(navController: NavHostController, context: Context) {
                     modifier = Modifier.height(540.dp).width(300.dp),
                     colors = CardDefaults.cardColors(containerColor = Color(0xA6C7C2C2))
                 ){
-                    Column (modifier = Modifier.fillMaxSize().padding(24.dp)){
-                        Text("Quem somos", fontFamily = Inter, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                    Column (modifier = Modifier.fillMaxSize().padding(24.dp).verticalScroll(rememberScrollState())
+                    ){
+                        Text("Quem somos", fontFamily = Inter, fontWeight = FontWeight.Bold, color = Color.Black, fontSize = 14.sp)
                         Text("Touccan é uma forma inovadora de conectar pessoas que precisam de empregos temporários de alta remuneração a alguém que precisa de serviços de curto prazo e eficientes. Nossa plataforma permite que as pessoas realizem suas tarefas e contrate-as, com foco naqueles que precisam apenas por um curto período. Nosso objetivo de negócio é simplificar a procura de empregos temporários e contratação de temporários.",
-                            fontFamily = Inter, fontSize = 15.sp)
+                            fontFamily = Inter, color = Color.Black, fontSize = 15.sp)
                         Spacer(modifier = Modifier.height(24.dp))
-                        Text("Nossa missão", fontFamily = Inter, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                        Text("Nossa missão", fontFamily = Inter, fontWeight = FontWeight.Bold, color = Color.Black, fontSize = 14.sp)
                         Text("Nossa missão é simplificar o processo de emprego e contratação, tornando-o ágil e acessível. Acreditamos que todos devem ter a oportunidade de encontrar trabalho que se ajuste às suas necessidades e que os empregadores merecem acesso rápido a profissionais qualificados para serviços temporários.",
-                            fontFamily = Inter, fontSize = 15.sp)
+                            fontFamily = Inter, color = Color.Black, fontSize = 15.sp)
                     }
 
                 }

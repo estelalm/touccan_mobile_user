@@ -64,21 +64,6 @@ fun Login (navController: NavHostController, context: Context, userPreferences: 
     val userPreferences = UserPreferences(context)
     val userIdFlow = userPreferences.userId.collectAsState(initial = 0)
 
-    if(userIdFlow.value != 0){
-        val userId = userIdFlow.value?.let {
-            UserId(
-                id = it
-            )
-        }
-
-        val userIdJson = Json.encodeToString(userId)
-
-        Log.i("json pra mandar", userIdJson)
-
-        navController.navigate("home/${userIdFlow.value}")
-    }
-
-
     val scope = rememberCoroutineScope()
 
     val linearOrange = Brush.linearGradient(listOf(Color(0xffF07B07), Color(0xffE25401)))

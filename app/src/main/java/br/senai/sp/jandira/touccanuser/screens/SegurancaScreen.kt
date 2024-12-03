@@ -85,7 +85,7 @@ fun Seguranca(navController: NavHostController, context: Context) {
                 Row(modifier = Modifier.fillMaxWidth().padding(24.dp)) {
                     Image(
                         painterResource(R.drawable.seta_voltar), "",
-                        modifier = Modifier.height(40.dp)
+                        modifier = Modifier.height(40.dp).clickable { navController.popBackStack() }
                     )
                 }
                 Column(
@@ -99,6 +99,7 @@ fun Seguranca(navController: NavHostController, context: Context) {
                         fontFamily = Inter,
                         fontWeight = FontWeight.Black,
                         fontStyle = FontStyle.Italic,
+                        color = Color.Black,
                         fontSize = 18.sp,
                         modifier = Modifier.padding(bottom = 4.dp)
                     )
@@ -137,6 +138,7 @@ fun Seguranca(navController: NavHostController, context: Context) {
                         Text(
                             "Senha atual",
                             fontFamily = Inter,
+                            color = Color.Black,
                             fontWeight = FontWeight.Bold,
                             fontSize = 18.sp
                         )
@@ -146,6 +148,8 @@ fun Seguranca(navController: NavHostController, context: Context) {
                                 focusedContainerColor  = Color.Transparent,
                                 unfocusedContainerColor = Color.Transparent,
                                 cursorColor = MainOrange,
+                                focusedIndicatorColor = Color.Black,
+                                unfocusedIndicatorColor = Color.Black,
                                 focusedTextColor = Color.Black,
                                 unfocusedTextColor = Color.Black
                             )
@@ -153,6 +157,7 @@ fun Seguranca(navController: NavHostController, context: Context) {
                         Spacer(modifier = Modifier.height(24.dp))
                         Text(
                             "Nova senha",
+                            color = Color.Black,
                             fontFamily = Inter,
                             fontWeight = FontWeight.Bold,
                             fontSize = 18.sp
@@ -162,6 +167,8 @@ fun Seguranca(navController: NavHostController, context: Context) {
                                 disabledContainerColor = Color.Transparent,
                                 focusedContainerColor  = Color.Transparent,
                                 unfocusedContainerColor = Color.Transparent,
+                                focusedIndicatorColor = Color.Black,
+                                unfocusedIndicatorColor = Color.Black,
                                 cursorColor = MainOrange,
                                 focusedTextColor = Color.Black,
                                 unfocusedTextColor = Color.Black
@@ -170,6 +177,7 @@ fun Seguranca(navController: NavHostController, context: Context) {
                         Spacer(modifier = Modifier.height(24.dp))
                         Text(
                             "Confirmar senha",
+                            color = Color.Black,
                             fontFamily = Inter,
                             fontWeight = FontWeight.Bold,
                             fontSize = 18.sp
@@ -179,6 +187,8 @@ fun Seguranca(navController: NavHostController, context: Context) {
                                 disabledContainerColor = Color.Transparent,
                                 focusedContainerColor  = Color.Transparent,
                                 unfocusedContainerColor = Color.Transparent,
+                                focusedIndicatorColor = Color.Black,
+                                unfocusedIndicatorColor = Color.Black,
                                 cursorColor = MainOrange,
                                 focusedTextColor = Color.Black,
                                 unfocusedTextColor = Color.Black

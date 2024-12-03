@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -87,16 +88,17 @@ fun Suporte(navController: NavHostController, context: Context) {
 
                 Row(modifier = Modifier.fillMaxWidth().padding(24.dp)) { Image(
                     painterResource(R.drawable.seta_voltar), "",
-                    modifier = Modifier.height(40.dp)) }
+                    modifier = Modifier.height(40.dp).clickable { navController.popBackStack()}) }
                 Column (
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 34.dp, bottom = 50.dp)
+                        .padding(top = 14.dp, bottom = 50.dp)
                 ) {
                     Text(
                         "Suporte",
                         fontFamily = Inter,
+                        color = Color.Black,
                         fontWeight = FontWeight.Black,
                         fontStyle = FontStyle.Italic,
                         fontSize = 18.sp,
@@ -112,14 +114,14 @@ fun Suporte(navController: NavHostController, context: Context) {
 
 
                 Card (
-                    modifier = Modifier.height(400.dp).width(300.dp),
+                    modifier = Modifier.height(440.dp).width(300.dp),
                     colors = CardDefaults.cardColors(containerColor = Color(0xA6C7C2C2))
                 ){
                     Column (modifier = Modifier.fillMaxSize().padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally){
-                        Column { Text("E-mail para contato", fontFamily = Inter, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                            Text("contato.touccan@gmail.com", color = Color.DarkGray, fontFamily = Inter, fontWeight = FontWeight.SemiBold, fontSize = 16.sp) }
+                        Column { Text("E-mail para contato", fontFamily = Inter, fontWeight = FontWeight.Bold, color = Color.Black, fontSize = 18.sp)
+                            Text("contato.touccan@gmail.com", color = Color.DarkGray, fontFamily = Inter, fontWeight = FontWeight.SemiBold,  fontSize = 16.sp) }
                         Spacer(modifier = Modifier.height(24.dp))
-                        Text("Encontrou algum problema? Reporte para nós", fontFamily = Inter, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                        Text("Encontrou algum problema? Reporte para nós", fontFamily = Inter, fontWeight = FontWeight.Bold, color = Color.Black, fontSize = 14.sp)
                         OutlinedTextField(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -128,7 +130,8 @@ fun Suporte(navController: NavHostController, context: Context) {
                             shape = RectangleShape,
                             textStyle = TextStyle(
                                 fontSize = 12.sp,
-                                fontFamily = Inter
+                                fontFamily = Inter,
+                                color = Color.Black
                             ),
                             colors = TextFieldDefaults.colors(
                                 unfocusedContainerColor = Color.White,
@@ -146,9 +149,9 @@ fun Suporte(navController: NavHostController, context: Context) {
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MainOrange
                             ),
-                            modifier = Modifier.padding(top = 24.dp)
+                            modifier = Modifier.padding(top = 16.dp).height(50.dp)
                         ) {
-                            Text("Enviar reporte", fontFamily = Inter, fontWeight = FontWeight.Black)
+                            Text("Enviar reporte", fontFamily = Inter, fontWeight = FontWeight.Black, color = Color.Black)
                         }
                     }
 

@@ -36,6 +36,9 @@ import br.senai.sp.jandira.touccanuser.screens.UserProfile
 import br.senai.sp.jandira.touccanuser.ui.theme.TouccanUserTheme
 import kotlinx.serialization.json.Json
 import android.Manifest
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.runtime.collectAsState
+import br.senai.sp.jandira.touccanuser.model.UserId
 import br.senai.sp.jandira.touccanuser.screens.Conta
 import br.senai.sp.jandira.touccanuser.screens.Notifications
 import br.senai.sp.jandira.touccanuser.screens.Seguranca
@@ -44,6 +47,7 @@ import br.senai.sp.jandira.touccanuser.screens.Suporte
 import com.google.firebase.Firebase
 import com.google.firebase.FirebaseApp
 import com.google.firebase.messaging.messaging
+import kotlinx.serialization.encodeToString
 
 
 class MainActivity : ComponentActivity() {
@@ -81,16 +85,19 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         FirebaseApp.initializeApp(this)
         askNotificationPermission()
-
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         enableEdgeToEdge()
         setContent {
             TouccanUserTheme {
                 Surface(color = Color(0xffEBEBEB)) {
                     val navController = rememberNavController()
 
+                    val userPreferences = UserPreferences(this)
+                    val userIdFlow = userPreferences.userId.collectAsState(initial = 0)
+
                     NavHost(
                         navController = navController,
-                        startDestination = "logIn") {
+                        startDestination = if(userIdFlow.value!= 0){"home/${userIdFlow.value}"} else{"logIn"}) {
 
                         composable(route = "signUp"){ SignUpScreen(navController)}
 

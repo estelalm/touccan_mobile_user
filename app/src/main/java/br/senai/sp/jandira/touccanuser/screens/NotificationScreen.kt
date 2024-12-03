@@ -78,6 +78,7 @@ fun Notifications(navController: NavHostController, mainActivity: MainActivity) 
                     modifier = Modifier.fillMaxWidth()) {
                 Text(
                     "Notificações",
+                    color = Color.Black,
                     fontFamily = Inter,
                     fontWeight = FontWeight.Bold,
                     fontStyle = FontStyle.Italic,
@@ -92,9 +93,23 @@ fun Notifications(navController: NavHostController, mainActivity: MainActivity) 
                 )
             }
 
+            val nots = false
             LazyColumn (modifier = Modifier.padding(top = 24.dp).fillMaxSize()) {
-                items(5){
-                    NotificationCard()
+                if(nots){
+                    items(1){
+                        NotificationCard()
+                    }
+                }else{
+                    item{
+                        Text(
+                            "Você não recebeu nenhuma notificação!",
+                            color = Color.Black,
+                            fontFamily = Inter,
+                            fontWeight = FontWeight.Normal,
+                            fontStyle = FontStyle.Italic,
+                            fontSize = 16.sp
+                        )
+                    }
                 }
 
             }
@@ -127,18 +142,19 @@ fun NotificationCard() {
                     ){}
                     Row (verticalAlignment = Alignment.CenterVertically){
 
-                        Icon(Icons.Default.Warning, contentDescription = "", modifier = Modifier.padding(start = 20.dp, end = 12.dp).size(40.dp))
+                        Icon(Icons.Default.Warning, contentDescription = "", modifier = Modifier.padding(start = 20.dp, end = 12.dp).size(40.dp), tint = Color.Black)
                         Column (
                             modifier = Modifier
                                 .padding(horizontal = 6.dp, vertical = 2.dp)
                                 .fillMaxHeight(),
                             verticalArrangement = Arrangement.Center
                         ){
-                            Text("Você recebeu uma denúncia.",
+                            Text("Você foi aceito!.",
                                     fontFamily = Inter,
+                                    color = Color.Black,
                                     fontStyle = FontStyle.Italic,
                                     fontWeight = FontWeight.Bold)
-                            Text("Algum conteúdo explicando a denúncia, clique para ver o conteúdo")
+                            Text("Você foi contratado por Banho de Lua para Atendente da Loja", color = Color.Black)
                         }
                     }
 

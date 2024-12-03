@@ -164,7 +164,7 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(100.dp)
-                    .padding(top = 4.dp, start = 14.dp, end = 14.dp),
+                    .padding(top = 16.dp, start = 14.dp, end = 14.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -438,7 +438,7 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
                             ) {
                                 Text(
                                     if (editState.value) "Salvar alterações" else "Editar currículo",
-                                    fontWeight = FontWeight.Normal,
+                                    fontWeight = FontWeight.SemiBold,
                                     textAlign = TextAlign.Center,
                                     fontFamily = Inter,
                                     fontSize = 16.sp
@@ -500,7 +500,8 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
                         },
                         enabled = editState.value,
                         textStyle = TextStyle(
-                            fontFamily = Inter
+                            fontFamily = Inter,
+                            color = Color.DarkGray
                         ),
                         colors = TextFieldDefaults.colors(
                             unfocusedContainerColor = Color.Transparent,
@@ -544,7 +545,8 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
                         },
                         enabled = editState.value,
                         textStyle = TextStyle(
-                            fontFamily = Inter
+                            fontFamily = Inter,
+                            color = Color.DarkGray
                         ),
                         colors = TextFieldDefaults.colors(
                             unfocusedContainerColor = Color.Transparent,
@@ -590,7 +592,8 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
                         },
                         enabled = editState.value,
                         textStyle = TextStyle(
-                            fontFamily = Inter
+                            fontFamily = Inter,
+                            color = Color.DarkGray
                         ),
                         colors = TextFieldDefaults.colors(
                             unfocusedContainerColor = Color.Transparent,
@@ -673,28 +676,9 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
                                 })
                         }
                     }
-//                    TextField(
-//                        value = disponibilidadeState.value,
-//                        onValueChange = {
-//                            disponibilidadeState.value = it
-//                        },
-//                        enabled = editState.value,
-//                        textStyle = TextStyle(
-//                            fontFamily = Inter
-//                        ),
-//                        colors = TextFieldDefaults.colors(
-//                            unfocusedContainerColor = Color.Transparent,
-//                            disabledContainerColor = Color.Transparent,
-//                            focusedContainerColor = Color.Transparent,
-//                            errorContainerColor = Color.Transparent,
-//                            disabledIndicatorColor = Color.Transparent,
-//                            focusedIndicatorColor = Color.Transparent,
-//                            unfocusedIndicatorColor = Color.Transparent
-//                        )
-//                    )
                 }
             }
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(14.dp))
 
 
         }
@@ -837,40 +821,3 @@ fun uploadImageToFirebase(uri: Uri?, onComplete: (String?) -> Unit) {
         onComplete(null)
     }
 }
-
-
-//
-//suspend fun uploadImageToCloudinary(imageUri: Uri, context: Context): String? {
-//    return withContext(Dispatchers.IO) {
-//        try {
-//            val cloudinary = Cloudinary(ObjectUtils.asMap(
-//                "cloud_name", " dneuh2x7n",
-//                "api_key", "482649795316662",
-//                "api_secret", "LVUcSSkHp79gYWqB4zvbxUODh_g"
-//            ))
-//
-//            // Converter a URI em caminho real
-//            val file = File(getRealPathFromURI(imageUri, context))
-//
-//            // Fazer o upload da imagem
-//            val uploadResult = cloudinary.uploader().upload(file, ObjectUtils.emptyMap())
-//
-//            // Obter o URL público da imagem
-//            uploadResult["secure_url"] as? String
-//        } catch (e: Exception) {
-//            e.printStackTrace()
-//            null
-//        }
-//    }
-//}
-//
-//// Função para obter o caminho real do arquivo a partir da URI
-//fun getRealPathFromURI(contentUri: Uri, context: Context): String {
-//    val proj = arrayOf(MediaStore.Images.Media.DATA)
-//    val cursor = context.contentResolver.query(contentUri, proj, null, null, null)
-//    cursor?.moveToFirst()
-//    val columnIndex = cursor?.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-//    val filePath = columnIndex?.let { cursor.getString(it) }
-//    cursor?.close()
-//    return filePath ?: ""
-//}
