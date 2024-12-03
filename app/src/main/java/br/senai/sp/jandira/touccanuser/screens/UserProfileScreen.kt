@@ -710,91 +710,94 @@ fun HistoryUser(userId: Int){
         }
     })
 
+    Column(modifier = Modifier.fillMaxSize()){
+        LazyColumn {
 
-    LazyColumn {
-
-        if(avaliacaoLoadState.value){
-            item { Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center){ CircularProgressIndicator(color = MainOrange) } }
-        }else{
-            if(avaliacoesState.value.isEmpty()){
-                item {
-                    Text(
-                    "Você ainda não foi avaliado!: ",
-                    fontFamily = Inter,
-                    color = Color.Black,
-                        textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.SemiBold
-                ) }
+            if(avaliacaoLoadState.value){
+                item { Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center){ CircularProgressIndicator(color = MainOrange) } }
             }else{
-                items(avaliacoesState.value){ avaliacao ->
+                if(avaliacoesState.value.isEmpty()){
+                    item {
+                        Text(
+                            "Você ainda não foi avaliado!: ",
+                            fontFamily = Inter,
+                            color = Color.Black,
+                            textAlign = TextAlign.Center,
+                            fontWeight = FontWeight.SemiBold
+                        ) }
+                }else{
+                    items(avaliacoesState.value){ avaliacao ->
 
-                    var bico = remember{ mutableStateOf( Bico())}
+                        var bico = remember{ mutableStateOf( Bico())}
 
-                    val callBico = RetrofitFactory()
-                        .getBicoService()
-                        .getBicoById(avaliacao.id_bico)
+                        val callBico = RetrofitFactory()
+                            .getBicoService()
+                            .getBicoById(avaliacao.id_bico)
 
-                    callBico.enqueue(object: Callback<ResultBico> {
-                        override fun onResponse(call: Call<ResultBico>, res: Response<ResultBico>) {
-                            Log.i("Response: ", res.toString())
-                            bico.value = res.body()!!.bico
-                        }
-
-                        override fun onFailure(call: Call<ResultBico>, t: Throwable) {
-                            Log.i("Falhou:", t.toString())
-                        }
-                    })
-
-
-                    ElevatedCard (modifier = Modifier
-                        .clickable { }
-                        .padding(horizontal = 18.dp, vertical = 8.dp),
-                        elevation = CardDefaults.elevatedCardElevation(
-                            defaultElevation = 3.dp
-                        )){
-                        Row (modifier = Modifier
-                            .height(90.dp)
-                            .fillMaxWidth()
-                            .background(Color.White)){
-                            Card (
-                                modifier = Modifier
-                                    .fillMaxHeight()
-                                    .width(10.dp),
-                                colors = CardDefaults.cardColors(
-                                    containerColor = MainOrange,
-                                ),
-                                shape = RectangleShape
-                            ){}
-                            Column (
-                                modifier = Modifier
-                                    .padding(horizontal = 6.dp, vertical = 2.dp)
-                                    .fillMaxHeight(),
-                                verticalArrangement = Arrangement.Center
-                            ){
-                                Text("${bico.value.cliente[0].nome_fantasia} - ${bico.value.titulo}.",
-                                    fontFamily = Inter,
-                                    fontWeight = FontWeight.Bold)
-                                Text(avaliacao.avaliacao)
-                                Row(modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 2.dp)){
-                                    val stars = avaliacao.nota
-                                    for (i in 1..5) {
-                                        if(i <= stars) Icon(Icons.Filled.Star,contentDescription = "", tint = Color(0xFFFFBC06))
-                                        else
-                                            Icon(Icons.Filled.Star,contentDescription = "", tint = Color(0xFF504D4D))
-                                    }
-
-                                }
+                        callBico.enqueue(object: Callback<ResultBico> {
+                            override fun onResponse(call: Call<ResultBico>, res: Response<ResultBico>) {
+                                Log.i("Response: ", res.toString())
+                                bico.value = res.body()!!.bico
                             }
 
+                            override fun onFailure(call: Call<ResultBico>, t: Throwable) {
+                                Log.i("Falhou:", t.toString())
+                            }
+                        })
+
+
+                        ElevatedCard (modifier = Modifier
+                            .clickable { }
+                            .padding(horizontal = 18.dp, vertical = 8.dp),
+                            elevation = CardDefaults.elevatedCardElevation(
+                                defaultElevation = 3.dp
+                            )){
+                            Row (modifier = Modifier
+                                .height(90.dp)
+                                .fillMaxWidth()
+                                .background(Color.White)){
+                                Card (
+                                    modifier = Modifier
+                                        .fillMaxHeight()
+                                        .width(10.dp),
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = MainOrange,
+                                    ),
+                                    shape = RectangleShape
+                                ){}
+                                Column (
+                                    modifier = Modifier
+                                        .padding(horizontal = 6.dp, vertical = 2.dp)
+                                        .fillMaxHeight(),
+                                    verticalArrangement = Arrangement.Center
+                                ){
+                                    Text("${bico.value.cliente[0].nome_fantasia} - ${bico.value.titulo}.",
+                                        fontFamily = Inter,
+                                        fontWeight = FontWeight.Bold)
+                                    Text(avaliacao.avaliacao)
+                                    Row(modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 2.dp)){
+                                        val stars = avaliacao.nota
+                                        for (i in 1..5) {
+                                            if(i <= stars) Icon(Icons.Filled.Star,contentDescription = "", tint = Color(0xFFFFBC06))
+                                            else
+                                                Icon(Icons.Filled.Star,contentDescription = "", tint = Color(0xFF504D4D))
+                                        }
+
+                                    }
+                                }
+
+                            }
                         }
                     }
                 }
             }
-        }
 
+        }
     }
+
+
 
 }
 

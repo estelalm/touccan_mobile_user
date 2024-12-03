@@ -2,6 +2,7 @@ package br.senai.sp.jandira.touccanuser.service
 
 import br.senai.sp.jandira.touccanuser.model.AceitosResult
 import br.senai.sp.jandira.touccanuser.model.Candidato
+import br.senai.sp.jandira.touccanuser.model.Categoria
 import br.senai.sp.jandira.touccanuser.model.ClienteId
 import br.senai.sp.jandira.touccanuser.model.Contratado
 import br.senai.sp.jandira.touccanuser.model.Finalizar
@@ -62,5 +63,8 @@ interface BicoService {
     @Headers("Content-Type: application/json")
     @POST("finalizar/cliente")
     fun finalizarCliente(@Body finalizar: FinalizarCliente): Call<FinalizarCliente>
+
+    @GET("categoria")
+    fun getAllCategorias(): Call<CategoriasRes>
 
 }

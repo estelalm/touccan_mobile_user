@@ -2,6 +2,7 @@ package br.senai.sp.jandira.touccanuser.screens
 
 import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -33,6 +34,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -48,7 +50,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import br.senai.sp.jandira.touccanuser.R
+import br.senai.sp.jandira.touccanuser.UserPreferences
 import br.senai.sp.jandira.touccanuser.model.LoginResult
+import br.senai.sp.jandira.touccanuser.model.ResultUserProfile
+import br.senai.sp.jandira.touccanuser.model.UserPerfil
 import br.senai.sp.jandira.touccanuser.service.RetrofitFactory
 import br.senai.sp.jandira.touccanuser.ui.theme.Inter
 import br.senai.sp.jandira.touccanuser.ui.theme.MainOrange
@@ -58,6 +63,11 @@ import kotlinx.serialization.json.Json
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+
+fun validatePassword(password: String): Boolean{
+    val regex = """^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%^&*()_+{}\[\]:;"'<>,.?/\\|`~]).{8,}$""".toRegex()
+    return regex.matches(password)
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -74,6 +84,17 @@ fun Seguranca(navController: NavHostController, context: Context) {
             }
         ) { innerpadding ->
 
+            val perfilUsuario = remember { mutableStateOf(UserPerfil()) }
+            var isErrorState = remember {
+                mutableStateOf(false)
+            }
+            var messageErrorState = remember {
+                mutableStateOf("")
+            }
+
+
+            val userPreferences = UserPreferences(context)
+            val userIdFlow = userPreferences.userId.collectAsState(initial = 0)
 
             Column(
                 modifier = Modifier
@@ -162,7 +183,13 @@ fun Seguranca(navController: NavHostController, context: Context) {
                             fontWeight = FontWeight.Bold,
                             fontSize = 18.sp
                         )
-                        TextField(value = novaSenhaState.value, onValueChange = {novaSenhaState.value = it},
+                        TextField(value = novaSenhaState.value, onValueChange = {
+                            novaSenhaState.value = it
+                            if(!validatePassword(it))
+                                isErrorState.value = true
+                            messageErrorState.value = "A senha deve conter no mínimo 1 letra maíuscula, 1 número, 1 caractere especial (@, !, $, etc) e 8 dígitos"
+
+                        },
                             colors = TextFieldDefaults.colors(
                                 disabledContainerColor = Color.Transparent,
                                 focusedContainerColor  = Color.Transparent,
@@ -202,6 +229,71 @@ fun Seguranca(navController: NavHostController, context: Context) {
                 Button(
                     onClick = {
 
+                        val callUserPerfil = userIdFlow.value?.let { userId ->
+                            RetrofitFactory()
+                                .getUserService()
+                                .getUserById(userId)
+                        }
+
+                        callUserPerfil?.enqueue(object : Callback<ResultUserProfile> {
+                            override fun onResponse(call: Call<ResultUserProfile>, response: Response<ResultUserProfile>) {
+                                if (response.isSuccessful) {
+                                    val responseBody = response.body()
+                                    if (responseBody != null) {
+                                        Log.i("response perfil usuario", responseBody.toString())
+                                        perfilUsuario.value = responseBody.usuario
+                                    } else {
+                                        Log.w("response perfil usuario", "Corpo da resposta é nulo")
+                                    }
+                                } else {
+                                    Log.w("response perfil usuario", "Resposta não foi bem-sucedida: ${response.errorBody()?.string()}")
+                                }
+                            }
+
+                            override fun onFailure(call: Call<ResultUserProfile>, t: Throwable) {
+                                Log.e("Falhou!!!", t.message.orEmpty())
+                            }
+                        })
+
+                        if (novaSenhaState.value == "") {
+                            Toast.makeText(
+                                context,
+                                "Todos os valores devem ser preenchidos",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            if (perfilUsuario.value.senha == atualState.value) {
+
+                                if (confirmarState.value == novaSenhaState.value) {
+
+                                    perfilUsuario.value.senha = novaSenhaState.value
+                                    val callUserPerfil = userIdFlow.value?.let {
+                                        RetrofitFactory()
+                                            .getUserService()
+                                            .updateUser(perfilUsuario.value, it)
+                                    }
+
+                                    if (callUserPerfil != null) {
+                                        callUserPerfil.enqueue(object : Callback<UserPerfil> {
+                                            override fun onResponse(
+                                                call: Call<UserPerfil>,
+                                                res: Response<UserPerfil>
+                                            ) {
+                                                Log.i("response atualizar", res.toString())
+                                            }
+
+                                            override fun onFailure(
+                                                p0: Call<UserPerfil>,
+                                                t: Throwable
+                                            ) {
+                                                Log.i("Falhou!!!", t.toString())
+                                            }
+                                        })
+                                    }
+                                }
+
+                            }
+                        }
                     },
                     modifier = Modifier
                         .height(40.dp),

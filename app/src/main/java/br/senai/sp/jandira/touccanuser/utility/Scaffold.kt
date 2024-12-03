@@ -165,7 +165,9 @@ fun BottomAppBar(navController: NavHostController, context: Context) {
             }
 
             IconButton(
-                onClick = {}
+                onClick = {
+                    navController.navigate("pesquisa")
+                }
             ) {
                 Icon(
                     painter = painterResource(R.drawable.pesquisa),

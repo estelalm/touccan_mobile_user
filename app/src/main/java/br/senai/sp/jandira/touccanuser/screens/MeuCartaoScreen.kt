@@ -94,6 +94,7 @@ fun MeuCartao(navController: NavHostController, idUser: String?, mainActivity: M
                         fontWeight = FontWeight.ExtraBold,
                         fontStyle = FontStyle.Italic,
                         fontSize = 16.sp,
+                        color = Color.Black,
                         modifier = Modifier.padding(bottom = 4.dp)
                     )
                     Box(

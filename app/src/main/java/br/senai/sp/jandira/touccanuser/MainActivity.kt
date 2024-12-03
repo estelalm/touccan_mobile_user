@@ -41,6 +41,7 @@ import androidx.compose.runtime.collectAsState
 import br.senai.sp.jandira.touccanuser.model.UserId
 import br.senai.sp.jandira.touccanuser.screens.Conta
 import br.senai.sp.jandira.touccanuser.screens.Notifications
+import br.senai.sp.jandira.touccanuser.screens.SearchScreen
 import br.senai.sp.jandira.touccanuser.screens.Seguranca
 import br.senai.sp.jandira.touccanuser.screens.SobreNos
 import br.senai.sp.jandira.touccanuser.screens.Suporte
@@ -231,6 +232,11 @@ class MainActivity : ComponentActivity() {
                         ){ backStackEntry ->
                                 Cofre(navController, this@MainActivity)
                         }
+                        composable(route = "pesquisa",
+                        ){ backStackEntry ->
+                            SearchScreen(navController, this@MainActivity)
+                        }
+
 
                         composable(route = "configuracoes",
                         ){ backStackEntry ->

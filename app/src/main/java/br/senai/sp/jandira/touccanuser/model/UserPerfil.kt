@@ -8,7 +8,7 @@ data class UserPerfil(
     val cep: String = "",
     val email: String = "",
     var data_nascimento: String = "",
-    val senha: String = "",
+    var senha: String = "",
     var foto: String = "",
     var biografia: String = "",
     var habilidade: String = "",
