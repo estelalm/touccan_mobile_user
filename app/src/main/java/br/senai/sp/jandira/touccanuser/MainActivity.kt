@@ -263,9 +263,13 @@ class MainActivity : ComponentActivity() {
                         ){ backStackEntry ->
                             ChatList(navController, this@MainActivity)
                         }
-                        composable(route = "chat",
+                        composable(route = "chat/{id}",
+                            arguments = listOf(navArgument("id") {
+//                                type = NavType.StringType
+                            })
                         ){ backStackEntry ->
-                            Chat(navController, this@MainActivity)
+                            val clientId = backStackEntry.arguments?.getString("id")
+                            Chat(navController, clientId, this@MainActivity)
                         }
                         composable(route = "notificacoes",
                         ){ backStackEntry ->
