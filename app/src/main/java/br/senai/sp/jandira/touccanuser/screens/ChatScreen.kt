@@ -66,7 +66,7 @@ fun Chat(navController: NavHostController, clientId: String?, MainActivity: Cont
     val messagesState = remember { mutableStateOf(listOf<ChatMessage>()) }
     val textState = remember { mutableStateOf("") }
     val database = FirebaseDatabase.getInstance()
-    val chatId = "C${clientId}_U${userIdFlow.value}" // Defina o ID do chat
+    val chatId = "C${clientId}_U${userIdFlow.value.toString()}" // Defina o ID do chat
     val messagesRef = database.getReference("chats").child(chatId).child("conversa")
 
     // Listener para atualizar as mensagens
@@ -218,8 +218,9 @@ fun Chat(navController: NavHostController, clientId: String?, MainActivity: Cont
                                     if (messageText.isNotEmpty()) {
                                         val newMessage = ChatMessage(
                                             texto = messageText,
-                                            id_usuario = userIdFlow.value.toString(),
-                                            timestamp = System.currentTimeMillis().toString()
+                                            id_cliente = userIdFlow.value.toString(),
+                                            timestamp = System.currentTimeMillis().toString(),
+                                            tipo = "enviada"
                                         )
                                         messagesRef.push().setValue(newMessage)
                                         textState.value = ""
