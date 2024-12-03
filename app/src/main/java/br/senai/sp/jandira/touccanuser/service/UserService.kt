@@ -2,6 +2,7 @@ package br.senai.sp.jandira.touccanuser.service
 
 import br.senai.sp.jandira.touccanuser.model.Login
 import br.senai.sp.jandira.touccanuser.model.LoginResult
+import br.senai.sp.jandira.touccanuser.model.RelationRes
 import br.senai.sp.jandira.touccanuser.model.ResultUserProfile
 import br.senai.sp.jandira.touccanuser.model.User
 import br.senai.sp.jandira.touccanuser.model.UserPerfil
@@ -35,6 +36,8 @@ interface UserService {
     @GET("usuario/{id}")
     fun getUserById(@Path("id") id: Int): Call<ResultUserProfile>
 
+    @GET("usuario/relacoes/{id}")
+    fun getUserRelation(@Path("id") id: Int): Call<RelationRes>
 
 }
 

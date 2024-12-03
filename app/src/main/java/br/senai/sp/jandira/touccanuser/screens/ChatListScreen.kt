@@ -1,5 +1,6 @@
 package br.senai.sp.jandira.touccanuser.screens
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -17,8 +18,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -40,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -50,8 +52,15 @@ import androidx.navigation.NavHostController
 import br.senai.sp.jandira.touccanuser.MainActivity
 import br.senai.sp.jandira.touccanuser.R
 import br.senai.sp.jandira.touccanuser.UserPreferences
+import br.senai.sp.jandira.touccanuser.model.Relation
+import br.senai.sp.jandira.touccanuser.model.RelationRes
+import br.senai.sp.jandira.touccanuser.service.RetrofitFactory
 import br.senai.sp.jandira.touccanuser.ui.theme.Inter
 import br.senai.sp.jandira.touccanuser.ui.theme.MainOrange
+import coil.compose.AsyncImage
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,7 +70,31 @@ fun ChatList(navController: NavHostController, mainActivity: MainActivity) {
     val userIdFlow = userPreferences.userId.collectAsState(initial = null)
 
     var chatListState = remember {
-        mutableStateOf(true)
+        mutableStateOf(listOf<Relation>())
+    }
+
+    val callChatList = userIdFlow.value?.let {
+        RetrofitFactory()
+        .getUserService()
+        .getUserRelation(it)
+    }
+
+    if (callChatList != null) {
+        callChatList.enqueue(object: Callback<RelationRes> {
+            override fun onResponse(call: Call<RelationRes>, res: Response<RelationRes>) {
+                val chats = res.body()?.clientes
+
+                if(chats != null){
+                    chatListState.value = chats.distinctBy {it.id}
+                }else{
+                    Log.i("Error: ", "A lista de bicos retornou nula")
+                }
+            }
+
+            override fun onFailure(call: Call<RelationRes>, t: Throwable) {
+                Log.i("Falhou:", t.toString())
+            }
+        })
     }
 
     Surface(modifier = Modifier.background(Color(0xffEBEBEB))) {
@@ -167,7 +200,7 @@ fun ChatList(navController: NavHostController, mainActivity: MainActivity) {
                 }
 
 
-                if (!chatListState.value) {
+                if (chatListState.value.isEmpty()) {
                     Column (
                         modifier = Modifier
                             .fillMaxWidth()
@@ -182,7 +215,7 @@ fun ChatList(navController: NavHostController, mainActivity: MainActivity) {
                         )
                         Text(
                             "Você não possui mensagens...",
-                            modifier = Modifier.offset(y = -50.dp),
+                            modifier = Modifier.offset(y = -20.dp),
                             fontFamily = Inter,
                             fontWeight = FontWeight.SemiBold,
                             fontStyle = FontStyle.Italic,
@@ -201,8 +234,8 @@ fun ChatList(navController: NavHostController, mainActivity: MainActivity) {
                         contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
 
                     ){
-                        items(3){
-                            ChatCard(navController)
+                        items(chatListState.value){
+                            ChatCard(navController, it)
                         }
                     }
                 }
@@ -214,7 +247,7 @@ fun ChatList(navController: NavHostController, mainActivity: MainActivity) {
 }
 
 @Composable
-fun ChatCard(navController: NavHostController) {
+fun ChatCard(navController: NavHostController, chat: Relation) {
     ElevatedCard(
         colors = CardDefaults.cardColors(
             containerColor = Color.White
@@ -232,15 +265,22 @@ fun ChatCard(navController: NavHostController) {
             verticalAlignment = Alignment.CenterVertically
         ){
             Box(modifier = Modifier.size(30.dp).clip(RoundedCornerShape(50.dp))){
-                Image(
-                    modifier = Modifier.fillMaxSize(),
-                    painter = painterResource(R.drawable.person),
-                    contentDescription = "Foto de perfil do usuário tal"
-                )
+                var asyncModel = remember {
+                    mutableStateOf("")
+                }
+                if (chat.foto_cliente == "" || chat.foto_cliente == null) {
+                    asyncModel.value =
+                        "https://i.pinimg.com/236x/21/9e/ae/219eaea67aafa864db091919ce3f5d82.jpg"
+                } else {
+                    asyncModel.value = chat.foto_cliente
+                }
+                AsyncImage(asyncModel.value, "Foto de perfil de" + chat.nome_cliente,
+                    contentScale = ContentScale.FillWidth, alignment = Alignment.Center,
+                    modifier = Modifier.fillMaxSize())
             }
             Column (modifier = Modifier.padding(start = 12.dp)){
                 Text(
-                    text = "Mercadinho Bom Lugar",
+                    text = chat.nome_cliente,
                     fontFamily = Inter,
                     fontWeight = FontWeight.SemiBold,
                     color = Color(0xff726F6F)

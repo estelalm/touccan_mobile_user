@@ -414,7 +414,16 @@ fun AnuncioCard(
                     navController.navigate("perfilCliente/${bico.cliente[0].id}")
                 }
             )
-            Card (modifier = Modifier.clickable { navController.navigate("bico/${bico.id}/${candidatado.value}") }){
+            Card (modifier = Modifier.clickable {
+                if(candidatou.value){
+                    navController.navigate("meuBico/${bico.id}/${candidatado.value}")
+                }else{if(candidatado.value){
+                    navController.navigate("meuBico/${bico.id}/${candidatado.value}")
+                }else{
+                    navController.navigate("bico/${bico.id}/${candidatado.value}")
+                }}
+
+            }){
                 Row (modifier = Modifier
                     .height(180.dp)
                     .fillMaxWidth()
