@@ -40,6 +40,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.runtime.collectAsState
 import br.senai.sp.jandira.touccanuser.screens.Conta
 import br.senai.sp.jandira.touccanuser.screens.InsertCode
+import br.senai.sp.jandira.touccanuser.screens.InsertEmail
 import br.senai.sp.jandira.touccanuser.screens.Notifications
 import br.senai.sp.jandira.touccanuser.screens.ResetPassword
 import br.senai.sp.jandira.touccanuser.screens.SearchScreen
@@ -276,14 +277,27 @@ class MainActivity : ComponentActivity() {
                             Notifications(navController, this@MainActivity)
                         }
 
-                        composable(route = "resetPassword",
+                        composable(route = "resetPassword/{id}", arguments = listOf(navArgument("id"){})
                         ){ backStackEntry ->
-                            ResetPassword(navController, this@MainActivity)
+                            val id = backStackEntry.arguments?.getString("id")
+                            if (id != null) {
+                                ResetPassword(navController, this@MainActivity, id.toInt())
+                            }
+                        }
+                        composable(route = "insertEmail",
+                        ){ backStackEntry ->
+                            InsertEmail(navController, this@MainActivity)
                         }
 
-                        composable(route = "insertCode",
-                        ){ backStackEntry ->
-                            InsertCode(navController, this@MainActivity)
+
+
+                        composable(route = "insertCode/{email}", arguments = listOf(navArgument("email"){
+                        })
+                        ){backStackEntry->
+                            val email = backStackEntry.arguments?.getString("email")
+                            if (email != null){
+                                InsertCode(navController, this@MainActivity, email)
+                            }
                         }
 
                         }

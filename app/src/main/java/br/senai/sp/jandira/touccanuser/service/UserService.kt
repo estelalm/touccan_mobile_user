@@ -5,9 +5,11 @@ import br.senai.sp.jandira.touccanuser.model.Login
 import br.senai.sp.jandira.touccanuser.model.LoginResult
 import br.senai.sp.jandira.touccanuser.model.RelationRes
 import br.senai.sp.jandira.touccanuser.model.ResultUserProfile
+import br.senai.sp.jandira.touccanuser.model.ResultUserProfileList
 import br.senai.sp.jandira.touccanuser.model.TokenRes
 import br.senai.sp.jandira.touccanuser.model.User
 import br.senai.sp.jandira.touccanuser.model.UserPerfil
+import br.senai.sp.jandira.touccanuser.model.UserSenha
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -28,7 +30,7 @@ interface UserService {
 
     @Headers("Content-Type: application/json")
     @PUT("senha/usuario/{id}")
-    fun updateUserSenha(@Body user: UserPerfil, @Path("id") id: Int): Call<UserPerfil>
+    fun updateUserSenha(@Body user: UserSenha, @Path("id") id: Int): Call<UserSenha>
 
     @Headers("Content-Type: application/json")
     @POST("login/usuario")
@@ -36,6 +38,10 @@ interface UserService {
 
     @GET("usuario/{id}")
     fun getUserById(@Path("id") id: Int): Call<ResultUserProfile>
+
+    @GET("usuario")
+    fun getUsers(): Call<ResultUserProfileList>
+
 
     @GET("usuario/relacoes/{id}")
     fun getUserRelation(@Path("id") id: Int): Call<RelationRes>

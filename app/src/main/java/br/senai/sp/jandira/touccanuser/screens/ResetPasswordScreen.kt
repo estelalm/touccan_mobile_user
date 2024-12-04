@@ -1,5 +1,7 @@
 package br.senai.sp.jandira.touccanuser.screens
 
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -32,17 +34,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import br.senai.sp.jandira.touccanuser.MainActivity
 import br.senai.sp.jandira.touccanuser.R
+import br.senai.sp.jandira.touccanuser.model.UserPerfil
+import br.senai.sp.jandira.touccanuser.model.UserSenha
+import br.senai.sp.jandira.touccanuser.service.RetrofitFactory
 import br.senai.sp.jandira.touccanuser.ui.theme.Inter
 import br.senai.sp.jandira.touccanuser.ui.theme.MainOrange
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 @Composable
-fun ResetPassword(navController: NavHostController, mainActivity: MainActivity) {
+fun ResetPassword(navController: NavHostController, mainActivity: MainActivity, idUser: Int) {
     var passwordState = remember{
         mutableStateOf("")
     }
@@ -204,7 +211,31 @@ fun ResetPassword(navController: NavHostController, mainActivity: MainActivity) 
                     containerColor = MainOrange
                 ),
                 modifier = Modifier.padding(12.dp).width(200.dp),
-                onClick = {}
+                onClick = {
+
+                    val novaSenha = UserSenha(
+                        senha = passwordState.value
+                    )
+
+                    val callUserPerfil = RetrofitFactory()
+                        .getUserService()
+                        .updateUserSenha(novaSenha, idUser)
+
+                    callUserPerfil.enqueue(object : Callback<UserSenha> {
+                        override fun onResponse(p0: Call<UserSenha>, res: Response<UserSenha>) {
+                            if(res.isSuccessful){
+                                Toast.makeText(mainActivity, "Senha alterada, redirecionando para a página de login...", Toast.LENGTH_SHORT).show()
+                                navController.navigate("login")
+                            }
+                            Log.i("response edit", res.toString())
+                        }
+
+                        override fun onFailure(p0: Call<UserSenha>, t: Throwable) {
+                            Log.i("Falhou!!!", t.toString())
+                        }
+                    })
+
+                }
             ) {
                 Text(
                     "Atualizar",

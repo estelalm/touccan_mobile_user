@@ -791,9 +791,10 @@ fun HistoryUser(userId: Int){
                                         Text(
                                             "${bico.value.cliente[0].nome_fantasia} - ${bico.value.titulo}.",
                                             fontFamily = Inter,
+                                            color = Color.Black,
                                             fontWeight = FontWeight.Bold
                                         )
-                                        Text(avaliacao.avaliacao, fontFamily = Inter)
+                                        Text(avaliacao.avaliacao, fontFamily = Inter,color = Color.Black)
                                         Row(
                                             modifier = Modifier
                                                 .fillMaxWidth()

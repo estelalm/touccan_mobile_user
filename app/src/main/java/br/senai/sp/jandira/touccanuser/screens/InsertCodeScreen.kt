@@ -18,13 +18,16 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,6 +48,7 @@ import br.senai.sp.jandira.touccanuser.UserPreferences
 import br.senai.sp.jandira.touccanuser.model.EmailReset
 import br.senai.sp.jandira.touccanuser.model.EmailTouccan
 import br.senai.sp.jandira.touccanuser.model.ResultUserProfile
+import br.senai.sp.jandira.touccanuser.model.ResultUserProfileList
 import br.senai.sp.jandira.touccanuser.model.TokenRes
 import br.senai.sp.jandira.touccanuser.model.UserPerfil
 import br.senai.sp.jandira.touccanuser.service.RetrofitFactory
@@ -54,65 +58,32 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
+
 @Composable
-fun InsertCode(navController: NavHostController, context: Context) {
+fun InsertCode(navController: NavHostController, context: Context, emailUser: String) {
 
-    Surface (modifier = Modifier.background(Color(0xffEBEBEB))){
+    Surface(modifier = Modifier.background(Color(0xffEBEBEB))) {
 
-        val userPreferences = UserPreferences(context)
-        val userIdFlow = userPreferences.userId.collectAsState(initial = 0)
-
-        var perfilUsuario = remember {
-            mutableStateOf(UserPerfil())
-        }
-
-        val callUserPerfil = userIdFlow.value?.let {
-            RetrofitFactory()
-                .getUserService()
-                .getUserById(it)
-        }
-
-        if (callUserPerfil != null) {
-            callUserPerfil.enqueue(object : Callback<ResultUserProfile> {
-                override fun onResponse(p0: Call<ResultUserProfile>, p1: Response<ResultUserProfile>) {
-                    Log.i("response perfil usuario", p1.body()!!.toString())
-                    perfilUsuario.value = p1.body()!!.usuario
-                }
-
-                override fun onFailure(p0: Call<ResultUserProfile>, p1: Throwable) {
-                    Log.i("Falhou!!!", p1.toString())
-                }
-            })
-        }
 
         val email = EmailReset(
-            email = perfilUsuario.value.email,
+            email = emailUser
         )
 
-        var tokenState = remember {
-            mutableStateOf(0)
-        }
-
-        var codeState = remember{
-            mutableStateOf("")
-        }
-
-        var errorState = remember{
-            mutableStateOf(false)
-        }
+        var tokenState = remember { mutableStateOf(0) }
+        var codeState = remember { mutableStateOf("") }
+        var errorState = remember { mutableStateOf(false) }
 
         val sendToken = RetrofitFactory()
             .getUserService()
             .sendToken(email)
 
-
-        sendToken.enqueue(object: Callback<TokenRes> {
+        sendToken.enqueue(object : Callback<TokenRes> {
             override fun onResponse(call: Call<TokenRes>, res: Response<TokenRes>) {
-                Log.i("Dados a serem enviados", email.toString())
-                Log.i("Response: ", res.toString())
-                val token = res.body()?.token
-                if(token != null){
-                    tokenState.value = token
+                Log.i("Response", res.body().toString())
+                if (res.isSuccessful && res.body() != null) {
+                    tokenState.value = res.body()!!.token ?: 0
+                } else {
+                    Log.i("Response Error", "Token inválido ou não recebido")
                 }
             }
 
@@ -121,12 +92,12 @@ fun InsertCode(navController: NavHostController, context: Context) {
             }
         })
 
-
-        Column (
-            modifier = Modifier.fillMaxSize().padding(24.dp),
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
             Image(
                 painter = painterResource(R.drawable.logo_touccan),
                 contentDescription = "Logo da touccan",
@@ -135,9 +106,14 @@ fun InsertCode(navController: NavHostController, context: Context) {
             )
             Spacer(modifier = Modifier.height(50.dp))
             ElevatedCard(
-                modifier = Modifier.height(300.dp).width(300.dp)
+                colors = CardDefaults.cardColors(
+                    containerColor = Color.LightGray
+                ),
+                modifier = Modifier
+                    .height(300.dp)
+                    .width(300.dp)
             ) {
-                Column(modifier = Modifier.padding(vertical = 24.dp, horizontal = 20.dp)){
+                Column(modifier = Modifier.padding(vertical = 24.dp, horizontal = 20.dp)) {
                     Text(
                         text = "Digite o código enviado em seu e-mail",
                         fontWeight = FontWeight.SemiBold,
@@ -145,15 +121,68 @@ fun InsertCode(navController: NavHostController, context: Context) {
                         fontFamily = Inter,
                         fontSize = 22.sp
                     )
+
+                    var userList = remember{
+                        mutableStateOf(listOf<UserPerfil>())
+                    }
+                    var idUser = remember{
+                        mutableStateOf(0)
+                    }
                     Spacer(modifier = Modifier.height(50.dp))
                     OutlinedTextField(
-                        modifier = Modifier.height(70.dp).fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            unfocusedContainerColor = Color.Transparent,
+                            focusedContainerColor = Color.Transparent,
+                            focusedBorderColor = Color.Black,
+                            unfocusedBorderColor = Color.Black
+                        ),
+                        modifier = Modifier
+                            .height(70.dp)
+                            .fillMaxWidth(),
                         value = codeState.value,
                         trailingIcon = {
                             IconButton(onClick = {
-                                if(tokenState.value.toString() == codeState.value){
-                                    navController.navigate("resetPassword")
-                                }else{
+                                if (tokenState.value.toString() == codeState.value) {
+
+
+                                    val callUserPerfil = RetrofitFactory()
+                                        .getUserService()
+                                        .getUsers()
+
+                                    callUserPerfil.enqueue(object : Callback<ResultUserProfileList> {
+                                        override fun onResponse(
+                                            p0: Call<ResultUserProfileList>,
+                                            res: Response<ResultUserProfileList>
+                                        ) {
+                                            val userResult = res.body()?.usuario
+                                            if (userResult != null) {
+                                                // Filtrar o usuário pelo email
+                                                val usuarioEncontrado = userResult.find { it.email == emailUser }
+                                                if (usuarioEncontrado != null) {
+                                                    idUser.value = usuarioEncontrado.id
+                                                    Log.i("Usuário encontrado", "ID: ${idUser.value}, Email: ${usuarioEncontrado.email}")
+
+                                                    navController.navigate("resetPassword/${idUser.value}")
+                                                } else {
+                                                    Log.i("Usuário não encontrado", "Nenhum usuário com o email $emailUser foi encontrado.")
+                                                }
+                                            } else {
+                                                Log.i("Resposta vazia", "Nenhum dado foi retornado.")
+                                            }
+                                        }
+
+                                        override fun onFailure(
+                                            p0: Call<ResultUserProfileList>,
+                                            t: Throwable
+                                        ) {
+                                            Log.i("Falhou!!!", t.toString())
+                                        }
+                                    })
+
+
+
+
+                                } else {
                                     errorState.value = true
                                 }
                             }) {
@@ -176,8 +205,12 @@ fun InsertCode(navController: NavHostController, context: Context) {
                         }
                     )
 
-                    if(errorState.value){
-                        Text("Código inválido", color = Color.Red, modifier = Modifier.padding(12.dp))
+                    if (errorState.value) {
+                        Text(
+                            "Código inválido",
+                            color = Color.Red,
+                            modifier = Modifier.padding(12.dp)
+                        )
                     }
                 }
             }
@@ -196,18 +229,16 @@ fun InsertCode(navController: NavHostController, context: Context) {
                 ),
                 modifier = Modifier.padding(12.dp),
                 onClick = {
-                    val sendToken = RetrofitFactory()
+                    val resendToken = RetrofitFactory()
                         .getUserService()
                         .sendToken(email)
 
-
-                    sendToken.enqueue(object: Callback<TokenRes> {
+                    resendToken.enqueue(object : Callback<TokenRes> {
                         override fun onResponse(call: Call<TokenRes>, res: Response<TokenRes>) {
-                            Log.i("Dados a serem enviados", email.toString())
-                            Log.i("Response: ", res.toString())
-                            val token = res.body()?.token
-                            if(token != null){
-                                tokenState.value = token
+                            if (res.isSuccessful && res.body() != null) {
+                                tokenState.value = res.body()!!.token ?: 0
+                            } else {
+                                Log.i("Response Error", "Token inválido ou não recebido")
                             }
                         }
 
@@ -225,10 +256,7 @@ fun InsertCode(navController: NavHostController, context: Context) {
                     fontSize = 18.sp
                 )
             }
-
         }
-
     }
-
 }
 

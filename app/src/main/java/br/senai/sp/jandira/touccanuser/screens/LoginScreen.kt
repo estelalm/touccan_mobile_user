@@ -36,6 +36,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -317,12 +318,13 @@ fun Login (navController: NavHostController, context: Context, userPreferences: 
                     )
                 }
 
-                Text("Esqueceu a senha? Clique aqui para redefinir",
+                Text("Esqueceu a senha? \n Clique aqui para redefinir",
                     fontSize = 14.sp,
-                    color = Color(mainOrange),
+                    color = Color.Black,
                     fontFamily = Inter,
+                    textAlign = TextAlign.Center,
                     textDecoration = TextDecoration.Underline,
-                    modifier = Modifier.fillMaxWidth().clickable { navController.navigate("") }
+                    modifier = Modifier.fillMaxWidth().padding(top = 24.dp).clickable { navController.navigate("insertEmail") }
                 )
 
             }
