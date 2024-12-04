@@ -99,8 +99,8 @@ class MainActivity : ComponentActivity() {
 
                     NavHost(
                         navController = navController,
-                        startDestination = if(userIdFlow.value== 0 || userIdFlow.value == null){"logIn"} else{"home/${userIdFlow.value}"}) {
-
+                        startDestination = "logIn") {
+//startDestination = if(userIdFlow.value== 0 || userIdFlow.value == null){"logIn"} else{"home/${userIdFlow.value}"}
                         composable(route = "signUp"){ SignUpScreen(navController)}
 
                         composable(route = "setPassword/{dados}",
