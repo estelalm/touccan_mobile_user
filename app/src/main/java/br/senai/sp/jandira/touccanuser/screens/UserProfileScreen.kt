@@ -82,8 +82,11 @@ import java.time.LocalDate
 import java.time.Period
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextDecoration
+import br.senai.sp.jandira.touccanuser.model.DenunciaUser
 import coil.compose.rememberAsyncImagePainter
 import com.google.firebase.storage.FirebaseStorage
+import java.util.Locale
 
 
 @Composable
@@ -694,13 +697,20 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
 
 @SuppressLint("DefaultLocale")
 @Composable
-fun HistoryUser(userId: Int){
+fun HistoryUser(userId: Int) {
 
     var avaliacoesState = remember {
         mutableStateOf(listOf<AvaliacaoUser>())
     }
     var avaliacaoLoadState = remember {
         mutableStateOf(true)
+    }
+    var denunciasState = remember {
+        mutableStateOf(listOf<DenunciaUser>())
+    }
+
+    var isDenunciaActive = remember {
+        mutableStateOf(false) // Começa com avaliações
     }
 
     val callFeedback = RetrofitFactory()
@@ -711,6 +721,7 @@ fun HistoryUser(userId: Int){
         override fun onResponse(p0: Call<FeedbackUser>, res: Response<FeedbackUser>) {
             Log.i("response feedback", res.body()!!.toString())
             avaliacoesState.value = res.body()!!.avaliacoes
+            denunciasState.value = res.body()!!.denuncias
             avaliacaoLoadState.value = false
         }
 
@@ -719,13 +730,19 @@ fun HistoryUser(userId: Int){
         }
     })
 
-    Column(modifier = Modifier.fillMaxSize()){
+    Column(modifier = Modifier.fillMaxSize()) {
         LazyColumn {
-
-            if(avaliacaoLoadState.value){
-                item { Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center){ CircularProgressIndicator(color = MainOrange) } }
-            }else{
-                if(avaliacoesState.value.isEmpty()){
+            if (avaliacaoLoadState.value) {
+                item {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        CircularProgressIndicator(color = MainOrange)
+                    }
+                }
+            } else {
+                if (avaliacoesState.value.isEmpty() && denunciasState.value.isEmpty()) {
                     item {
                         Text(
                             "Você ainda não foi avaliado!",
@@ -734,48 +751,60 @@ fun HistoryUser(userId: Int){
                             textAlign = TextAlign.Center,
                             fontWeight = FontWeight.SemiBold,
                             modifier = Modifier.fillMaxWidth()
-                        ) }
-                }else{
-                    item{
-//                        Row (modifier = Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.Center){
-//                            val total = remember(avaliacoesState.value) {
-//                                avaliacoesState.value.filter { it.id_usuario == userId }
-//                                    .sumOf { it.nota }
-//                            }
-//                            val media = total / avaliacoesState.value.size
-//                            Text("Avaliação média: ${String.format("%.2f", media)}" )
-//                        }
+                        )
+                    }
+                } else {
+                    item {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            val media = if (avaliacoesState.value.isNotEmpty()) {
+                                val total = avaliacoesState.value.filter { it.id_usuario == userId }
+                                    .sumOf { it.nota }
+                                val mediaBruta = total.toDouble() / avaliacoesState.value.size
+                                String.format(Locale.US, "%.1f", mediaBruta).toDouble()
+                            } else {
+                                0.0
+                            }
+
+                            Text(
+                                "Média: $media",
+                                fontFamily = Inter,
+                                color = Color.Black,
+                                fontSize = 18.sp,
+                                textAlign = TextAlign.Center,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                            Spacer(modifier = Modifier.width(24.dp))
+                            Text(
+                                text = if (isDenunciaActive.value) "Ver avaliações" else "Ver denúncias",
+                                fontFamily = Inter,
+                                color = Color.Red,
+                                fontSize = 18.sp,
+                                textDecoration = TextDecoration.Underline,
+                                textAlign = TextAlign.Center,
+                                fontWeight = FontWeight.SemiBold,
+                                modifier = Modifier.clickable {
+                                    isDenunciaActive.value = !isDenunciaActive.value
+                                }
+                            )
+                        }
                     }
 
-                    items(avaliacoesState.value){ avaliacao ->
-
-                        var bico = remember{ mutableStateOf(Bico())}
-
-                        val callBico = RetrofitFactory()
-                            .getBicoService()
-                            .getBicoById(avaliacao.id_bico)
-
-                        callBico.enqueue(object : Callback<ResultBico> {
-                            override fun onResponse(
-                                p0: Call<ResultBico>,
-                                res: Response<ResultBico>
-                            ) {
-                                Log.i("response feedback", res.body()!!.toString())
-                                bico.value = res.body()!!.bico
-                            }
-
-                            override fun onFailure(p0: Call<ResultBico>, p1: Throwable) {
-                                Log.i("Falhou!!!", p1.toString())
-                            }
-                        })
-
-                        if(bico.value.cliente.isNotEmpty()) {
-                            ElevatedCard(modifier = Modifier
-                                .clickable { }
-                                .padding(horizontal = 18.dp, vertical = 8.dp),
+                    if (!isDenunciaActive.value) {
+                        items(avaliacoesState.value) { avaliacao ->
+                            // Lógica de exibição das avaliações
+                            ElevatedCard(
+                                modifier = Modifier
+                                    .clickable { }
+                                    .padding(horizontal = 18.dp, vertical = 8.dp),
                                 elevation = CardDefaults.elevatedCardElevation(
                                     defaultElevation = 3.dp
-                                )) {
+                                )
+                            ) {
                                 Row(
                                     modifier = Modifier
                                         .height(90.dp)
@@ -798,12 +827,11 @@ fun HistoryUser(userId: Int){
                                         verticalArrangement = Arrangement.Center
                                     ) {
                                         Text(
-                                            "${bico.value.cliente[0].nome_fantasia} - ${bico.value.titulo}.",
+                                            "Avaliação: ${avaliacao.avaliacao}",
                                             fontFamily = Inter,
                                             color = Color.Black,
                                             fontWeight = FontWeight.Bold
                                         )
-                                        Text(avaliacao.avaliacao, fontFamily = Inter,color = Color.Black)
                                         Row(
                                             modifier = Modifier
                                                 .fillMaxWidth()
@@ -823,25 +851,62 @@ fun HistoryUser(userId: Int){
                                                         tint = Color(0xFF504D4D)
                                                     )
                                             }
-
                                         }
                                     }
-
                                 }
                             }
-                        }else{
-
+                        }
+                    } else {
+                        items(denunciasState.value) { denuncia ->
+                            // Lógica de exibição das denúncias
+                            ElevatedCard(
+                                modifier = Modifier
+                                    .clickable { }
+                                    .padding(horizontal = 18.dp, vertical = 8.dp),
+                                elevation = CardDefaults.elevatedCardElevation(
+                                    defaultElevation = 3.dp
+                                )
+                            ) {
+                                Row(
+                                    modifier = Modifier
+                                        .height(90.dp)
+                                        .fillMaxWidth()
+                                        .background(Color.White)
+                                ) {
+                                    Card(
+                                        modifier = Modifier
+                                            .fillMaxHeight()
+                                            .width(10.dp),
+                                        colors = CardDefaults.cardColors(
+                                            containerColor = MainOrange,
+                                        ),
+                                        shape = RectangleShape
+                                    ) {}
+                                    Column(
+                                        modifier = Modifier
+                                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                                            .fillMaxHeight(),
+                                        verticalArrangement = Arrangement.Center
+                                    ) {
+                                        Text(
+                                            "Denúncia: ${denuncia.denuncia}",
+                                            fontFamily = Inter,
+                                            color = Color.Black,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    }
+                                }
+                            }
                         }
                     }
                 }
             }
-
         }
     }
-
-
-
 }
+
+
+
 
 fun uploadImageToFirebase(uri: Uri?, onComplete: (String?) -> Unit) {
     if (uri == null) {
