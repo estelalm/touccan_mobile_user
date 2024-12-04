@@ -194,26 +194,34 @@ fun UserProfile(navController: NavHostController, usuarioId: String, mainActivit
                     elevation = CardDefaults.cardElevation(defaultElevation = 9.dp)
                 ) {
 
-                    if (editState.value) { Button(
+                    if (editState.value) {
+                        Button(
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Gray
                         ),
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier.size(170.dp),
                         onClick = {
                             imagePickerLauncher.launch("image/*")
                         }
                     ) {
 
                         if(insertedImage.value){
-                            //preciso que só essa imagem preencha o espaço do botão, do crculo do card, porque ela não ta preenchendo
-                            Image(
-                                painter = rememberAsyncImagePainter(imageUri.value),
-                                contentDescription = "Imagem escolhida",
-                                contentScale = ContentScale.FillWidth,
-                                alignment = Alignment.Center,
-                                modifier = Modifier
-                                    .fillMaxSize()
-                            )
+                            // não ta preenchendo
+                            Card(
+                                modifier = Modifier.size(120.dp),
+                                shape = CircleShape
+                            ){
+                                Image(
+                                    painter = rememberAsyncImagePainter(imageUri.value),
+                                    contentDescription = "Imagem escolhida",
+                                    contentScale = ContentScale.FillBounds,
+                                    alignment = Alignment.Center,
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                )
+                            }
+
+
                         }else{
                             Image(
                                 painter = painterResource(R.drawable.inserir_imagem),
@@ -720,11 +728,12 @@ fun HistoryUser(userId: Int){
                 if(avaliacoesState.value.isEmpty()){
                     item {
                         Text(
-                            "Você ainda não foi avaliado!: ",
+                            "Você ainda não foi avaliado!",
                             fontFamily = Inter,
                             color = Color.Black,
                             textAlign = TextAlign.Center,
-                            fontWeight = FontWeight.SemiBold
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.fillMaxWidth()
                         ) }
                 }else{
                     item{
