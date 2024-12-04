@@ -90,10 +90,12 @@ fun InsertEmail(navController: NavHostController, context: Context) {
                     .width(300.dp)
             ) {
                 Column(modifier = Modifier.padding(vertical = 24.dp, horizontal = 20.dp)) {
+                    Spacer(modifier = Modifier.height(50.dp))
                     Text(
                         text = "Digite o email de login",
                         fontWeight = FontWeight.SemiBold,
                         textAlign = TextAlign.Center,
+                        color = Color.Black,
                         fontFamily = Inter,
                         fontSize = 22.sp
                     )
@@ -103,10 +105,12 @@ fun InsertEmail(navController: NavHostController, context: Context) {
                             unfocusedContainerColor = Color.Transparent,
                             focusedContainerColor = Color.Transparent,
                             focusedBorderColor = Color.Black,
-                            unfocusedBorderColor = Color.Black
+                            unfocusedBorderColor = Color.Black,
+                            focusedTextColor = Color.Black,
+                            unfocusedTextColor = Color.Black
                         ),
                         modifier = Modifier
-                            .height(70.dp)
+                            .height(60.dp)
                             .fillMaxWidth(),
                         value = emailState.value,
                         onValueChange = {

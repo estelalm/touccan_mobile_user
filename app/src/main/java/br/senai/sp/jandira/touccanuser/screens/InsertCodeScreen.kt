@@ -2,33 +2,15 @@ package br.senai.sp.jandira.touccanuser.screens
 
 import android.content.Context
 import android.util.Log
-import android.widget.Space
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Email
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -44,10 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import br.senai.sp.jandira.touccanuser.R
-import br.senai.sp.jandira.touccanuser.UserPreferences
 import br.senai.sp.jandira.touccanuser.model.EmailReset
-import br.senai.sp.jandira.touccanuser.model.EmailTouccan
-import br.senai.sp.jandira.touccanuser.model.ResultUserProfile
 import br.senai.sp.jandira.touccanuser.model.ResultUserProfileList
 import br.senai.sp.jandira.touccanuser.model.TokenRes
 import br.senai.sp.jandira.touccanuser.model.UserPerfil
@@ -58,39 +37,36 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-
 @Composable
 fun InsertCode(navController: NavHostController, context: Context, emailUser: String) {
-
     Surface(modifier = Modifier.background(Color(0xffEBEBEB))) {
+        val email = EmailReset(email = emailUser)
 
+        val tokenState = remember { mutableStateOf(0) }
+        val codeState = remember { mutableStateOf("") }
+        val errorState = remember { mutableStateOf(false) }
 
-        val email = EmailReset(
-            email = emailUser
-        )
+        // Garante que o envio do token seja feito apenas uma vez
+        LaunchedEffect(Unit) {
+            val sendToken = RetrofitFactory()
+                .getUserService()
+                .sendToken(email)
 
-        var tokenState = remember { mutableStateOf(0) }
-        var codeState = remember { mutableStateOf("") }
-        var errorState = remember { mutableStateOf(false) }
-
-        val sendToken = RetrofitFactory()
-            .getUserService()
-            .sendToken(email)
-
-        sendToken.enqueue(object : Callback<TokenRes> {
-            override fun onResponse(call: Call<TokenRes>, res: Response<TokenRes>) {
-                Log.i("Response", res.body().toString())
-                if (res.isSuccessful && res.body() != null) {
-                    tokenState.value = res.body()!!.token ?: 0
-                } else {
-                    Log.i("Response Error", "Token inválido ou não recebido")
+            sendToken.enqueue(object : Callback<TokenRes> {
+                override fun onResponse(call: Call<TokenRes>, res: Response<TokenRes>) {
+                    Log.i("Response", res.body().toString())
+                    if (res.isSuccessful && res.body() != null) {
+                        tokenState.value = res.body()!!.token ?: 0
+                    } else {
+                        Log.i("Response Error", "Token inválido ou não recebido")
+                    }
                 }
-            }
 
-            override fun onFailure(call: Call<TokenRes>, t: Throwable) {
-                Log.i("Falhou:", t.toString())
-            }
-        })
+                override fun onFailure(call: Call<TokenRes>, t: Throwable) {
+                    Log.i("Falhou:", t.toString())
+                }
+            })
+        }
 
         Column(
             modifier = Modifier
@@ -122,12 +98,8 @@ fun InsertCode(navController: NavHostController, context: Context, emailUser: St
                         fontSize = 22.sp
                     )
 
-                    var userList = remember{
-                        mutableStateOf(listOf<UserPerfil>())
-                    }
-                    var idUser = remember{
-                        mutableStateOf(0)
-                    }
+                    val idUser = remember { mutableStateOf(0) }
+
                     Spacer(modifier = Modifier.height(50.dp))
                     OutlinedTextField(
                         colors = OutlinedTextFieldDefaults.colors(
@@ -143,8 +115,6 @@ fun InsertCode(navController: NavHostController, context: Context, emailUser: St
                         trailingIcon = {
                             IconButton(onClick = {
                                 if (tokenState.value.toString() == codeState.value) {
-
-
                                     val callUserPerfil = RetrofitFactory()
                                         .getUserService()
                                         .getUsers()
@@ -156,7 +126,6 @@ fun InsertCode(navController: NavHostController, context: Context, emailUser: St
                                         ) {
                                             val userResult = res.body()?.usuario
                                             if (userResult != null) {
-                                                // Filtrar o usuário pelo email
                                                 val usuarioEncontrado = userResult.find { it.email == emailUser }
                                                 if (usuarioEncontrado != null) {
                                                     idUser.value = usuarioEncontrado.id
@@ -178,10 +147,6 @@ fun InsertCode(navController: NavHostController, context: Context, emailUser: St
                                             Log.i("Falhou!!!", t.toString())
                                         }
                                     })
-
-
-
-
                                 } else {
                                     errorState.value = true
                                 }
@@ -189,9 +154,7 @@ fun InsertCode(navController: NavHostController, context: Context, emailUser: St
                                 Icon(Icons.Outlined.Email, "")
                             }
                         },
-                        onValueChange = {
-                            codeState.value = it
-                        },
+                        onValueChange = { codeState.value = it },
                         shape = RectangleShape,
                         placeholder = {
                             Text(
@@ -259,4 +222,3 @@ fun InsertCode(navController: NavHostController, context: Context, emailUser: St
         }
     }
 }
-

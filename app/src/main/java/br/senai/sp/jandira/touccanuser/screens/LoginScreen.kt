@@ -95,7 +95,7 @@ fun Login (navController: NavHostController, context: Context, userPreferences: 
         ) {
             Box(modifier = Modifier
                 .fillMaxWidth()
-                .height(200.dp)
+                .height(240.dp)
                 //height com a curva: 320.dp
                 .background(linearOrange)
                 .zIndex(-0.6F)
@@ -233,7 +233,7 @@ fun Login (navController: NavHostController, context: Context, userPreferences: 
                     Text(messageErrorState.value, color = Color.Red)
                 }
 
-                Spacer(modifier = Modifier.height(140.dp))
+                Spacer(modifier = Modifier.height(100.dp))
                 Button(
                     onClick = {
                         val login = Login(

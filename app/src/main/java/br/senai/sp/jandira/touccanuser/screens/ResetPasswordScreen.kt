@@ -97,6 +97,7 @@ fun ResetPassword(navController: NavHostController, mainActivity: MainActivity, 
                     Text(
                         modifier = Modifier.fillMaxWidth().padding(bottom = 36.dp),
                         text = "Crie uma nova senha",
+                        color = Color.Black,
                         fontWeight = FontWeight.SemiBold,
                         textAlign = TextAlign.Center,
                         fontFamily = Inter,
