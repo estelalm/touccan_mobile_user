@@ -218,7 +218,7 @@ fun Chat(navController: NavHostController, clientId: String?, MainActivity: Cont
                                     if (messageText.isNotEmpty()) {
                                         val newMessage = ChatMessage(
                                             texto = messageText,
-                                            id_cliente = userIdFlow.value.toString(),
+                                            id_usuario = userIdFlow.value.toString(),
                                             timestamp = System.currentTimeMillis().toString(),
                                             tipo = "enviada"
                                         )
