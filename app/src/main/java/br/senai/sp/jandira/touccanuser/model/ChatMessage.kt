@@ -4,6 +4,5 @@ data class ChatMessage(
     val id_cliente: String? = null,
     val id_usuario: String? = null,
     val texto: String = "",
-    val timestamp: String = "",
     val tipo: String = ""
 )

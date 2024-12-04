@@ -2,7 +2,6 @@ package br.senai.sp.jandira.touccanuser.screens
 
 import android.content.Context
 import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -55,6 +55,8 @@ import com.google.firebase.database.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.text.SimpleDateFormat
+import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,7 +68,7 @@ fun Chat(navController: NavHostController, clientId: String?, MainActivity: Cont
     val messagesState = remember { mutableStateOf(listOf<ChatMessage>()) }
     val textState = remember { mutableStateOf("") }
     val database = FirebaseDatabase.getInstance()
-    val chatId = "C${clientId}_U${userIdFlow.value.toString()}" // Defina o ID do chat
+    val chatId = "C${clientId}_U${userIdFlow.value.toString()}"
     val messagesRef = database.getReference("chats").child(chatId).child("conversa")
 
     // Listener para atualizar as mensagens
@@ -74,9 +76,16 @@ fun Chat(navController: NavHostController, clientId: String?, MainActivity: Cont
         override fun onDataChange(snapshot: DataSnapshot) {
             val messages = mutableListOf<ChatMessage>()
             snapshot.children.forEach { child ->
-                val message = child.getValue(ChatMessage::class.java)
-                if (message != null) {
+                try {
+                    val rawMessage = child.value as Map<String, Any>
+                    val message = ChatMessage(
+                        texto = rawMessage["texto"] as String? ?: "",
+                        id_usuario = rawMessage["id_usuario"]?.toString(), // Converte para String se necessário
+                        tipo = rawMessage["tipo"] as String? ?: ""
+                    )
                     messages.add(message)
+                } catch (e: Exception) {
+                    Log.e("FirebaseError", "Erro ao processar mensagem: ${e.message}")
                 }
             }
             messagesState.value = messages
@@ -86,24 +95,29 @@ fun Chat(navController: NavHostController, clientId: String?, MainActivity: Cont
             Log.e("FirebaseError", error.message)
         }
     })
-    val id = clientId?.toInt()
-    val chatClientState = remember{
+
+    val chatClientState = remember {
         mutableStateOf(ClientePerfil())
     }
 
-    val callClienteChat = RetrofitFactory()
-        .getClientService()
-        .getClientById(id!!)
-    callClienteChat.enqueue(object : Callback<ResultClientProfile> {
-        override fun onResponse(p0: Call<ResultClientProfile>, p1: Response<ResultClientProfile>) {
-            Log.i("response TelaC", p1.body()!!.toString())
-            chatClientState.value = p1.body()!!.cliente
-        }
+    val id = clientId?.toInt()
+    if (id != null) {
+        val callClienteChat = RetrofitFactory()
+            .getClientService()
+            .getClientById(id)
+        callClienteChat.enqueue(object : Callback<ResultClientProfile> {
+            override fun onResponse(p0: Call<ResultClientProfile>, p1: Response<ResultClientProfile>) {
+                Log.i("response TelaC", p1.body()!!.toString())
+                chatClientState.value = p1.body()!!.cliente
+            }
 
-        override fun onFailure(p0: Call<ResultClientProfile>, p1: Throwable) {
-            Log.i("Falhou!!!", p1.toString())
-        }
-    })
+            override fun onFailure(p0: Call<ResultClientProfile>, p1: Throwable) {
+                Log.i("Falhou!!!", p1.toString())
+            }
+        })
+    } else {
+        Log.e("ID Nulo", "O ID do cliente é nulo.")
+    }
 
     Surface(modifier = Modifier.background(Color(0xffEBEBEB))) {
 
@@ -177,16 +191,15 @@ fun Chat(navController: NavHostController, clientId: String?, MainActivity: Cont
                                 .fillMaxSize()
                                 .padding(vertical = 24.dp, horizontal = 12.dp)
                         ) {
-                            items(messagesState.value.size) { index ->
-                                val message = messagesState.value[index]
-                                val isUserMessage = message.id_usuario != null
-                                if (isUserMessage) {
+                            items(messagesState.value) { message ->
+                                if (message.id_usuario != null) {
                                     MessageUser(message.texto)
                                 } else {
-                                    MessageClient(message.texto)
+                                    MessageClient(message.texto)  // Passando o texto corretamente
                                 }
                             }
                         }
+
                     }
 
                     ElevatedCard(
@@ -219,20 +232,24 @@ fun Chat(navController: NavHostController, clientId: String?, MainActivity: Cont
                                         val newMessage = ChatMessage(
                                             texto = messageText,
                                             id_usuario = userIdFlow.value.toString(),
-                                            timestamp = System.currentTimeMillis().toString(),
                                             tipo = "enviada"
                                         )
-                                        messagesRef.push().setValue(newMessage)
+                                        messagesRef.push().setValue(newMessage).addOnCompleteListener { task ->
+                                            if (task.isSuccessful) {
+                                                Log.i("Mensagem", "Mensagem enviada com sucesso")
+                                            } else {
+                                                Log.e("Erro", "Falha ao enviar a mensagem", task.exception)
+                                            }
+                                        }
                                         textState.value = ""
                                     }
                                 },
-                                enabled = textState.value.isNotEmpty() // Desativa o botão se o texto estiver vazio
+                                enabled = textState.value.isNotEmpty()
                             ) {
                                 Icon(
                                     painter = painterResource(R.drawable.send),
                                     contentDescription = "Enviar mensagem"
                                 )
-                            }
                             }
                         }
                     }
@@ -240,8 +257,7 @@ fun Chat(navController: NavHostController, clientId: String?, MainActivity: Cont
             }
         }
     }
-
-
+}
 @Composable
 fun MessageUser(text: String) {
     Row(
